@@ -1,0 +1,126 @@
+body {
+  background-color: #f5efea;
+}
+h1 {
+    color: #b75301;
+    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+    font-size: 38px;
+    text-align: center;
+}
+
+p {
+    color: black;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 18px;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+
+nav {
+    display: flex;
+    margin: -8px;
+    justify-content: center;
+    gap: 10px;
+    background-color:#b2835d;
+    padding: 10px;
+
+    color: black;
+    font-family: 'Times New Roman', Times, serif, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+}
+
+nav a:hover {
+    background-color: #b75301;
+}
+
+img {
+    border-radius: 20px;
+
+}
+
+.carrossel {
+    position: relative;
+    width: 600px;
+    height: 500px;
+    margin: auto;
+    overflow: hidden;
+}
+
+.carrossel input {
+    display: none;
+}
+
+.imagens {
+    display: flex;
+    width: 1200px;
+    transition: transform 0.5s ease;
+}
+
+.imagens img {
+    width: 600px;
+    height: 500px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+/* Mostra a primeira imagem */
+#obra1:checked ~ .imagens {
+    transform: translateX(0);
+}
+
+/* Mostra a segunda imagem */
+#obra2:checked ~ .imagens {
+    transform: translateX(-600px);
+}
+
+.botoes label {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+
+    padding: 10px;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.botoes label:first-child {
+    left: 10px;
+}
+
+.botoes label:last-child {
+    right: 10px;
+}
+
+footer{
+    display: flex;
+    margin: -8px;
+    justify-content: center;
+    gap: 40px;
+    background-color:#b2835d;
+    padding: 10px;
+
+    color: whitesmoke;
+    font-family: 'Times New Roman', Times, serif, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+footer a {
+    color: whitesmoke;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
