@@ -1,15 +1,15 @@
 body {
-  background-color: #f5efea;
+  background-color: #FAF1E6;
 }
 h1 {
-    color: #b75301;
+    color:#4B3528;
     font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
     font-size: 38px;
     text-align: center;
 }
 
 p {
-    color: black;
+    color:#2F1F1A;
     font-family: "Times New Roman", Times, serif;
     font-size: 18px;
     line-height: 1.6;
@@ -22,7 +22,7 @@ nav {
     margin: -8px;
     justify-content: center;
     gap: 10px;
-    background-color:#b2835d;
+    background-color:  #3A241B;
     padding: 10px;
 
     color: black;
@@ -32,13 +32,13 @@ nav {
 }
 
 nav a {
-    color: white;
+    color:#F2E1D0;
     text-decoration: none;
     padding: 10px 20px;
 }
 
 nav a:hover {
-    background-color: #b75301;
+    background-color:#5A371E;
 }
 
 img {
@@ -102,25 +102,31 @@ img {
     right: 10px;
 }
 
-footer{
+footer {
     display: flex;
     margin: -8px;
     justify-content: center;
-    gap: 40px;
-    background-color:#b2835d;
+    gap: 10px;
+    background-color: #3A241B;
     padding: 10px;
 
-    color: whitesmoke;
-    font-family: 'Times New Roman', Times, serif, sans-serif;
+    color: #F2E1D0;
+    font-family: 'Times New Roman', Times, serif;
     font-size: 18px;
     line-height: 1.6;
 }
 
 footer a {
-    color: whitesmoke;
+    color: #F2E1D0;
     text-decoration: none;
+    padding: 10px 20px;
+}
+footer p {
+    color: #F2E1D0;
+    text-decoration: none;
+    padding: 10px 20px;
 }
 
 footer a:hover {
-    text-decoration: underline;
+    background-color: #5A371E;
 }
