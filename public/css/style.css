@@ -46,61 +46,6 @@ img {
 
 }
 
-.carrossel {
-    position: relative;
-    width: 600px;
-    height: 500px;
-    margin: auto;
-    overflow: hidden;
-}
-
-.carrossel input {
-    display: none;
-}
-
-.imagens {
-    display: flex;
-    width: 1200px;
-    transition: transform 0.5s ease;
-}
-
-.imagens img {
-    width: 600px;
-    height: 500px;
-    object-fit: cover;
-    flex-shrink: 0;
-}
-
-/* Mostra a primeira imagem */
-#obra1:checked ~ .imagens {
-    transform: translateX(0);
-}
-
-/* Mostra a segunda imagem */
-#obra2:checked ~ .imagens {
-    transform: translateX(-600px);
-}
-
-.botoes label {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-
-    padding: 10px;
-    font-size: 25px;
-    cursor: pointer;
-}
-
-.botoes label:first-child {
-    left: 10px;
-}
-
-.botoes label:last-child {
-    right: 10px;
-}
 
 footer {
     display: flex;

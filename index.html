@@ -8,6 +8,7 @@
   <title>Arte Guiada</title>
 
   <link rel="stylesheet" href="public/css/style.css">
+  <link rel="stylesheet" href="public/css/carrossel.css">
 
   <meta name="description" content="Página inicial do site Arte Guiada, que ensina o usuário a analisar obras de arte, mostrando um caminho para ver além da obra como um mero desenho e atribuindo significado ao olhar do espectador.">
 </head>
@@ -45,31 +46,43 @@
 
       <div class="carrossel">
 
-        <input type="radio" name="obra" id="obra1" checked>
-        <input type="radio" name="obra" id="obra2">
+        <span id="item-1"></span>
+        <span id="item-2"></span>
+        <span id="item-3"></span>
 
-        <div class="imagens">
-
+        <div class="carrossel-item item-1">
           <img
-            src="public/img/a_boba.jpg"
-            alt="Obra intitulada A Boba, que mostra uma mulher sentada em uma cadeira, olhando para alguém acima dela. Possui cores vibrantes em tons de amarelo, verde e azul."
+            src="public/img/van-gogh-caveira.jpg"
+            alt=""
             fetchpriority="high"
           >
 
-          <img
-            src="public/img/girl_with_a_pearl.jpg"
-            alt="Obra que apresenta uma moça com um brinco de pérola olhando para o espectador em uma pose de três quartos. O fundo é totalmente preto."
-            fetchpriority="low"
-          >
-
+          <a href="#item-3" class="prev arrow" aria-label="Obra anterior"></a>
+          <a href="#item-2" class="next arrow" aria-label="Próxima obra"></a>
         </div>
 
-        <div class="botoes">
-          <label for="obra1">❮</label>
-          <label for="obra2">❯</label>
+        <div class="carrossel-item item-2">
+          <img
+            src="public/img/a_boba.jpg"
+            alt=""
+          >
+
+          <a href="#item-1" class="prev arrow" aria-label="Obra anterior"></a>
+          <a href="#item-3" class="next arrow" aria-label="Próxima obra"></a>
+        </div>
+
+        <div class="carrossel-item item-3">
+          <img
+            src="public/img/girl_with_a_pearl.jpg"
+            alt=""
+          >
+
+          <a href="#item-2" class="prev arrow" aria-label="Obra anterior"></a>
+          <a href="#item-1" class="next arrow" aria-label="Próxima obra"></a>
         </div>
 
       </div>
+
     </section>
 
   </main>

@@ -1,0 +1,73 @@
+.carrossel {
+    width: 400px;
+    height: 400px;
+    position: relative;
+    overflow: hidden;
+}
+
+.carrossel-item {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.carrossel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.arrow {
+    border: solid #3A241B;
+    border-width: 3px 0 0 3px;
+    display: inline-block;
+    padding: 10px;
+    position: absolute;
+    top: 50%;
+    z-index: 5;
+}
+
+.prev {
+    left: 30px;
+    transform: translateY(-50%) rotate(-45deg);
+}
+
+.next {
+    right: 30px;
+    transform: translateY(-50%) rotate(135deg);
+}
+
+[id^="item"] {
+    display: none;
+}
+
+/* Primeira obra quando nenhuma obra foi selecionada */
+.carrossel:not(:has([id^="item"]:target)) .item-1 {
+    z-index: 2;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Primeira obra */
+#item-1:target ~ .item-1 {
+    z-index: 3;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Segunda obra */
+#item-2:target ~ .item-2 {
+    z-index: 3;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Terceira obra */
+#item-3:target ~ .item-3 {
+    z-index: 3;
+    opacity: 1;
+    visibility: visible;
+}
