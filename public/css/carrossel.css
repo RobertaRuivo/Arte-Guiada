@@ -1,8 +1,11 @@
 .carrossel {
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     height: 400px;
     position: relative;
     overflow: hidden;
+    /*Centraliza o carrossel */
+    margin: 0 auto;
 }
 
 .carrossel-item {
@@ -11,6 +14,7 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.5s ease-in-out;
+    
 }
 
 .carrossel-item img {
@@ -70,4 +74,13 @@
     z-index: 3;
     opacity: 1;
     visibility: visible;
+}
+
+/*Adapta a altura do carrossel para celular */
+@media (max-width: 768px) {
+
+    .carrossel {
+        height: 300px;
+    }
+
 }

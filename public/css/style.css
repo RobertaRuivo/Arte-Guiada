@@ -1,11 +1,16 @@
+/*Remove a margem padrão do navegador */
 body {
+    margin: 0;
     background-color: #FAF1E6;
 }
 
 h1 {
     color: #4B3528;
     font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-    font-size: 38px;
+
+    /*Tamanho se adapta à tela */
+    font-size: clamp(28px, 5vw, 38px);
+
     text-align: center;
 }
 
@@ -17,17 +22,26 @@ p {
     text-align: justify;
 }
 
+/*Limita a largura do conteúdo */
+main {
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
 
 nav {
     display: flex;
-    margin: -8px;
+
+    /*Removido margin: -8px; */
+
     justify-content: center;
     gap: 10px;
     background-color: #3A241B;
     padding: 10px;
 
     color: black;
-    font-family: 'Times New Roman', Times, serif, sans-serif;
+    font-family: "Times New Roman", Times, serif;
     font-size: 18px;
     line-height: 1.6;
 }
@@ -42,22 +56,30 @@ nav a:hover {
     background-color: #5A371E;
 }
 
+
 img {
     border-radius: 20px;
-
+    max-width: 100%;
+    height: auto;
 }
 
 
 footer {
     display: flex;
-    margin: -8px;
+
+    /*Removido margin: -8px; */
+
     justify-content: center;
+
+    /*Garante alinhamento vertical */
+    align-items: center;
+
     gap: 10px;
     background-color: #3A241B;
     padding: 10px;
 
     color: #F2E1D0;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: "Times New Roman", Times, serif;
     font-size: 18px;
     line-height: 1.6;
 }
@@ -76,4 +98,21 @@ footer p {
 
 footer a:hover {
     background-color: #5A371E;
+}
+
+
+/* Regras específicas para telas menores */
+@media (max-width: 768px) {
+
+    /*footer passa a ficar vertical */
+    footer {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    /*nav passa a ficar vertical */
+    nav {
+        flex-direction: column;
+        text-align: center;
+    }
 }
