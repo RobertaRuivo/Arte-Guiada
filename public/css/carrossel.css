@@ -52,21 +52,21 @@
 }
 
 /* Primeira obra */
-#item-1:target ~ .item-1 {
+#item-1:target~.item-1 {
     z-index: 3;
     opacity: 1;
     visibility: visible;
 }
 
 /* Segunda obra */
-#item-2:target ~ .item-2 {
+#item-2:target~.item-2 {
     z-index: 3;
     opacity: 1;
     visibility: visible;
 }
 
 /* Terceira obra */
-#item-3:target ~ .item-3 {
+#item-3:target~.item-3 {
     z-index: 3;
     opacity: 1;
     visibility: visible;

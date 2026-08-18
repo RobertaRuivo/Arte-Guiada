@@ -1,36 +1,66 @@
 <!DOCTYPE html>
 
 <html lang="pt-br">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Login</title> 
-    <link rel="stylesheet" href="../public/css/style.css">
 
-    <meta name="description" content="Página de login do site Arte Guiada, que permite ao usuário acessar sua conta ou criar uma nova conta para analisar obras de arte e aprender a atribuir significado ao olhar do espectador.">
-  </head>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Login</title>
+  <link rel="stylesheet" href="../public/css/style.css">
 
-  <body>
-    <header>
-      <nav>
-        <a href="../index.html">Início</a>
-        <a href="../views/login.html">Login</a>
-        <a href="../index.html#secao1">O que fazemos</a>
-        <a href="../index.html#secao2">Obras</a>
-      </nav>
-    </header>
+  <meta name="description"
+    content="Página de login do site Arte Guiada, que permite ao usuário acessar sua conta ou criar uma nova conta para analisar obras de arte e aprender a atribuir significado ao olhar do espectador.">
+</head>
 
-    <div class="opcoes-login">
-      <button>Entrar</button>
-      <button>Cadastrar</button>
-    </div>  
+<body>
+  <header>
+    <nav>
+      <a href="../index.html">Início</a>
+      <a href="../views/login.html">Login</a>
+      <a href="../index.html#secao2">O que fazemos</a>
+      <a href="../index.html#secao1">Obras</a>
+    </nav>
+  </header>
+
+  <h2>Cadastro</h2>
+
+  <form id="cadastroForm"> <!--usado para identificação no JS-->
+    <label for="nome">Nome:</label><br>
+    <input type="text" id="nome" name="nome" required><br>
+    <label for="sobrenome">Sobrenome:</label><br>
+    <input type="text" id="sobrenome" name="sobrenome" required><br>
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" required  pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})*"><br>
+
+    <label for="loginTipo">Tipo de login:</label><br>
+
+    <input type="text" id="loginTipo" name="loginTipo" list="tiposLogin" required>
+
+    <datalist id="tiposLogin">
+      <option value="Editor">
+      <option value="Visitante">
+    </datalist>
     <br>
-  </body>
+
+    <label for="senha">Senha:</label><br>
+    <input type="password" id="senha" name="senha" required pattern="[A-Za-z0-9-*@]{8,}"
+      title="A senha deve conter pelo menos 8 caracteres alfanuméricos"><br><br>
+
+    <label for="confirmaSenha">Confirme a senha:</label><br>
+    <input type="password" id="confirmaSenha" name="confirmaSenha" required minlength="8" pattern="[A-Za-z0-9-*@]{8,}"
+      title="A senha deve conter pelo menos 8 caracteres alfanuméricos"><br><br>
+
+    <input type="submit" value="Cadastrar">
+  </form>
+  <br>
+  <script src="../public/js/cadastro.js"></script>
+</body>
 
 
-  <footer>
-    Roberta Ruivo Pompeu
-    <a href="mailto:roberta.ruivo@unesp.br">Email</a>
-    Sistemas computacionais 2.2026 
-  </footer>
+<footer>
+  Roberta Ruivo Pompeu
+  <a href="mailto:roberta.ruivo@unesp.br">Email</a>
+  Sistemas computacionais 2.2026
+</footer>
+
 </html>
