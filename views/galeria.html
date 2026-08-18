@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Arte Guiada</title>
+
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/carrossel.css">
+    <link rel="stylesheet" href="../public/css/galeria.css">
+    <script src="../public/js/galeria.js" defer></script>
+
+
+    <meta name="description" content="pagina de teste de uma obra.">
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <a href="../index.html">Início</a>
+            <a href="../views/login.html">Login</a>
+            <a href="../index.html#secao2">O que fazemos</a>
+            <a href="../index.html#secao1">Obras</a>
+        </nav>
+    </header>
+
+<main>
+    <div class="arts-culture-gallery">
+        
+        <!-- Fundo Borrado -->
+        <div class="blur-background" style="background-image: url('../public/img/a_boba.jpg');"></div>
+
+        <!-- Alinhamento central -->
+        <div class="gallery-center-align">
+            
+            <!-- O container que abraça a imagem e sofre o zoom -->
+            <div class="zoom-container" id="zoom-container">
+                <img src="../public/img/a_boba.jpg" alt="A Boba - Anita Malfatti" class="main-artwork" />
+
+                <!-- Hotspots -->
+                <button class="hotspot" aria-label="Detalhe 1" style="top: 25%; left: 40%;" 
+                    data-title="O Rosto"
+                    data-text="Uma técnica especial de pinceladas fortes e cores vivas foi usada nos olhos e na expressão."
+                    data-zoom-x="40" data-zoom-y="25" data-scale="2.5"></button>
+
+                <button class="hotspot" aria-label="Detalhe 2" style="top: 75%; left: 65%;" 
+                    data-title="A Assinatura"
+                    data-text="A assinatura da artista se funde com os tons escuros no canto inferior da tela."
+                    data-zoom-x="65" data-zoom-y="75" data-scale="3.5"></button>
+            </div>
+            
+        </div>
+
+        <!-- Texto Flutuante -->
+        <div class="text-overlay">
+            <h2 id="detail-title">A Boba</h2>
+            <p id="detail-text">O conjunto dessa pintura constitui uma narrativa rica em cores. Selecione os pontos pulsantes para explorar os detalhes.</p>
+            <button id="btn-voltar" class="btn-voltar">Ver obra completa</button>
+        </div>
+        
+    </div>
+</main>
+    <footer>
+        <p>Roberta Ruivo Pompeu</p>
+        <a href="mailto:roberta.ruivo@unesp.br">Email</a>
+        <p>Sistemas Computacionais 2 - 2026</p>
+    </footer>
+
+</body>
+
+</html>
