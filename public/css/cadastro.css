@@ -1,0 +1,63 @@
+/* Indicador visual da força da senha */
+.strength-container {
+  width: 100%;
+  max-width: 300px;
+  height: 8px;
+  background-color: #ddd;
+  border-radius: 4px;
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+.strength-bar {
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.strength-text {
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+/* Autocomplete estilizado */
+.autocomplete-container {
+  position: relative;
+  max-width: 300px;
+}
+
+.sugestoes-box {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  z-index: 10;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.sugestao-item {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.sugestao-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* Mensagens de erro e feedback */
+.error-msg {
+  color: #e74c3c;
+  font-size: 0.85em;
+}
+
+.feedback-box {
+  margin-top: 15px;
+  padding: 10px;
+  font-weight: bold;
+}
+
+.feedback-box.success { color: #2ecc71; }
+.feedback-box.error { color: #e74c3c; }

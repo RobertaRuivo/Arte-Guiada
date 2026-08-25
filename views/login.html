@@ -1,17 +1,12 @@
 <!DOCTYPE html>
-
 <html lang="pt-br">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
+  <title>Cadastro</title>
   <link rel="stylesheet" href="../public/css/style.css">
-
-  <meta name="description"
-    content="Página de login do site Arte Guiada, que permite ao usuário acessar sua conta ou criar uma nova conta para analisar obras de arte e aprender a atribuir significado ao olhar do espectador.">
+  <meta name="description" content="Página de cadastro do site Arte Guiada.">
 </head>
-
 <body>
   <header>
     <nav>
@@ -22,45 +17,69 @@
     </nav>
   </header>
 
-  <h2>Cadastro</h2>
+  <main>
+    <h2>Cadastro e Contato</h2>
 
-  <form id="cadastroForm"> <!--usado para identificação no JS-->
-    <label for="nome">Nome:</label><br>
-    <input type="text" id="nome" name="nome" required><br>
-    <label for="sobrenome">Sobrenome:</label><br>
-    <input type="text" id="sobrenome" name="sobrenome" required><br>
-    <label for="email">Email:</label><br>
-    <input type="email" id="email" name="email" required  pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})*"><br>
+    <form id="cadastroForm" novalidate>
+      <!-- Campo Nome (Permite nomes compostos) -->
+      <label for="nome">Nome:</label><br>
+      <input type="text" id="nome" name="nome" required><br>
+      <span class="error-msg" id="nome-error"></span><br>
 
-    <label for="loginTipo">Tipo de login:</label><br>
+      <!-- Campo Sobrenome -->
+      <label for="sobrenome">Sobrenome:</label><br>
+      <input type="text" id="sobrenome" name="sobrenome" required><br>
+      <span class="error-msg" id="sobrenome-error"></span><br>
 
-    <input type="text" id="loginTipo" name="loginTipo" list="tiposLogin" required>
+      <!-- Campo Email -->
+      <label for="email">Email:</label><br>
+      <input type="email" id="email" name="email" required><br>
+      <span class="error-msg" id="email-error"></span><br>
 
-    <datalist id="tiposLogin">
-      <option value="Editor">
-      <option value="Visitante">
-    </datalist>
-    <br>
+      <!-- Perfis no Sistema (Radio Buttons) -->
+      <fieldset class="perfil-fieldset">
+        <legend>Perfil no Sistema:</legend>
+        <label><input type="radio" name="loginTipo" value="Visitante" required> Visitante</label><br>
+        <label><input type="radio" name="loginTipo" value="Editor"> Editor</label><br>
+        <label><input type="radio" name="loginTipo" value="Curador"> Curador</label><br>
+        <label><input type="radio" name="loginTipo" value="Estudante"> Estudante</label><br>
+        <label><input type="radio" name="loginTipo" value="Professor"> Professor</label><br>
+        <label><input type="radio" name="loginTipo" value="Pesquisador"> Pesquisador</label>
+      </fieldset>
+      <span class="error-msg" id="tipo-error"></span><br>
 
-    <label for="senha">Senha:</label><br>
-    <input type="password" id="senha" name="senha" required pattern="[A-Za-z0-9-*@]{8,}"
-      title="A senha deve conter pelo menos 8 caracteres alfanuméricos"><br><br>
+      <!-- Campo Mensagem -->
+      <label for="mensagem">Mensagem / Biografia curta:</label><br>
+      <textarea id="mensagem" name="mensagem" rows="3" required></textarea><br>
+      <span class="error-msg" id="mensagem-error"></span><br>
 
-    <label for="confirmaSenha">Confirme a senha:</label><br>
-    <input type="password" id="confirmaSenha" name="confirmaSenha" required minlength="8" pattern="[A-Za-z0-9-*@]{8,}"
-      title="A senha deve conter pelo menos 8 caracteres alfanuméricos"><br><br>
+      <!-- Campo Senha e Força de Senha -->
+      <label for="senha">Senha:</label><br>
+      <input type="password" id="senha" name="senha" required><br>
+      
+      <!-- Barras de Nível de Força de Senha -->
+      <div class="strength-container">
+        <div id="strength-bar" class="strength-bar"></div>
+      </div>
+      <span id="strength-text" class="strength-text"></span><br>
 
-    <input type="submit" value="Cadastrar">
-  </form>
-  <br>
+      <!-- Campo Confirmar Senha -->
+      <label for="confirmaSenha">Confirme a senha:</label><br>
+      <input type="password" id="confirmaSenha" name="confirmaSenha" required><br>
+      <span class="error-msg" id="password-error"></span><br><br>
+
+      <input type="submit" value="Cadastrar">
+    </form>
+
+    <div id="form-feedback" class="feedback-box"></div>
+  </main>
+
+  <footer>
+    Roberta Ruivo Pompeu
+    <a href="mailto:roberta.ruivo@unesp.br">Email</a>
+    Sistemas computacionais 2.2026
+  </footer>
+
   <script src="../public/js/cadastro.js"></script>
 </body>
-
-
-<footer>
-  Roberta Ruivo Pompeu
-  <a href="mailto:roberta.ruivo@unesp.br">Email</a>
-  Sistemas computacionais 2.2026
-</footer>
-
 </html>
