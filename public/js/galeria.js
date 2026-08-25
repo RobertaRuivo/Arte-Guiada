@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
             'tour-intro'
         );
 
-
     const titleEl =
         document.getElementById(
             'detail-title'
@@ -45,7 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById(
             'tour-conclusion'
         );
-
 
     const btnIniciar =
         document.getElementById(
@@ -71,7 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById(
             'btn-voltar'
         );
-
 
     const progressBar =
         document.getElementById(
@@ -113,6 +110,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // ========================================================
+    // EVENTO ASSÍNCRONO COM PROMISES E CLOSURES (NOVO)
+    // ========================================================
+    
+    // Closure: Cria um ambiente léxico que preserva 'contexto' e 'contadorEventos'
+    const geradorEventoAssincrono = (contexto) => {
+        let contadorEventos = 0;
+        
+        // Retorna a função que gera a Promise
+        return (nomeEvento, delayMs) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    contadorEventos++;
+                    resolve(`[${contexto}] Evento '${nomeEvento}' concluído (Total de ações: ${contadorEventos})`);
+                }, delayMs);
+            });
+        };
+    };
+
+    // Instancia a closure para ser usada no Tour
+    const despacharEventoTour = geradorEventoAssincrono("React Tour System");
+
+
+    // ========================================================
     // EVENTOS INICIAIS
     // PRESERVADO
     // ========================================================
@@ -122,12 +142,10 @@ document.addEventListener("DOMContentLoaded", () => {
         startTour
     );
 
-
     btnSair.addEventListener(
         'click',
         exitTour
     );
-
 
     btnPrev.addEventListener(
         'click',
@@ -138,20 +156,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     );
 
-
     btnNext.addEventListener(
         'click',
         () => {
-
             goToDetail(
                 currentDetailIndex === -1
                     ? 0
                     : currentDetailIndex + 1
             );
-
         }
     );
-
 
     btnVoltar.addEventListener(
         'click',
@@ -178,16 +192,11 @@ document.addEventListener("DOMContentLoaded", () => {
                             )
                         );
 
-
                     if (!isTourMode) {
-
                         startTour();
-
                     }
 
-
                     goToDetail(index);
-
                 }
             );
 
@@ -208,9 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 e.key === 'Escape' &&
                 isTourMode
             ) {
-
                 exitTour();
-
             }
 
         }
@@ -219,14 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ========================================================
     // START TOUR
-    //
-    // PRESERVADO:
-    // Toda a lógica original continua.
-    //
-    // ADICIONADO:
-    // CustomEvent("tourStarted")
-    //
-    // Esse evento apenas avisa ao React que a visita começou.
     // ========================================================
 
     function startTour() {
@@ -245,7 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         showFullArtwork();
 
-
         // ----------------------------------------------------
         // Foco inicial.
         // PRESERVADO.
@@ -260,26 +258,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         // ====================================================
-        // ADICIONADO — COMUNICAÇÃO COM REACT
+        // MODIFICADO — COMUNICAÇÃO COM REACT (PROMISE + CLOSURE)
         // ====================================================
-
-        window.dispatchEvent(
-            new CustomEvent(
-                'tourStarted'
-            )
-        );
+        
+        // Substituí o disparo direto por um evento assíncrono atrasado
+        despacharEventoTour('tourStarted', 300).then((mensagemSucesso) => {
+            console.log(mensagemSucesso); // Opcional: visualizar a closure no console
+            
+            window.dispatchEvent(
+                new CustomEvent(
+                    'tourStarted'
+                )
+            );
+        });
 
     }
 
 
     // ========================================================
     // EXIT TOUR
-    //
-    // PRESERVADO:
-    // Toda a lógica original continua.
-    //
-    // ADICIONADO:
-    // CustomEvent("tourExited")
     // ========================================================
 
     function exitTour() {
@@ -296,7 +293,6 @@ document.addEventListener("DOMContentLoaded", () => {
         tourIntro.style.display =
             'flex';
 
-
         // ----------------------------------------------------
         // Remove zoom.
         // PRESERVADO.
@@ -310,17 +306,20 @@ document.addEventListener("DOMContentLoaded", () => {
             '1'
         );
 
-
         // ====================================================
-        // ADICIONADO — COMUNICAÇÃO COM REACT
+        // MODIFICADO — COMUNICAÇÃO COM REACT (PROMISE + CLOSURE)
         // ====================================================
 
-        window.dispatchEvent(
-            new CustomEvent(
-                'tourExited'
-            )
-        );
-
+        // Substituí o disparo direto por um evento assíncrono atrasado
+        despacharEventoTour('tourExited', 300).then((mensagemSucesso) => {
+            console.log(mensagemSucesso); // Opcional: visualizar a closure no console
+            
+            window.dispatchEvent(
+                new CustomEvent(
+                    'tourExited'
+                )
+            );
+        });
 
         // ----------------------------------------------------
         // Retorno de foco.
@@ -343,19 +342,14 @@ document.addEventListener("DOMContentLoaded", () => {
             index < 0 ||
             index >= totalDetails
         ) {
-
             return;
-
         }
-
 
         currentDetailIndex =
             index;
 
-
         const hotspot =
             hotspots[index];
-
 
         // ----------------------------------------------------
         // Atualiza progresso.
@@ -365,14 +359,11 @@ document.addEventListener("DOMContentLoaded", () => {
             index
         );
 
-
         hotspot.classList.add(
             'explored'
         );
 
-
         updateProgress();
-
 
         // ----------------------------------------------------
         // Atualiza hotspot ativo.
@@ -380,19 +371,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         hotspots.forEach(
             (h) => {
-
                 h.classList.remove(
                     'active-detail'
                 );
-
             }
         );
-
 
         hotspot.classList.add(
             'active-detail'
         );
-
 
         // ----------------------------------------------------
         // Atualiza texto.
@@ -403,16 +390,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 'data-title'
             );
 
-
         textEl.textContent =
             hotspot.getAttribute(
                 'data-text'
             );
 
-
         counterEl.textContent =
             `Detalhe ${index + 1} de ${totalDetails}`;
-
 
         // ----------------------------------------------------
         // Atualiza navegação.
@@ -421,14 +405,11 @@ document.addEventListener("DOMContentLoaded", () => {
         btnPrev.disabled =
             index === 0;
 
-
         btnNext.disabled =
             index === totalDetails - 1;
 
-
         btnVoltar.style.display =
             'inline-block';
-
 
         // ----------------------------------------------------
         // Aplica zoom.
@@ -437,7 +418,6 @@ document.addEventListener("DOMContentLoaded", () => {
         applyZoom(
             hotspot
         );
-
 
         // ----------------------------------------------------
         // Foco no título.
@@ -458,47 +438,36 @@ document.addEventListener("DOMContentLoaded", () => {
         currentDetailIndex =
             -1;
 
-
         zoomContainer.style.transform =
             'translate(0px, 0px) scale(1)';
-
 
         zoomContainer.style.setProperty(
             '--current-scale',
             '1'
         );
 
-
         hotspots.forEach(
             (h) => {
-
                 h.classList.remove(
                     'active-detail'
                 );
-
             }
         );
-
 
         titleEl.textContent =
             initialTitle;
 
-
         textEl.textContent =
             initialText;
-
 
         counterEl.textContent =
             "Visão Geral";
 
-
         btnVoltar.style.display =
             'none';
 
-
         btnPrev.disabled =
             true;
-
 
         btnNext.disabled =
             false;
@@ -516,18 +485,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const cw =
             zoomContainer.offsetWidth;
 
-
         const ch =
             zoomContainer.offsetHeight;
-
 
         const vw =
             window.innerWidth;
 
-
         const vh =
             window.innerHeight;
-
 
         const originX =
             parseFloat(
@@ -536,14 +501,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 )
             );
 
-
         const originY =
             parseFloat(
                 hotspot.getAttribute(
                     'data-zoom-y'
                 )
             );
-
 
         const scale =
             parseFloat(
@@ -552,46 +515,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 )
             ) || 2;
 
-
         const unscaledHx =
             (vw - cw) / 2 +
             (cw * originX / 100);
-
 
         const unscaledHy =
             (vh - ch) / 2 +
             (ch * originY / 100);
 
-
         const panelHeight =
             tourPanel.offsetHeight || 300;
-
 
         const targetX =
             vw / 2;
 
-
         const targetY =
             (vh - panelHeight) / 2;
-
 
         const tx =
             targetX -
             unscaledHx;
 
-
         const ty =
             targetY -
             unscaledHy;
 
-
         zoomContainer.style.transformOrigin =
             `${originX}% ${originY}%`;
 
-
         zoomContainer.style.transform =
             `translate(${tx}px, ${ty}px) scale(${scale})`;
-
 
         zoomContainer.style.setProperty(
             '--current-scale',
@@ -616,29 +569,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 ) * 100
             );
 
-
         progressBar.style.width =
             `${percent}%`;
-
 
         progressBar.setAttribute(
             'aria-valuenow',
             percent
         );
 
-
         progressText.textContent =
             `${percent}%`;
-
 
         if (
             exploredDetails.size ===
             totalDetails
         ) {
-
             conclusionEl.style.display =
                 'block';
-
         }
 
     }
