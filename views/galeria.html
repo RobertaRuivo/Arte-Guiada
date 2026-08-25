@@ -7,112 +7,336 @@
 
     <title>Arte Guiada - Visita Guiada</title>
 
+    <!-- ========================================================
+         PRESERVADO — CSS EXISTENTE
+         ======================================================== -->
+
     <link rel="stylesheet" href="../public/css/style.css">
     <link rel="stylesheet" href="../public/css/carrossel.css">
     <link rel="stylesheet" href="../public/css/galeria.css">
-    <script src="../public/js/galeria.js" defer></script>
+
+
+    <!-- ========================================================
+         ADICIONADO — REACT
+
+         React será utilizado somente para as cinco novas
+         funcionalidades assíncronas.
+
+         A visita guiada continua sendo controlada pelo
+         galeria.js.
+         ======================================================== -->
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+
+    <!-- ========================================================
+         PRESERVADO — METADADOS
+         ======================================================== -->
 
     <meta name="description" content="Página de teste de uma obra com experiência imersiva.">
 </head>
 
+
 <body>
 
+    <!-- ========================================================
+         PRESERVADO — MENU
+         ======================================================== -->
+
     <header>
+
         <nav>
-            <a href="../index.html">Início</a>
-            <a href="../views/login.html">Login</a>
-            <a href="../index.html#secao2">O que fazemos</a>
-            <a href="../index.html#secao1">Obras</a>
+
+            <a href="../index.html">
+                Início
+            </a>
+
+            <a href="../views/login.html">
+                Login
+            </a>
+
+            <a href="../index.html#secao2">
+                O que fazemos
+            </a>
+
+            <a href="../index.html#secao1">
+                Obras
+            </a>
+
         </nav>
+
     </header>
 
+
     <main>
+
+        <!-- ====================================================
+             PRESERVADO — CONTAINER PRINCIPAL
+             ==================================================== -->
+
         <div class="arts-culture-gallery" id="gallery-container">
 
-            <!-- Fundo Borrado -->
+
+            <!-- =================================================
+                 PRESERVADO — FUNDO BORRADO
+                 ================================================= -->
+
             <div class="blur-background" style="background-image: url('../public/img/a_boba.jpg');"></div>
 
-            <!-- Alinhamento central -->
+
+            <!-- =================================================
+                 PRESERVADO — ALINHAMENTO DA OBRA
+                 ================================================= -->
+
             <div class="gallery-center-align">
-                <!-- O container que abraça a imagem e sofre o zoom -->
+
+
+                <!-- =============================================
+                     PRESERVADO — CONTAINER DE ZOOM
+                     ============================================= -->
+
                 <div class="zoom-container" id="zoom-container">
+
+
+                    <!-- =========================================
+                         PRESERVADO — OBRA
+                         ========================================= -->
+
                     <img src="../public/img/a_boba.jpg" alt="A Boba - Anita Malfatti" class="main-artwork"
                         id="main-artwork" />
 
-                    <!-- Hotspots -->
+
+                    <!-- =========================================
+                         PRESERVADO — HOTSPOT 1
+                         ========================================= -->
+
                     <button class="hotspot" aria-label="Detalhe: O Rosto" style="top: 25%; left: 40%;" data-index="0"
                         data-title="O Rosto"
                         data-text="Uma técnica especial de pinceladas fortes e cores vivas foi usada nos olhos e na expressão."
                         data-zoom-x="40" data-zoom-y="25" data-scale="2.5"></button>
 
+
+                    <!-- =========================================
+                         PRESERVADO — HOTSPOT 2
+                         ========================================= -->
+
                     <button class="hotspot" aria-label="Detalhe: A Assinatura" style="top: 75%; left: 65%;"
                         data-index="1" data-title="A Assinatura"
                         data-text="A assinatura da artista se funde com os tons escuros no canto inferior da tela."
                         data-zoom-x="65" data-zoom-y="75" data-scale="3.5"></button>
+
                 </div>
+
             </div>
 
-            <!-- Overlay de Texto e Controles -->
+
+            <!-- =================================================
+                 PRESERVADO — OVERLAY
+                 ================================================= -->
+
             <div class="text-overlay">
 
-                <!-- Estado 1: Introdução à Obra -->
+
+                <!-- =============================================
+                     PRESERVADO — INTRODUÇÃO
+                     ============================================= -->
+
                 <div id="tour-intro" class="tour-section">
-                    <h2 id="main-title">A Boba</h2>
-                    <p id="main-text">O conjunto dessa pintura constitui uma narrativa rica em cores. Navegue livremente
-                        ou inicie uma experiência guiada passo a passo para não perder nenhum detalhe.</p>
-                    <button id="btn-iniciar-visita" class="btn-primary">Iniciar visita guiada</button>
+
+                    <h2 id="main-title">
+                        A Boba
+                    </h2>
+
+                    <p id="main-text">
+                        O conjunto dessa pintura constitui uma
+                        narrativa rica em cores. Navegue livremente
+                        ou inicie uma experiência guiada passo a
+                        passo para não perder nenhum detalhe.
+                    </p>
+
+
+                    <button id="btn-iniciar-visita" class="btn-primary">
+                        Iniciar visita guiada
+                    </button>
+
                 </div>
 
-                <!-- Estado 2: Painel de Visita Guiada (Inicia Oculto) -->
+
+                <!-- =============================================
+                     ESTADO 2 — PAINEL DA VISITA
+                     ============================================= -->
+
                 <div id="tour-panel" class="tour-section" style="display: none;">
 
+
+                    <!-- =========================================
+                         PRESERVADO — CABEÇALHO DA VISITA
+                         ========================================= -->
+
                     <div class="tour-header">
-                        <span id="tour-counter" class="tour-counter" aria-live="polite">Visão Geral</span>
-                        <button id="btn-sair-visita" class="btn-secondary" aria-label="Sair da visita guiada">Sair da
-                            visita</button>
+
+                        <span id="tour-counter" class="tour-counter" aria-live="polite">
+                            Visão Geral
+                        </span>
+
+
+                        <button id="btn-sair-visita" class="btn-secondary" aria-label="Sair da visita guiada">
+                            Sair da visita
+                        </button>
+
                     </div>
 
-                    <!-- Progresso -->
+
+                    <!-- =========================================
+                         PRESERVADO — PROGRESSO
+                         ========================================= -->
+
                     <div class="progress-container" aria-live="polite">
+
                         <div class="progress-header">
-                            <span class="progress-label">Detalhes explorados</span>
-                            <span id="progress-text" class="progress-text">0%</span>
+
+                            <span class="progress-label">
+                                Detalhes explorados
+                            </span>
+
+
+                            <span id="progress-text" class="progress-text">
+                                0%
+                            </span>
+
                         </div>
+
+
                         <div class="progress-bar-bg" aria-hidden="true">
+
                             <div id="tour-progress-bar" class="progress-bar-fill" style="width: 0%;" role="progressbar"
                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" tabindex="-1"></div>
+
                         </div>
+
                     </div>
 
-                    <!-- Conteúdo do Detalhe -->
+
+                    <!-- =========================================
+                         PRESERVADO — CONTEÚDO DO DETALHE
+                         ========================================= -->
+
                     <div class="detail-content">
-                        <h2 id="detail-title" tabindex="-1">A Boba</h2>
-                        <p id="detail-text">Selecione os pontos pulsantes ou utilize os controles abaixo para explorar
-                            os detalhes.</p>
+
+                        <h2 id="detail-title" tabindex="-1">
+                            A Boba
+                        </h2>
+
+
+                        <p id="detail-text">
+                            Selecione os pontos pulsantes ou utilize
+                            os controles abaixo para explorar os
+                            detalhes.
+                        </p>
+
 
                         <div id="tour-conclusion" class="tour-conclusion" style="display: none;" aria-live="assertive">
-                            <strong>Visita concluída!</strong> Você explorou todos os detalhes desta obra.
+
+                            <strong>
+                                Visita concluída!
+                            </strong>
+
+                            Você explorou todos os detalhes desta obra.
+
                         </div>
+
                     </div>
 
-                    <!-- Controles de Navegação -->
+
+                    <!-- =================================================
+                         ADICIONADO — PONTO DE MONTAGEM DO REACT
+
+                         O React será renderizado somente aqui.
+
+                         Ele não substitui:
+                         - hotspots;
+                         - zoom;
+                         - progresso;
+                         - navegação;
+                         - conteúdo principal.
+                         ================================================= -->
+
+                    <div id="react-async-tour-root" aria-label="Preparação e detalhes complementares da visita"></div>
+
+
+                    <!-- =========================================
+                         PRESERVADO — CONTROLES
+                         ========================================= -->
+
                     <div class="tour-controls">
-                        <button id="btn-prev" class="btn-nav" aria-label="Detalhe anterior" disabled>Anterior</button>
-                        <button id="btn-voltar" class="btn-voltar" style="display: none;">Ver obra completa</button>
-                        <button id="btn-next" class="btn-nav" aria-label="Próximo detalhe">Próximo</button>
+
+                        <button id="btn-prev" class="btn-nav" aria-label="Detalhe anterior" disabled>
+                            Anterior
+                        </button>
+
+
+                        <button id="btn-voltar" class="btn-voltar" style="display: none;">
+                            Ver obra completa
+                        </button>
+
+
+                        <button id="btn-next" class="btn-nav" aria-label="Próximo detalhe">
+                            Próximo
+                        </button>
+
                     </div>
 
                 </div>
+
             </div>
 
         </div>
+
     </main>
 
+
+    <!-- ========================================================
+         PRESERVADO — RODAPÉ
+         ======================================================== -->
+
     <footer>
-        <p>Roberta Ruivo Pompeu</p>
-        <a href="mailto:roberta.ruivo@unesp.br">Email</a>
-        <p>Sistemas Computacionais 2 - 2026</p>
+
+        <p>
+            Roberta Ruivo Pompeu
+        </p>
+
+
+        <a href="mailto:roberta.ruivo@unesp.br">
+            Email
+        </a>
+
+
+        <p>
+            Sistemas Computacionais 2 - 2026
+        </p>
+
     </footer>
+
+
+    <!-- ========================================================
+         PRESERVADO — JAVASCRIPT ORIGINAL
+         ======================================================== -->
+
+    <script src="../public/js/galeria.js" defer></script>
+
+
+    <!-- ========================================================
+         ADICIONADO — REACT
+
+         Este arquivo contém somente as novas funcionalidades
+         assíncronas.
+         ======================================================== -->
+
+    <script type="text/babel" src="../public/js/react-tour.js"></script>
 
 </body>
 

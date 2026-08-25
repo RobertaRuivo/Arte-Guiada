@@ -1,4 +1,13 @@
-/* Container Principal Normal */
+/* ============================================================
+   ARTE GUIADA — GALERIA
+   ============================================================ */
+
+
+/* ============================================================
+   Container Principal Normal
+   PRESERVADO
+   ============================================================ */
+
 .arts-culture-gallery {
     position: relative;
     width: 100%;
@@ -12,11 +21,16 @@
     transition: all 0.5s ease;
 }
 
-/* ESTADO 2: Modo Visita (Sobrescreve comportamento da página) */
+
+/* ============================================================
+   ESTADO 2 — MODO VISITA
+   PRESERVADO
+   ============================================================ */
+
 body.modo-visita {
     overflow: hidden;
-    /* Impede rolagem pro resto do site */
 }
+
 
 body.modo-visita .arts-culture-gallery {
     position: fixed;
@@ -29,6 +43,12 @@ body.modo-visita .arts-culture-gallery {
     border-radius: 0;
 }
 
+
+/* ============================================================
+   FUNDO BORRADO
+   PRESERVADO
+   ============================================================ */
+
 .blur-background {
     position: absolute;
     top: -5%;
@@ -38,12 +58,16 @@ body.modo-visita .arts-culture-gallery {
     background-size: cover;
     background-position: center;
     filter: blur(25px) brightness(0.6);
-    /* Reduzido brilho para destacar a obra original */
     opacity: 0.7;
     z-index: 0;
 }
 
-/* Containers de alinhamento e zoom */
+
+/* ============================================================
+   CONTAINERS DE ALINHAMENTO E ZOOM
+   PRESERVADO
+   ============================================================ */
+
 .gallery-center-align {
     position: relative;
     width: 100%;
@@ -54,6 +78,7 @@ body.modo-visita .arts-culture-gallery {
     z-index: 1;
 }
 
+
 .zoom-container {
     position: relative;
     display: inline-block;
@@ -62,8 +87,13 @@ body.modo-visita .arts-culture-gallery {
     transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
     transform-origin: center center;
     --current-scale: 1;
-    /* Variável CSS alterada pelo JS para manter proporção dos botões */
 }
+
+
+/* ============================================================
+   OBRA PRINCIPAL
+   PRESERVADO
+   ============================================================ */
 
 .main-artwork {
     display: block;
@@ -75,7 +105,12 @@ body.modo-visita .arts-culture-gallery {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
-/* Hotspots */
+
+/* ============================================================
+   HOTSPOTS
+   PRESERVADO
+   ============================================================ */
+
 .hotspot {
     position: absolute;
     width: 20px;
@@ -83,50 +118,89 @@ body.modo-visita .arts-culture-gallery {
     background-color: #fff;
     border: none;
     border-radius: 50%;
-    /* Mantém o tamanho aparente igual desfazendo a escala do pai */
-    transform: translate(-50%, -50%) scale(calc(1 / var(--current-scale)));
+
+    transform:
+        translate(-50%, -50%) scale(calc(1 / var(--current-scale)));
+
     cursor: pointer;
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.4);
+
+    box-shadow:
+        0 0 0 4px rgba(0, 0, 0, 0.4);
+
     animation: pulse 2s infinite;
+
     z-index: 10;
-    transition: background-color 0.3s, box-shadow 0.3s;
+
+    transition:
+        background-color 0.3s,
+        box-shadow 0.3s;
 }
+
 
 .hotspot:hover,
 .hotspot:focus-visible {
     background-color: #ffaa00;
+
     animation: none;
+
     outline: none;
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.7), 0 0 0 8px #ffaa00;
+
+    box-shadow:
+        0 0 0 4px rgba(0, 0, 0, 0.7),
+        0 0 0 8px #ffaa00;
 }
+
 
 .hotspot.explored {
     background-color: #ffaa00;
+
     opacity: 0.85;
+
     animation: none;
 }
+
 
 .hotspot.active-detail {
     background-color: #fff;
-    box-shadow: 0 0 0 4px #ffaa00, 0 0 0 8px rgba(255, 170, 0, 0.5);
+
+    box-shadow:
+        0 0 0 4px #ffaa00,
+        0 0 0 8px rgba(255, 170, 0, 0.5);
+
     animation: none;
 }
 
+
+/* ============================================================
+   ANIMAÇÃO DOS HOTSPOTS
+   PRESERVADO
+   ============================================================ */
+
 @keyframes pulse {
+
     0% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+        box-shadow:
+            0 0 0 0 rgba(255, 255, 255, 0.7);
     }
 
     70% {
-        box-shadow: 0 0 0 12px rgba(255, 255, 255, 0);
+        box-shadow:
+            0 0 0 12px rgba(255, 255, 255, 0);
     }
 
     100% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+        box-shadow:
+            0 0 0 0 rgba(255, 255, 255, 0);
     }
+
 }
 
-/* Overlay de Texto e Controles */
+
+/* ============================================================
+   OVERLAY DE TEXTO
+   PRESERVADO
+   ============================================================ */
+
 .text-overlay {
     position: absolute;
     bottom: 0;
@@ -136,28 +210,41 @@ body.modo-visita .arts-culture-gallery {
     display: flex;
     flex-direction: column;
     pointer-events: none;
-    /* Deixa o clique passar para a imagem */
 }
 
-/* Sections internas que reativam o clique */
+
 .tour-section {
     pointer-events: auto;
     padding: 30px 40px 40px 40px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.85) 60%, transparent 100%);
+
+    background:
+        linear-gradient(to top,
+            rgba(0, 0, 0, 0.95) 0%,
+            rgba(0, 0, 0, 0.85) 60%,
+            transparent 100%);
+
     color: #fff;
+
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
+
     backdrop-filter: blur(5px);
 }
 
-/* Estado 1 - Intro */
+
+/* ============================================================
+   ESTADO 1 — INTRO
+   PRESERVADO
+   ============================================================ */
+
 #tour-intro h2 {
     font-size: 2rem;
     margin: 0;
     font-family: sans-serif;
 }
+
 
 #tour-intro p {
     font-size: 1.1rem;
@@ -167,211 +254,693 @@ body.modo-visita .arts-culture-gallery {
     opacity: 0.9;
 }
 
-/* Estado 2 - Painel Visita */
+
+/* ============================================================
+   ESTADO 2 — PAINEL DE VISITA
+   PRESERVADO
+   ============================================================ */
+
 #tour-panel {
     gap: 20px;
-    background: rgba(10, 10, 10, 0.85);
-    /* Fundo sólido p/ melhor contraste na leitura */
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    background:
+        rgba(10, 10, 10, 0.85);
+
+    border-top:
+        1px solid rgba(255, 255, 255, 0.1);
 }
+
+
+/* ============================================================
+   CABEÇALHO DA VISITA
+   PRESERVADO
+   ============================================================ */
 
 .tour-header {
     width: 100%;
+
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
 }
 
+
 .tour-counter {
     font-size: 0.9rem;
+
     text-transform: uppercase;
+
     letter-spacing: 1px;
+
     color: #ffaa00;
+
     font-weight: bold;
 }
 
-/* Progresso */
+
+/* ============================================================
+   PROGRESSO
+   PRESERVADO
+   ============================================================ */
+
 .progress-container {
     width: 100%;
+
     max-width: 600px;
+
     display: flex;
+
     flex-direction: column;
+
     gap: 8px;
 }
 
+
 .progress-header {
     display: flex;
+
     justify-content: space-between;
+
     font-size: 0.85rem;
+
     color: #ccc;
 }
 
+
 .progress-bar-bg {
     width: 100%;
+
     height: 8px;
-    background: rgba(255, 255, 255, 0.2);
+
+    background:
+        rgba(255, 255, 255, 0.2);
+
     border-radius: 4px;
+
     overflow: hidden;
 }
 
+
 .progress-bar-fill {
     height: 100%;
+
     background: #ffaa00;
-    transition: width 0.4s ease-out;
+
+    transition:
+        width 0.4s ease-out;
 }
 
-/* Detalhe */
+
+/* ============================================================
+   DETALHE
+   PRESERVADO
+   ============================================================ */
+
 .detail-content h2 {
     font-size: 1.8rem;
+
     margin: 0 0 10px 0;
+
     font-family: sans-serif;
+
     outline: none;
-    /* Remover contorno padrão, tem foco programático */
 }
+
 
 .detail-content p {
     font-size: 1.05rem;
+
     line-height: 1.6;
+
     margin: 0;
+
     max-width: 800px;
+
     opacity: 0.95;
 }
 
+
 .tour-conclusion {
     margin-top: 15px;
+
     padding: 10px 15px;
-    background: rgba(255, 170, 0, 0.2);
-    border-left: 4px solid #ffaa00;
+
+    background:
+        rgba(255, 170, 0, 0.2);
+
+    border-left:
+        4px solid #ffaa00;
+
     border-radius: 4px;
+
     color: #fff;
+
     font-size: 0.95rem;
 }
 
-/* Botões */
+
+/* ============================================================
+   BOTÕES
+   PRESERVADO
+   ============================================================ */
+
 button {
     font-family: inherit;
 }
 
+
 .btn-primary {
     background: #ffaa00;
+
     color: #000;
+
     border: none;
+
     padding: 12px 24px;
+
     font-size: 1.1rem;
+
     font-weight: bold;
+
     border-radius: 30px;
+
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+
+    transition:
+        background 0.3s,
+        transform 0.2s;
 }
+
 
 .btn-primary:hover,
 .btn-primary:focus-visible {
     background: #ffcc00;
+
     transform: scale(1.05);
 }
 
+
 .btn-secondary {
     background: transparent;
+
     color: #ccc;
-    border: 1px solid #555;
+
+    border:
+        1px solid #555;
+
     padding: 8px 16px;
+
     border-radius: 20px;
+
     cursor: pointer;
-    transition: all 0.3s;
+
+    transition:
+        all 0.3s;
 }
+
 
 .btn-secondary:hover,
 .btn-secondary:focus-visible {
     background: #fff;
+
     color: #000;
 }
 
+
+/* ============================================================
+   CONTROLES DE NAVEGAÇÃO
+   PRESERVADO
+   ============================================================ */
+
 .tour-controls {
     display: flex;
+
     gap: 15px;
+
     align-items: center;
+
     flex-wrap: wrap;
 }
 
+
 .btn-nav {
     background: #222;
+
     color: #fff;
-    border: 1px solid #444;
+
+    border:
+        1px solid #444;
+
     padding: 12px 24px;
+
     border-radius: 24px;
+
     cursor: pointer;
+
     font-size: 1rem;
-    transition: all 0.3s;
+
+    transition:
+        all 0.3s;
 }
+
 
 .btn-nav:hover:not(:disabled),
 .btn-nav:focus-visible:not(:disabled) {
     background: #ffaa00;
+
     color: #000;
+
     border-color: #ffaa00;
 }
 
+
 .btn-nav:disabled {
     opacity: 0.4;
+
     cursor: not-allowed;
 }
 
+
 .btn-voltar {
     background: transparent;
+
     color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.5);
+
     padding: 12px 24px;
+
     border-radius: 24px;
+
     cursor: pointer;
+
     font-size: 1rem;
-    transition: all 0.3s;
+
+    transition:
+        all 0.3s;
 }
+
 
 .btn-voltar:hover,
 .btn-voltar:focus-visible {
     background: #fff;
+
     color: #000;
 }
 
-/* Acessibilidade - Focus global */
+
+/* ============================================================
+   FOCO GLOBAL
+   PRESERVADO
+   ============================================================ */
+
 button:focus-visible {
-    outline: 3px solid #ffaa00;
-    outline-offset: 3px;
+    outline:
+        3px solid #ffaa00;
+
+    outline-offset:
+        3px;
 }
 
-/* Responsividade */
+
+/* ============================================================
+   RESPONSIVIDADE ORIGINAL
+   PRESERVADA
+   ============================================================ */
+
 @media (max-width: 768px) {
+
     .tour-section {
         padding: 20px;
     }
 
+
     .tour-controls {
         width: 100%;
+
         justify-content: space-between;
     }
+
 
     .btn-nav,
     .btn-voltar {
         padding: 10px 16px;
+
         font-size: 0.9rem;
     }
 
+
     .main-artwork {
         max-height: 70vh;
-        /* Abre espaço pro painel em telas pequenas */
     }
+
 }
 
-/* Redução de movimento */
+
+/* ============================================================
+   REDUÇÃO DE MOVIMENTO ORIGINAL
+   PRESERVADO
+   ============================================================ */
+
 @media (prefers-reduced-motion: reduce) {
+
     * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
+        animation-duration:
+            0.01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        transition-duration:
+            0.01ms !important;
+
+        scroll-behavior:
+            auto !important;
     }
 
+
     .hotspot {
-        box-shadow: 0 0 0 2px rgba(255, 255, 255, 1);
+        box-shadow:
+            0 0 0 2px rgba(255, 255, 255, 1);
     }
+
+}
+
+
+/* ============================================================
+   ============================================================
+   ADICIONADO — REACT / EVENTOS ASSÍNCRONOS
+   ============================================================
+   ============================================================ */
+
+
+/* ============================================================
+   CONTAINER DO REACT
+   ============================================================ */
+
+#react-async-tour-root {
+    width: 100%;
+
+    max-width: 800px;
+}
+
+
+.react-tour-container {
+    width: 100%;
+}
+
+
+/* ============================================================
+   EVENTO 1 — SPINNER
+   ============================================================ */
+
+.react-loading {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    min-height: 44px;
+
+    color: #fff;
+}
+
+
+.react-spinner {
+    width: 22px;
+
+    height: 22px;
+
+    flex-shrink: 0;
+
+    border:
+        3px solid rgba(255, 255, 255, 0.25);
+
+    border-top-color:
+        #ffaa00;
+
+    border-radius: 50%;
+
+    animation:
+        react-spinner-rotate 0.8s linear infinite;
+}
+
+
+@keyframes react-spinner-rotate {
+
+    from {
+        transform:
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+
+}
+
+
+/* ============================================================
+   EVENTO 2 — FADE-IN
+   ============================================================ */
+
+.react-tour-content {
+    width: 100%;
+}
+
+
+.fade-in {
+    animation:
+        react-fade-in 0.45s ease-out forwards;
+}
+
+
+@keyframes react-fade-in {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+
+/* ============================================================
+   TÍTULO DOS DETALHES
+   ============================================================ */
+
+.react-tour-content h3 {
+    margin:
+        0 0 10px 0;
+
+    font-size: 1rem;
+
+    color: #ffaa00;
+}
+
+
+/* ============================================================
+   EVENTO 3 — LISTA DE DETALHES
+   ============================================================ */
+
+.react-detail-list {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+/* ============================================================
+   BOTÕES DA LISTA
+   ============================================================ */
+
+.react-detail-item {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 10px 14px;
+
+    background:
+        rgba(255, 255, 255, 0.08);
+
+    color: #fff;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.18);
+
+    border-radius: 8px;
+
+    text-align: left;
+
+    font: inherit;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.react-detail-item:hover {
+    background:
+        rgba(255, 170, 0, 0.18);
+
+    border-color:
+        #ffaa00;
+}
+
+
+.react-detail-item:focus-visible {
+    background:
+        rgba(255, 170, 0, 0.18);
+
+    border-color:
+        #ffaa00;
+
+    outline:
+        3px solid #ffaa00;
+
+    outline-offset:
+        3px;
+}
+
+
+.react-detail-title {
+    font-size: 0.95rem;
+
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   EVENTO 3 — DESLIZAMENTO DOS ITENS
+   ============================================================ */
+
+.slide-in {
+    opacity: 0;
+
+    animation:
+        react-slide-in 0.4s ease-out forwards;
+
+    animation-delay:
+        var(--item-delay);
+}
+
+
+@keyframes react-slide-in {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateX(-12px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateX(0);
+    }
+
+}
+
+
+/* ============================================================
+   MENSAGEM DE VISITA PRONTA
+   ============================================================ */
+
+.react-ready-message {
+    margin:
+        12px 0 0 0;
+
+    color: #ddd;
+
+    font-size: 0.9rem;
+
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   RESPONSIVIDADE DOS NOVOS ELEMENTOS
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    #react-async-tour-root {
+        max-width: 100%;
+    }
+
+
+    .react-detail-item {
+        padding:
+            10px 12px;
+    }
+
+
+    .react-detail-title {
+        font-size:
+            0.9rem;
+    }
+
+
+    .react-loading {
+        font-size:
+            0.95rem;
+    }
+
+}
+
+
+/* ============================================================
+   REDUÇÃO DE MOVIMENTO DOS NOVOS ELEMENTOS
+
+   A funcionalidade continua funcionando, mas as animações
+   não essenciais são removidas.
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .react-spinner {
+        animation: none;
+    }
+
+
+    .fade-in {
+        animation: none;
+
+        opacity: 1;
+    }
+
+
+    .slide-in {
+        animation: none;
+
+        opacity: 1;
+
+        transform: none;
+    }
+
+
+    .react-detail-item {
+        transition: none;
+    }
+
 }
