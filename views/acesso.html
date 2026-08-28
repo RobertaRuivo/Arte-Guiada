@@ -1,0 +1,218 @@
+html
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Arte Guiada - Acesso</title>
+
+  <meta name="description"
+    content="Entre ou crie sua conta no Arte Guiada e comece sua experiência de exploração artística.">
+
+  <link rel="stylesheet" href="../public/css/style.css">
+  <link rel="stylesheet" href="../public/css/acesso.css">
+</head>
+
+<body>
+
+  <main class="acesso">
+
+    <!-- ==========================================
+             IMAGEM DA OBRA
+             ========================================== -->
+
+    <div class="acesso-imagem">
+
+      <div class="acesso-imagem-fundo"></div>
+
+      <div class="acesso-imagem-conteudo">
+
+        <p class="acesso-marca">
+          ARTE GUIADA
+        </p>
+
+        <h1>
+          Olhe novamente.
+          <span>Descubra além da obra.</span>
+        </h1>
+
+        <p>
+          Uma experiência para aprender a observar,
+          interpretar e descobrir novos significados
+          na arte.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- ==========================================
+             ÁREA DOS FORMULÁRIOS
+             ========================================== -->
+
+    <div class="acesso-formularios">
+
+      <div class="acesso-conteudo">
+
+        <!-- LOGIN -->
+
+        <section id="form-login" class="formulario formulario-ativo" aria-labelledby="titulo-login">
+
+          <p class="formulario-eyebrow">
+            Bem-vindo de volta
+          </p>
+
+          <h2 id="titulo-login">
+            Continue sua experiência
+          </h2>
+
+          <p class="formulario-descricao">
+            Entre para continuar explorando as obras
+            e suas experiências guiadas.
+          </p>
+
+
+          <form id="login-form">
+
+            <div class="campo">
+
+              <label for="login-email">
+                Email
+              </label>
+
+              <input type="email" id="login-email" name="email" placeholder="seu@email.com" autocomplete="email"
+                required>
+
+            </div>
+
+
+            <div class="campo">
+
+              <label for="login-senha">
+                Senha
+              </label>
+
+              <input type="password" id="login-senha" name="senha" placeholder="Sua senha"
+                autocomplete="current-password" required>
+
+            </div>
+
+
+            <button type="submit" class="botao-principal">
+              Entrar
+            </button>
+
+            <p id="login-mensagem" class="mensagem" aria-live="polite"></p>
+
+          </form>
+
+
+          <div class="troca-formulario">
+
+            <span>
+              É sua primeira vez aqui?
+            </span>
+
+            <button type="button" id="mostrar-cadastro" class="botao-link">
+              Criar uma conta
+            </button>
+
+          </div>
+
+        </section>
+
+
+        <!-- CADASTRO -->
+
+        <section id="form-cadastro" class="formulario" aria-labelledby="titulo-cadastro" aria-hidden="true">
+
+          <p class="formulario-eyebrow">
+            Comece sua jornada
+          </p>
+
+          <h2 id="titulo-cadastro">
+            Crie sua conta
+          </h2>
+
+          <p class="formulario-descricao">
+            Crie seu perfil para acompanhar suas
+            experiências pelo Arte Guiada.
+          </p>
+
+
+          <form id="cadastro-form">
+
+            <div class="campo">
+
+              <label for="cadastro-nome">
+                Nome
+              </label>
+
+              <input type="text" id="cadastro-nome" name="nome" placeholder="Como podemos chamar você?"
+                autocomplete="name" required>
+
+            </div>
+
+
+            <div class="campo">
+
+              <label for="cadastro-email">
+                Email
+              </label>
+
+              <input type="email" id="cadastro-email" name="email" placeholder="seu@email.com" autocomplete="email"
+                required>
+
+            </div>
+
+
+            <div class="campo">
+
+              <label for="cadastro-senha">
+                Senha
+              </label>
+
+              <input type="password" id="cadastro-senha" name="senha" placeholder="Crie uma senha"
+                autocomplete="new-password" minlength="6" required>
+
+            </div>
+
+
+            <button type="submit" class="botao-principal">
+              Criar conta
+            </button>
+
+            <p id="cadastro-mensagem" class="mensagem" aria-live="polite"></p>
+
+          </form>
+
+
+          <div class="troca-formulario">
+
+            <span>
+              Já possui uma conta?
+            </span>
+
+            <button type="button" id="mostrar-login" class="botao-link">
+              Entrar
+            </button>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <script src="../public/js/acesso.js" defer></script>
+
+</body>
+
+</html>
