@@ -1,87 +1,332 @@
 <!DOCTYPE html>
+
 <html lang="pt-br">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Arte Guiada</title>
-
-  <link rel="stylesheet" href="public/css/style.css">
-  <link rel="stylesheet" href="public/css/carrossel.css">
+  <title>Arte Guiada | Aprenda a olhar para a arte</title>
 
   <meta name="description"
-    content="Página inicial do site Arte Guiada, que ensina o usuário a analisar obras de arte, mostrando um caminho para ver além da obra como um mero desenho e atribuindo significado ao olhar do espectador.">
+    content="Arte Guiada é uma experiência interativa que ensina a observar, explorar e interpretar obras de arte.">
+
+  <link rel="stylesheet" href="public/css/style.css">
 </head>
 
 <body>
 
-  <header>
-    <nav>
-      <a href="index.html">Início</a>
-      <a href="views/login.html">Login</a>
-      <a href="#secao2">O que fazemos</a>
-      <a href="#secao1">Obras</a>
+  <header class="cabecalho">
+    <nav class="nav-principal" aria-label="Navegação principal">
+
+      
+      <a href="index.html" class="logo">
+        Arte Guiada
+      </a>
+
+      <div class="nav-links">
+        <a href="index.html">Início</a>
+        <a href="#obras">Obras</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="views/login.html">Login</a>
+      </div>
+
     </nav>
+    
+
   </header>
 
   <main>
 
-    <section id="secao1">
-      <h2>Obras</h2>
+    
+    <!-- HERO -->
 
-      <div class="carrossel">
+    <section class="hero">
 
-        <span id="item-1"></span>
-        <span id="item-2"></span>
-        <span id="item-3"></span>
+      <div class="hero-conteudo">
 
-        <div class="carrossel-item item-1">
-          <img src="public/img/van-gogh-caveira.jpg" alt="" fetchpriority="high">
+        <div class="hero-texto">
 
-          <a href="#item-3" class="prev arrow" aria-label="Obra anterior"></a>
-          <a href="#item-2" class="next arrow" aria-label="Próxima obra"></a>
+          <h1>
+            Aprenda a olhar
+            <span>para a arte.</span>
+          </h1>
+
+          <p>
+            Uma experiência guiada para observar, explorar e interpretar
+            obras de arte, construindo um olhar mais atento e uma
+            interpretação própria.
+          </p>
+
+          <div class="hero-acoes">
+
+            <a href="#obras" class="botao botao-principal">
+              Explorar obras
+            </a>
+
+            <a href="#como-funciona" class="botao botao-secundario">
+              Como funciona
+            </a>
+
+          </div>
+
         </div>
 
-        <div class="carrossel-item item-2">
-          <img src="public/img/a_boba.jpg" alt="">
 
-          <a href="#item-1" class="prev arrow" aria-label="Obra anterior"></a>
-          <a href="#item-3" class="next arrow" aria-label="Próxima obra"></a>
+        <!-- COMPOSIÇÃO DAS OBRAS -->
+
+        <div class="obras-destaque" aria-label="Obras em destaque">
+
+          <a href="views/galeria.html" class="obra obra-esquerda" aria-label="Explorar Caveira">
+
+            <img src="public/img/van-gogh-caveira.jpg" alt="Obra Caveira, de Vincent van Gogh">
+
+          </a>
+
+
+          <a href="views/galeria.html" class="obra obra-centro" aria-label="Explorar A Boba">
+
+            <img src="public/img/a_boba.jpg" alt="Obra A Boba, de Anita Malfatti">
+
+            <div class="obra-legenda">
+              <strong>A Boba</strong>
+              <span>Anita Malfatti</span>
+            </div>
+
+          </a>
+
+
+          <a href="views/galeria.html" class="obra obra-direita" aria-label="Explorar Moça com Brinco de Pérola">
+
+            <img src="public/img/girl_with_a_pearl.jpg" alt="Obra Moça com Brinco de Pérola, de Johannes Vermeer">
+
+          </a>
+
         </div>
 
-        <div class="carrossel-item item-3">
-          <img src="public/img/girl_with_a_pearl.jpg" alt="">
+      </div>
 
-          <a href="#item-2" class="prev arrow" aria-label="Obra anterior"></a>
-          <a href="#item-1" class="next arrow" aria-label="Próxima obra"></a>
-        </div>
+
+      <div class="hero-indicador">
+        <span>Explore uma obra para começar</span>
+        <span class="seta-baixo" aria-hidden="true">↓</span>
+      </div>
+
+    </section>
+
+
+    <!-- COMO FUNCIONA -->
+
+    <section id="como-funciona" class="como-funciona">
+
+      <div class="secao-cabecalho">
+
+        <span class="etiqueta">COMO FUNCIONA</span>
+
+        <h2>
+          Mais do que ver.
+          <span>Aprender a observar.</span>
+        </h2>
+
+        <p>
+          O Arte Guiada apresenta um caminho para olhar uma obra
+          com mais atenção, descobrindo seus elementos e construindo
+          uma interpretação própria.
+        </p>
+
+      </div>
+
+
+      <div class="etapas">
+
+        <article class="etapa">
+
+          <span class="numero">01</span>
+
+          <div>
+            <h3>Observe</h3>
+
+            <p>
+              Comece olhando para a obra e percebendo seus elementos
+              visuais antes de buscar uma interpretação.
+            </p>
+          </div>
+
+        </article>
+
+
+        <article class="etapa">
+
+          <span class="numero">02</span>
+
+          <div>
+            <h3>Explore</h3>
+
+            <p>
+              Descubra detalhes da obra por meio de uma experiência
+              interativa com hotspots e zoom.
+            </p>
+          </div>
+
+        </article>
+
+
+        <article class="etapa">
+
+          <span class="numero">03</span>
+
+          <div>
+            <h3>Interprete</h3>
+
+            <p>
+              Relacione os elementos observados e construa sua própria
+              leitura da obra.
+            </p>
+          </div>
+
+        </article>
 
       </div>
 
     </section>
 
-    <section id="secao2">
-      <h1>O que fazemos</h1>
 
-      <p>
-        Somos um site que ensina o usuário a analisar obras de arte,
-        ou seja, somos um guia virtual da obra de arte escolhida.
-      </p>
+    <!-- OBRAS -->
 
-      <p>
-        Nosso intuito é mostrar um caminho para ver além da obra como
-        um mero desenho, atribuindo significado ao olhar do espectador
-        e mostrando quais passos lógicos são usados para olhar as obras.
-      </p>
+    <section id="obras" class="obras-secao">
+
+      <div class="obras-introducao">
+
+        <span class="etiqueta">OBRAS</span>
+
+        <h2>
+          Escolha uma obra
+          <span>para explorar.</span>
+        </h2>
+
+        <p>
+          Comece pela obra que mais desperta sua curiosidade.
+          Você poderá explorá-la livremente ou seguir uma visita guiada.
+        </p>
+
+      </div>
+
+
+      <div class="obras-grid">
+
+        <article class="obra-card">
+
+          <div class="obra-card-imagem">
+            <img src="public/img/a_boba.jpg" alt="A Boba, de Anita Malfatti">
+          </div>
+
+          <div class="obra-card-conteudo">
+
+            <span class="obra-artista">
+              Anita Malfatti
+            </span>
+
+            <h3>A Boba</h3>
+
+            <a href="views/galeria.html" class="obra-link">
+              Explorar obra →
+            </a>
+
+          </div>
+
+        </article>
+
+
+        <article class="obra-card">
+
+          <div class="obra-card-imagem">
+            <img src="public/img/van-gogh-caveira.jpg" alt="Caveira, de Vincent van Gogh">
+          </div>
+
+          <div class="obra-card-conteudo">
+
+            <span class="obra-artista">
+              Vincent van Gogh
+            </span>
+
+            <h3>Caveira</h3>
+
+            <a href="#obras" class="obra-link">
+              Em breve →
+            </a>
+
+          </div>
+
+        </article>
+
+
+        <article class="obra-card">
+
+          <div class="obra-card-imagem">
+            <img src="public/img/girl_with_a_pearl.jpg" alt="Moça com Brinco de Pérola, de Johannes Vermeer">
+          </div>
+
+          <div class="obra-card-conteudo">
+
+            <span class="obra-artista">
+              Johannes Vermeer
+            </span>
+
+            <h3>Moça com Brinco de Pérola</h3>
+
+            <a href="#obras" class="obra-link">
+              Em breve →
+            </a>
+
+          </div>
+
+        </article>
+
+      </div>
+
     </section>
+
+
+    <!-- CHAMADA PARA VISITA -->
+
+    <section class="chamada-visita">
+
+      <div>
+
+        <span class="etiqueta">EXPERIÊNCIA INTERATIVA</span>
+
+        <h2>
+          Não sabe por onde começar?
+        </h2>
+
+        <p>
+          Escolha uma obra e deixe o Arte Guiada conduzir sua
+          observação passo a passo.
+        </p>
+
+      </div>
+
+      <a href="views/galeria.html" class="botao botao-claro">
+        Iniciar visita guiada
+      </a>
+
+    </section>
+    
 
   </main>
 
-  <footer>
-    <p>Roberta Ruivo Pompeu</p>
-    <a href="mailto:roberta.ruivo@unesp.br">Email</a>
+  <footer class="rodape">
+
+    
+    <p>Arte Guiada</p>
+
+    <a href="mailto:roberta.ruivo@unesp.br">
+      Email
+    </a>
+
     <p>Sistemas Computacionais 2 - 2026</p>
+    
+
   </footer>
 
 </body>
