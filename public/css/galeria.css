@@ -1,946 +1,1181 @@
-/* ============================================================
-   ARTE GUIADA — GALERIA
-   ============================================================ */
+/* =========================================================
+   ARTE GUIADA
+   GALERIA
+   ========================================================= */
 
 
-/* ============================================================
-   Container Principal Normal
-   PRESERVADO
-   ============================================================ */
+/* =========================================================
+   1. VARIÁVEIS VISUAIS
+   ========================================================= */
 
-.arts-culture-gallery {
-    position: relative;
-    width: 100%;
-    height: 85vh;
-    min-height: 600px;
-    background-color: #000;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.5s ease;
+:root {
+
+    /* Paleta principal */
+
+    --cream: #f7efe4;
+    --cream-dark: #eee1d1;
+
+    --brown: #3b2117;
+    --brown-soft: #674637;
+
+    --terracotta: #9b6048;
+    --terracotta-light: #c9967c;
+
+    --border: #d8c7b4;
+
+    --white: #fffaf4;
+
+
+    /* Tipografia */
+
+    --font-display:
+        "Cormorant Garamond",
+        "Iowan Old Style",
+        "Palatino Linotype",
+        Georgia,
+        serif;
+
+    --font-body:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+
+    /* Dimensões */
+
+    --page-padding: clamp(24px, 5vw, 80px);
+
+    --content-width: 1500px;
+
+    --radius: 2px;
+
+
+    /* Movimento */
+
+    --transition-slow:
+        900ms cubic-bezier(0.22, 1, 0.36, 1);
+
+    --transition-medium:
+        500ms cubic-bezier(0.22, 1, 0.36, 1);
+
 }
 
 
-/* ============================================================
-   ESTADO 2 — MODO VISITA
-   PRESERVADO
-   ============================================================ */
+/* =========================================================
+   2. RESET
+   ========================================================= */
 
-body.modo-visita {
-    overflow: hidden;
+* {
+    box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
 
-body.modo-visita .arts-culture-gallery {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 9999;
+body {
     margin: 0;
-    border-radius: 0;
+
+    background: var(--cream);
+    color: var(--brown);
+
+    font-family: var(--font-body);
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+button,
+a {
+    font: inherit;
+}
+
+button {
+    color: inherit;
+}
+
+img {
+    max-width: 100%;
 }
 
 
-/* ============================================================
-   FUNDO BORRADO
-   PRESERVADO
-   ============================================================ */
+/* =========================================================
+   3. ACESSIBILIDADE
+   ========================================================= */
 
-.blur-background {
-    position: absolute;
-    top: -5%;
-    left: -5%;
-    width: 110%;
-    height: 110%;
-    background-size: cover;
-    background-position: center;
-    filter: blur(25px) brightness(0.6);
-    opacity: 0.7;
-    z-index: 0;
+.skip-link {
+    position: fixed;
+
+    top: 12px;
+    left: 12px;
+
+    z-index: 1000;
+
+    padding: 12px 18px;
+
+    background: var(--brown);
+    color: var(--white);
+
+    text-decoration: none;
+
+    transform: translateY(-150%);
+
+    transition: transform 200ms ease;
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+}
+
+:focus-visible {
+    outline: 3px solid var(--terracotta);
+    outline-offset: 5px;
 }
 
 
-/* ============================================================
-   CONTAINERS DE ALINHAMENTO E ZOOM
-   PRESERVADO
-   ============================================================ */
+/* =========================================================
+   4. HEADER
+   ========================================================= */
 
-.gallery-center-align {
+.site-header {
+
+    width: 100%;
+
+    min-height: 74px;
+
+    padding:
+        18px var(--page-padding);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid var(--border);
+
+}
+
+.site-logo {
+
+    color: var(--brown);
+
+    font-family: var(--font-display);
+
+    font-size: clamp(1.3rem, 2vw, 1.7rem);
+
+    text-decoration: none;
+
+    letter-spacing: -0.02em;
+}
+
+.fullscreen-button {
+
+    display: inline-flex;
+
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px 15px;
+
+    background: transparent;
+
+    border: 1px solid var(--border);
+
+    border-radius: 999px;
+
+    color: var(--brown);
+
+    cursor: pointer;
+
+    transition:
+        background-color 200ms ease,
+        border-color 200ms ease;
+}
+
+.fullscreen-button:hover {
+    background: var(--cream-dark);
+    border-color: var(--terracotta-light);
+}
+
+
+/* =========================================================
+   5. ESTRUTURA PRINCIPAL
+   ========================================================= */
+
+.gallery {
+
+    width: min(calc(100% - (var(--page-padding) * 2)),
+            var(--content-width));
+
+    min-height: calc(100vh - 74px);
+
+    margin: 0 auto;
+
+    padding:
+        clamp(28px, 5vh, 70px) 0;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.55fr) minmax(320px, 0.8fr);
+
+    gap: clamp(40px, 6vw, 100px);
+
+    align-items: center;
+}
+
+
+/* =========================================================
+   6. ÁREA DA OBRA
+   ========================================================= */
+
+.artwork-section {
+
+    min-width: 0;
+
+    display: flex;
+
+    justify-content: center;
+}
+
+
+.artwork-frame {
+
     position: relative;
+
+    width: 100%;
+
+    /*
+       Mantemos uma proporção estável.
+       A imagem não depende da altura da janela.
+    */
+
+    aspect-ratio: 4 / 5;
+
+    max-height: 78vh;
+
+    overflow: hidden;
+
+    background: var(--cream-dark);
+
+}
+
+
+/* =========================================================
+   7. CAMADAS DA OBRA
+   ========================================================= */
+
+.artwork-layer {
+
+    position: absolute;
+
+    inset: 0;
+
+    overflow: hidden;
+
+    background: var(--cream-dark);
+
+}
+
+.artwork-layer img {
+
+    position: absolute;
+
+    inset: 0;
+
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+    object-fit: cover;
+
+    /*
+       Estas propriedades são alteradas pelo JavaScript
+       conforme o detalhe atual.
+    */
+
+    object-position:
+        var(--focus-x, 50%) var(--focus-y, 50%);
+
+    transform:
+        scale(var(--zoom, 1));
+
+    transform-origin:
+        var(--focus-x, 50%) var(--focus-y, 50%);
+
+    transition:
+        transform var(--transition-slow),
+        object-position var(--transition-slow);
+
+}
+
+
+/* Camada seguinte começa invisível */
+
+.artwork-layer-next {
+    opacity: 0;
+
+    z-index: 2;
+}
+
+.artwork-layer-current {
+    opacity: 1;
+
     z-index: 1;
 }
 
 
-.zoom-container {
-    position: relative;
-    display: inline-block;
-    max-width: 100%;
-    max-height: 90vh;
-    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-    transform-origin: center center;
-    --current-scale: 1;
-}
+/*
+   Durante a transição:
 
+   A imagem nova aparece enquanto
+   o enquadramento da obra muda.
+*/
 
-/* ============================================================
-   OBRA PRINCIPAL
-   PRESERVADO
-   ============================================================ */
+.artwork-frame.is-transitioning .artwork-layer-next {
 
-.main-artwork {
-    display: block;
-    max-width: 100%;
-    max-height: 90vh;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-}
-
-
-/* ============================================================
-   HOTSPOTS
-   PRESERVADO
-   ============================================================ */
-
-.hotspot {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: #fff;
-    border: none;
-    border-radius: 50%;
-
-    transform:
-        translate(-50%, -50%) scale(calc(1 / var(--current-scale)));
-
-    cursor: pointer;
-
-    box-shadow:
-        0 0 0 4px rgba(0, 0, 0, 0.4);
-
-    animation: pulse 2s infinite;
-
-    z-index: 10;
+    opacity: 1;
 
     transition:
-        background-color 0.3s,
-        box-shadow 0.3s;
+        opacity 700ms ease;
+}
+
+.artwork-frame.is-transitioning .artwork-layer-current {
+
+    opacity: 0;
+
+    transition:
+        opacity 700ms ease;
 }
 
 
-.hotspot:hover,
-.hotspot:focus-visible {
-    background-color: #ffaa00;
+/* =========================================================
+   8. LEGENDA DA OBRA
+   ========================================================= */
 
-    animation: none;
+.artwork-caption {
 
-    outline: none;
-
-    box-shadow:
-        0 0 0 4px rgba(0, 0, 0, 0.7),
-        0 0 0 8px #ffaa00;
-}
-
-
-.hotspot.explored {
-    background-color: #ffaa00;
-
-    opacity: 0.85;
-
-    animation: none;
-}
-
-
-.hotspot.active-detail {
-    background-color: #fff;
-
-    box-shadow:
-        0 0 0 4px #ffaa00,
-        0 0 0 8px rgba(255, 170, 0, 0.5);
-
-    animation: none;
-}
-
-
-/* ============================================================
-   ANIMAÇÃO DOS HOTSPOTS
-   PRESERVADO
-   ============================================================ */
-
-@keyframes pulse {
-
-    0% {
-        box-shadow:
-            0 0 0 0 rgba(255, 255, 255, 0.7);
-    }
-
-    70% {
-        box-shadow:
-            0 0 0 12px rgba(255, 255, 255, 0);
-    }
-
-    100% {
-        box-shadow:
-            0 0 0 0 rgba(255, 255, 255, 0);
-    }
-
-}
-
-
-/* ============================================================
-   OVERLAY DE TEXTO
-   PRESERVADO
-   ============================================================ */
-
-.text-overlay {
     position: absolute;
-    bottom: 0;
+
     left: 0;
+    bottom: 0;
+
+    z-index: 5;
+
     width: 100%;
-    z-index: 20;
+
+    padding:
+        60px clamp(20px, 3vw, 40px) 25px;
+
     display: flex;
+
     flex-direction: column;
-    pointer-events: none;
-}
 
+    align-items: flex-start;
 
-.tour-section {
-    pointer-events: auto;
-    padding: 30px 40px 40px 40px;
+    /*
+       Não é uma caixa.
+       É apenas uma pequena área de leitura
+       integrada à imagem.
+    */
 
     background:
         linear-gradient(to top,
-            rgba(0, 0, 0, 0.95) 0%,
-            rgba(0, 0, 0, 0.85) 60%,
-            transparent 100%);
+            rgba(25, 12, 8, 0.72),
+            rgba(25, 12, 8, 0));
 
-    color: #fff;
+    color: var(--white);
+
+    pointer-events: none;
+}
+
+.artwork-caption span {
+
+    margin-bottom: 3px;
+
+    font-family: var(--font-body);
+
+    font-size: 0.72rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.2em;
+
+    text-transform: uppercase;
+}
+
+.artwork-caption strong {
+
+    font-family: var(--font-display);
+
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+
+    font-weight: 500;
+
+    line-height: 1;
+}
+
+
+/* =========================================================
+   9. ÁREA NARRATIVA
+   ========================================================= */
+
+.narrative-section {
+
+    min-width: 0;
 
     display: flex;
+
     flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
 
-    backdrop-filter: blur(5px);
+    justify-content: center;
+
 }
 
 
-/* ============================================================
-   ESTADO 1 — INTRO
-   PRESERVADO
-   ============================================================ */
+/* =========================================================
+   10. CABEÇALHO DO DETALHE
+   ========================================================= */
 
-#tour-intro h2 {
-    font-size: 2rem;
-    margin: 0;
-    font-family: sans-serif;
-}
-
-
-#tour-intro p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    max-width: 700px;
-    margin: 0;
-    opacity: 0.9;
-}
-
-
-/* ============================================================
-   ESTADO 2 — PAINEL DE VISITA
-   PRESERVADO
-   ============================================================ */
-
-#tour-panel {
-    gap: 20px;
-
-    background:
-        rgba(10, 10, 10, 0.85);
-
-    border-top:
-        1px solid rgba(255, 255, 255, 0.1);
-}
-
-
-/* ============================================================
-   CABEÇALHO DA VISITA
-   PRESERVADO
-   ============================================================ */
-
-.tour-header {
-    width: 100%;
+.narrative-top {
 
     display: flex;
 
     justify-content: space-between;
 
     align-items: center;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid var(--border);
 }
 
+.section-label {
 
-.tour-counter {
-    font-size: 0.9rem;
+    margin: 0;
+
+    color: var(--terracotta);
+
+    font-size: 0.72rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.24em;
 
     text-transform: uppercase;
+}
 
-    letter-spacing: 1px;
+.slide-counter {
 
-    color: #ffaa00;
+    margin: 0;
 
-    font-weight: bold;
+    color: var(--brown-soft);
+
+    font-size: 0.8rem;
 }
 
 
-/* ============================================================
-   PROGRESSO
-   PRESERVADO
-   ============================================================ */
+/* =========================================================
+   11. CONTEÚDO
+   ========================================================= */
 
-.progress-container {
-    width: 100%;
+.narrative-content {
 
-    max-width: 600px;
+    padding:
+        clamp(35px, 6vh, 75px) 0;
+
+    min-height: 350px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+}
+
+.detail-number {
+
+    margin: 0 0 12px;
+
+    color: var(--terracotta);
+
+    font-family: var(--font-display);
+
+    font-size: 1rem;
+
+    font-style: italic;
+}
+
+.narrative-content h1 {
+
+    margin: 0 0 24px;
+
+    max-width: 650px;
+
+    font-family: var(--font-display);
+
+    font-size: clamp(2.8rem,
+            5vw,
+            5.3rem);
+
+    font-weight: 400;
+
+    line-height: 0.92;
+
+    letter-spacing: -0.035em;
+}
+
+.detail-description {
+
+    max-width: 620px;
+
+    margin: 0;
+
+    color: var(--brown-soft);
+
+    font-family: var(--font-display);
+
+    font-size: clamp(1.15rem,
+            1.6vw,
+            1.45rem);
+
+    line-height: 1.55;
+
+}
+
+
+/* =========================================================
+   12. NAVEGAÇÃO
+   ========================================================= */
+
+.narrative-navigation {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding-bottom: 28px;
+
+}
+
+.navigation-button {
+
+    padding: 10px 0;
+
+    background: transparent;
+
+    border: 0;
+
+    border-bottom: 1px solid transparent;
+
+    color: var(--brown);
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        color 200ms ease,
+        border-color 200ms ease;
+}
+
+.navigation-button:hover:not(:disabled) {
+
+    color: var(--terracotta);
+
+    border-bottom-color:
+        var(--terracotta);
+}
+
+.navigation-button:disabled {
+
+    color: #b8a89b;
+
+    cursor: not-allowed;
+
+}
+
+
+/* =========================================================
+   13. PROGRESSO
+   ========================================================= */
+
+.progress-area {
 
     display: flex;
 
     flex-direction: column;
 
     gap: 8px;
+
+    padding-bottom: 28px;
 }
 
+.progress-track {
 
-.progress-header {
-    display: flex;
+    position: relative;
 
-    justify-content: space-between;
-
-    font-size: 0.85rem;
-
-    color: #ccc;
-}
-
-
-.progress-bar-bg {
     width: 100%;
 
-    height: 8px;
+    height: 2px;
 
-    background:
-        rgba(255, 255, 255, 0.2);
+    background: var(--border);
 
-    border-radius: 4px;
-
-    overflow: hidden;
 }
 
+.progress-track span {
 
-.progress-bar-fill {
+    display: block;
+
+    width: 50%;
+
     height: 100%;
 
-    background: #ffaa00;
+    background: var(--brown);
 
     transition:
-        width 0.4s ease-out;
+        width var(--transition-medium);
 }
 
-
-/* ============================================================
-   DETALHE
-   PRESERVADO
-   ============================================================ */
-
-.detail-content h2 {
-    font-size: 1.8rem;
-
-    margin: 0 0 10px 0;
-
-    font-family: sans-serif;
-
-    outline: none;
-}
-
-
-.detail-content p {
-    font-size: 1.05rem;
-
-    line-height: 1.6;
+.progress-area p {
 
     margin: 0;
 
-    max-width: 800px;
+    color: var(--brown-soft);
 
-    opacity: 0.95;
+    font-size: 0.75rem;
 }
 
 
-.tour-conclusion {
-    margin-top: 15px;
+/* =========================================================
+   14. EXPLORAÇÃO
+   ========================================================= */
 
-    padding: 10px 15px;
+.exploration-message {
 
-    background:
-        rgba(255, 170, 0, 0.2);
+    padding-top: 20px;
 
-    border-left:
-        4px solid #ffaa00;
+    border-top: 1px solid var(--border);
 
-    border-radius: 4px;
-
-    color: #fff;
-
-    font-size: 0.95rem;
-}
-
-
-/* ============================================================
-   BOTÕES
-   PRESERVADO
-   ============================================================ */
-
-button {
-    font-family: inherit;
-}
-
-
-.btn-primary {
-    background: #ffaa00;
-
-    color: #000;
-
-    border: none;
-
-    padding: 12px 24px;
-
-    font-size: 1.1rem;
-
-    font-weight: bold;
-
-    border-radius: 30px;
-
-    cursor: pointer;
-
-    transition:
-        background 0.3s,
-        transform 0.2s;
-}
-
-
-.btn-primary:hover,
-.btn-primary:focus-visible {
-    background: #ffcc00;
-
-    transform: scale(1.05);
-}
-
-
-.btn-secondary {
-    background: transparent;
-
-    color: #ccc;
-
-    border:
-        1px solid #555;
-
-    padding: 8px 16px;
-
-    border-radius: 20px;
-
-    cursor: pointer;
-
-    transition:
-        all 0.3s;
-}
-
-
-.btn-secondary:hover,
-.btn-secondary:focus-visible {
-    background: #fff;
-
-    color: #000;
-}
-
-
-/* ============================================================
-   CONTROLES DE NAVEGAÇÃO
-   PRESERVADO
-   ============================================================ */
-
-.tour-controls {
-    display: flex;
-
-    gap: 15px;
-
-    align-items: center;
-
-    flex-wrap: wrap;
-}
-
-
-.btn-nav {
-    background: #222;
-
-    color: #fff;
-
-    border:
-        1px solid #444;
-
-    padding: 12px 24px;
-
-    border-radius: 24px;
-
-    cursor: pointer;
-
-    font-size: 1rem;
-
-    transition:
-        all 0.3s;
-}
-
-
-.btn-nav:hover:not(:disabled),
-.btn-nav:focus-visible:not(:disabled) {
-    background: #ffaa00;
-
-    color: #000;
-
-    border-color: #ffaa00;
-}
-
-
-.btn-nav:disabled {
-    opacity: 0.4;
-
-    cursor: not-allowed;
-}
-
-
-.btn-voltar {
-    background: transparent;
-
-    color: #fff;
-
-    border:
-        1px solid rgba(255, 255, 255, 0.5);
-
-    padding: 12px 24px;
-
-    border-radius: 24px;
-
-    cursor: pointer;
-
-    font-size: 1rem;
-
-    transition:
-        all 0.3s;
-}
-
-
-.btn-voltar:hover,
-.btn-voltar:focus-visible {
-    background: #fff;
-
-    color: #000;
-}
-
-
-/* ============================================================
-   FOCO GLOBAL
-   PRESERVADO
-   ============================================================ */
-
-button:focus-visible {
-    outline:
-        3px solid #ffaa00;
-
-    outline-offset:
-        3px;
-}
-
-
-/* ============================================================
-   RESPONSIVIDADE ORIGINAL
-   PRESERVADA
-   ============================================================ */
-
-@media (max-width: 768px) {
-
-    .tour-section {
-        padding: 20px;
-    }
-
-
-    .tour-controls {
-        width: 100%;
-
-        justify-content: space-between;
-    }
-
-
-    .btn-nav,
-    .btn-voltar {
-        padding: 10px 16px;
-
-        font-size: 0.9rem;
-    }
-
-
-    .main-artwork {
-        max-height: 70vh;
-    }
-
-}
-
-
-/* ============================================================
-   REDUÇÃO DE MOVIMENTO ORIGINAL
-   PRESERVADO
-   ============================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-
-    * {
-        animation-duration:
-            0.01ms !important;
-
-        animation-iteration-count:
-            1 !important;
-
-        transition-duration:
-            0.01ms !important;
-
-        scroll-behavior:
-            auto !important;
-    }
-
-
-    .hotspot {
-        box-shadow:
-            0 0 0 2px rgba(255, 255, 255, 1);
-    }
-
-}
-
-
-/* ============================================================
-   ============================================================
-   ADICIONADO — REACT / EVENTOS ASSÍNCRONOS
-   ============================================================
-   ============================================================ */
-
-
-/* ============================================================
-   CONTAINER DO REACT
-   ============================================================ */
-
-#react-async-tour-root {
-    width: 100%;
-
-    max-width: 800px;
-}
-
-
-.react-tour-container {
-    width: 100%;
-}
-
-
-/* ============================================================
-   EVENTO 1 — SPINNER
-   ============================================================ */
-
-.react-loading {
     display: flex;
 
     align-items: center;
 
-    gap: 12px;
+    justify-content: space-between;
 
-    min-height: 44px;
-
-    color: #fff;
+    gap: 20px;
 }
 
+.exploration-message p {
 
-.react-spinner {
-    width: 22px;
+    margin: 0;
 
-    height: 22px;
+    color: var(--brown-soft);
+
+    font-size: 0.8rem;
+
+    line-height: 1.4;
+}
+
+.text-button {
 
     flex-shrink: 0;
 
-    border:
-        3px solid rgba(255, 255, 255, 0.25);
+    padding: 0;
 
-    border-top-color:
-        #ffaa00;
+    background: transparent;
 
-    border-radius: 50%;
+    border: 0;
 
-    animation:
-        react-spinner-rotate 0.8s linear infinite;
+    border-bottom: 1px solid var(--brown);
+
+    color: var(--brown);
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+.text-button:hover {
+
+    color: var(--terracotta);
+
+    border-color: var(--terracotta);
+
 }
 
 
-@keyframes react-spinner-rotate {
+/* =========================================================
+   15. TRANSIÇÃO DO TEXTO
+   ========================================================= */
+
+.narrative-section.is-changing .narrative-content {
+
+    animation:
+        narrativeOut 220ms ease forwards;
+}
+
+.narrative-section.is-entering .narrative-content {
+
+    animation:
+        narrativeIn 600ms cubic-bezier(0.22,
+            1,
+            0.36,
+            1) forwards;
+}
+
+@keyframes narrativeOut {
 
     from {
-        transform:
-            rotate(0deg);
+        opacity: 1;
+        transform: translateY(0);
     }
 
     to {
-        transform:
-            rotate(360deg);
+        opacity: 0;
+        transform: translateY(15px);
     }
 
 }
 
-
-/* ============================================================
-   EVENTO 2 — FADE-IN
-   ============================================================ */
-
-.react-tour-content {
-    width: 100%;
-}
-
-
-.fade-in {
-    animation:
-        react-fade-in 0.45s ease-out forwards;
-}
-
-
-@keyframes react-fade-in {
+@keyframes narrativeIn {
 
     from {
         opacity: 0;
+        transform: translateY(25px);
     }
 
     to {
         opacity: 1;
+        transform: translateY(0);
     }
 
 }
 
 
-/* ============================================================
-   TÍTULO DOS DETALHES
-   ============================================================ */
+/* =========================================================
+   16. OBRA COMPLETA
+   ========================================================= */
 
-.react-tour-content h3 {
-    margin:
-        0 0 10px 0;
+.complete-artwork {
 
-    font-size: 1rem;
+    position: fixed;
 
-    color: #ffaa00;
+    inset: 0;
+
+    z-index: 500;
+
+    display: grid;
+
+    place-items: center;
+
+    padding: 30px;
+
+    background: rgba(35, 20, 14, 0.96);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity 350ms ease,
+        visibility 350ms ease;
 }
 
+.complete-artwork.is-open {
 
-/* ============================================================
-   EVENTO 3 — LISTA DE DETALHES
-   ============================================================ */
+    opacity: 1;
 
-.react-detail-list {
-    width: 100%;
+    visibility: visible;
+
+    pointer-events: auto;
+}
+
+.complete-artwork figure {
+
+    margin: 0;
+
+    max-width: 90vw;
+    max-height: 90vh;
 
     display: flex;
 
     flex-direction: column;
 
-    gap: 8px;
+    align-items: center;
+
+    gap: 16px;
+}
+
+.complete-artwork img {
+
+    max-width: 90vw;
+    max-height: 82vh;
+
+    width: auto;
+    height: auto;
+
+    object-fit: contain;
+}
+
+.complete-artwork figcaption {
+
+    display: flex;
+
+    gap: 10px;
+
+    align-items: baseline;
+
+    color: var(--white);
+
+    font-family: var(--font-display);
+
+}
+
+.complete-artwork figcaption span {
+
+    font-family: var(--font-body);
+
+    font-size: 0.75rem;
+
+    letter-spacing: 0.15em;
+
+    text-transform: uppercase;
+}
+
+.complete-artwork figcaption strong {
+
+    font-size: 1.5rem;
+
+    font-weight: 400;
+}
+
+.complete-close {
+
+    position: absolute;
+
+    top: 25px;
+    right: 30px;
+
+    width: 48px;
+    height: 48px;
+
+    display: grid;
+
+    place-items: center;
+
+    background: transparent;
+
+    border: 1px solid rgba(255, 255, 255, 0.5);
+
+    border-radius: 50%;
+
+    color: var(--white);
+
+    font-size: 2rem;
+
+    line-height: 1;
+
+    cursor: pointer;
 }
 
 
-/* ============================================================
-   BOTÕES DA LISTA
-   ============================================================ */
+/* =========================================================
+   17. FOOTER
+   ========================================================= */
 
-.react-detail-item {
-    width: 100%;
+.site-footer {
+
+    min-height: 120px;
+
+    padding:
+        30px var(--page-padding);
 
     display: flex;
 
     align-items: center;
 
-    padding: 10px 14px;
+    justify-content: center;
 
-    background:
-        rgba(255, 255, 255, 0.08);
+    gap: 40px;
 
-    color: #fff;
+    background: var(--brown);
 
-    border:
-        1px solid rgba(255, 255, 255, 0.18);
+    color: var(--white);
 
-    border-radius: 8px;
+}
 
-    text-align: left;
+.site-footer p {
 
-    font: inherit;
+    margin: 0;
 
-    cursor: pointer;
+    font-family: var(--font-display);
 
-    transition:
-        background-color 0.2s ease,
-        border-color 0.2s ease;
+    font-size: 1rem;
+
 }
 
 
-.react-detail-item:hover {
-    background:
-        rgba(255, 170, 0, 0.18);
+/* =========================================================
+   18. TABLET
+   ========================================================= */
 
-    border-color:
-        #ffaa00;
-}
+@media (max-width: 1000px) {
 
+    .gallery {
 
-.react-detail-item:focus-visible {
-    background:
-        rgba(255, 170, 0, 0.18);
+        grid-template-columns:
+            minmax(0, 1.2fr) minmax(280px, 0.8fr);
 
-    border-color:
-        #ffaa00;
+        gap: 35px;
 
-    outline:
-        3px solid #ffaa00;
-
-    outline-offset:
-        3px;
-}
-
-
-.react-detail-title {
-    font-size: 0.95rem;
-
-    font-weight: 600;
-}
-
-
-/* ============================================================
-   EVENTO 3 — DESLIZAMENTO DOS ITENS
-   ============================================================ */
-
-.slide-in {
-    opacity: 0;
-
-    animation:
-        react-slide-in 0.4s ease-out forwards;
-
-    animation-delay:
-        var(--item-delay);
-}
-
-
-@keyframes react-slide-in {
-
-    from {
-        opacity: 0;
-
-        transform:
-            translateX(-12px);
     }
 
-    to {
-        opacity: 1;
+    .narrative-content {
 
-        transform:
-            translateX(0);
+        min-height: 300px;
+
+    }
+
+    .narrative-content h1 {
+
+        font-size: clamp(2.7rem,
+                6vw,
+                4.2rem);
+
     }
 
 }
 
 
-/* ============================================================
-   MENSAGEM DE VISITA PRONTA
-   ============================================================ */
+/* =========================================================
+   19. MOBILE
+   ========================================================= */
 
-.react-ready-message {
-    margin:
-        12px 0 0 0;
+@media (max-width: 760px) {
 
-    color: #ddd;
+    .site-header {
 
-    font-size: 0.9rem;
+        min-height: 64px;
 
-    line-height: 1.5;
-}
-
-
-/* ============================================================
-   RESPONSIVIDADE DOS NOVOS ELEMENTOS
-   ============================================================ */
-
-@media (max-width: 768px) {
-
-    #react-async-tour-root {
-        max-width: 100%;
-    }
-
-
-    .react-detail-item {
         padding:
-            10px 12px;
+            15px 20px;
+
+    }
+
+    .fullscreen-text {
+
+        display: none;
+
+    }
+
+    .gallery {
+
+        width: 100%;
+
+        padding:
+            0 0 50px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 0;
+
     }
 
 
-    .react-detail-title {
-        font-size:
-            0.9rem;
+    /*
+       A obra continua sendo dominante.
+       Agora ocupa praticamente toda a largura.
+    */
+
+    .artwork-section {
+
+        width: 100%;
+
+    }
+
+    .artwork-frame {
+
+        width: 100%;
+
+        aspect-ratio: 4 / 5;
+
+        max-height: none;
+
     }
 
 
-    .react-loading {
+    .artwork-caption {
+
+        padding:
+            60px 20px 20px;
+
+    }
+
+
+    .narrative-section {
+
+        width: 100%;
+
+        padding:
+            0 20px;
+
+    }
+
+
+    .narrative-top {
+
+        padding:
+            18px 0;
+
+    }
+
+
+    .narrative-content {
+
+        min-height: 0;
+
+        padding:
+            45px 0 35px;
+
+    }
+
+
+    .narrative-content h1 {
+
         font-size:
-            0.95rem;
+            clamp(2.8rem,
+                13vw,
+                4rem);
+
+        margin-bottom: 20px;
+
+    }
+
+
+    .detail-description {
+
+        font-size: 1.25rem;
+
+        line-height: 1.5;
+
+    }
+
+
+    .narrative-navigation {
+
+        padding-bottom: 25px;
+
+    }
+
+
+    .navigation-button {
+
+        min-height: 44px;
+
+        padding:
+            10px 4px;
+
+    }
+
+
+    .exploration-message {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 15px;
+
+    }
+
+
+    .text-button {
+
+        min-height: 44px;
+
+    }
+
+
+    .site-footer {
+
+        min-height: 100px;
+
+        flex-direction: column;
+
+        gap: 5px;
+
+        text-align: center;
+
     }
 
 }
 
 
-/* ============================================================
-   REDUÇÃO DE MOVIMENTO DOS NOVOS ELEMENTOS
+/* =========================================================
+   20. MOBILE PEQUENO
+   ========================================================= */
 
-   A funcionalidade continua funcionando, mas as animações
-   não essenciais são removidas.
-   ============================================================ */
+@media (max-width: 420px) {
+
+    .artwork-frame {
+
+        aspect-ratio: 3 / 4;
+
+    }
+
+    .artwork-caption strong {
+
+        font-size: 2rem;
+
+    }
+
+    .narrative-content {
+
+        padding-top: 35px;
+
+    }
+
+    .detail-description {
+
+        font-size: 1.15rem;
+
+    }
+
+}
+
+
+/* =========================================================
+   21. REDUÇÃO DE MOVIMENTO
+   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
 
-    .react-spinner {
-        animation: none;
+    html {
+
+        scroll-behavior: auto;
+
     }
 
+    *,
+    *::before,
+    *::after {
 
-    .fade-in {
-        animation: none;
+        animation-duration: 0.01ms !important;
 
-        opacity: 1;
-    }
+        animation-iteration-count: 1 !important;
 
+        transition-duration: 0.01ms !important;
 
-    .slide-in {
-        animation: none;
-
-        opacity: 1;
-
-        transform: none;
-    }
-
-
-    .react-detail-item {
-        transition: none;
     }
 
 }
