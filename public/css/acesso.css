@@ -1,0 +1,1154 @@
+/* =========================================================
+   ARTE GUIADA
+   PÁGINA DE ACESSO
+   ========================================================= */
+
+
+/* =========================================================
+   CONFIGURAÇÃO GERAL
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+    min-height: 100%;
+}
+
+
+body.pagina-acesso {
+    min-height: 100vh;
+
+    background: #f7efe5;
+
+    color: #3f2a20;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 20px;
+}
+
+
+/* =========================================================
+   CONTAINER PRINCIPAL
+   ========================================================= */
+
+.acesso-container {
+    position: relative;
+
+    width: 100%;
+    max-width: 1180px;
+
+    height: min(820px, calc(100vh - 70px));
+
+    min-height: 620px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.08fr) minmax(340px, 0.92fr);
+
+    background: #fffaf4;
+
+    border-radius: 4px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 24px 60px rgba(70, 42, 25, 0.13);
+}
+
+
+/* =========================================================
+   ÁREA DOS FORMULÁRIOS
+   ========================================================= */
+
+.acesso-formularios {
+    position: relative;
+
+    min-width: 0;
+    min-height: 0;
+
+    overflow: hidden;
+
+    background: #fffaf4;
+}
+
+
+/* =========================================================
+   CADA FORMULÁRIO OCUPA O MESMO ESPAÇO
+   ========================================================= */
+
+.formulario-wrapper {
+    position: absolute;
+
+    inset: 0;
+
+    min-width: 0;
+    min-height: 0;
+
+    padding:
+        clamp(32px, 5vw, 58px) clamp(28px, 6vw, 64px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transform: translateX(25px);
+
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease,
+        visibility 0.35s ease;
+}
+
+
+/* Formulário ativo */
+
+.formulario-wrapper.ativo {
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+    transform: translateX(0);
+}
+
+
+/* =========================================================
+   ÁREA INTERNA COM ROLAGEM
+   ========================================================= */
+
+.formulario-scroll {
+    width: 100%;
+    height: 100%;
+
+    min-height: 0;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    padding-right: 16px;
+}
+
+
+/* Barra de rolagem */
+
+.formulario-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.formulario-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.formulario-scroll::-webkit-scrollbar-thumb {
+    background: #cdb9a8;
+
+    border-radius: 10px;
+}
+
+.formulario-scroll::-webkit-scrollbar-thumb:hover {
+    background: #a98b75;
+}
+
+
+/* Firefox */
+
+.formulario-scroll {
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        #cdb9a8 transparent;
+}
+
+
+/* =========================================================
+   TÍTULOS
+   ========================================================= */
+
+.acesso-etiqueta {
+    display: block;
+
+    margin-bottom: 20px;
+
+    color: #80583f;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 0.74rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.20em;
+
+    text-transform: uppercase;
+}
+
+
+.formulario-wrapper h1 {
+    margin: 0;
+
+    max-width: 540px;
+
+    color: #422a1e;
+
+    font-size:
+        clamp(2.6rem, 5vw, 4.25rem);
+
+    font-weight: 400;
+
+    line-height: 0.98;
+
+    letter-spacing: -0.025em;
+}
+
+
+.formulario-wrapper h1 span {
+    display: block;
+
+    font-style: italic;
+}
+
+
+/* =========================================================
+   INTRODUÇÃO
+   ========================================================= */
+
+.formulario-introducao {
+    max-width: 520px;
+
+    margin:
+        28px 0 34px;
+
+    color: #735c4c;
+
+    font-size:
+        clamp(1rem, 1.5vw, 1.15rem);
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   FORMULÁRIO
+   ========================================================= */
+
+#loginForm,
+#cadastroForm {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+/* =========================================================
+   CAMPOS
+   ========================================================= */
+
+.campo {
+    width: 100%;
+
+    min-width: 0;
+}
+
+
+.campo label,
+.perfil-fieldset legend {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #422a1e;
+
+    font-size: 0.94rem;
+
+    font-weight: 700;
+
+    line-height: 1.3;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.campo input[type="text"],
+.campo input[type="email"],
+.campo input[type="password"],
+.campo textarea {
+    display: block;
+
+    width: 100%;
+
+    min-height: 50px;
+
+    padding:
+        12px 14px;
+
+    border:
+        1px solid #d7ccc3;
+
+    border-radius: 2px;
+
+    background: #ffffff;
+
+    color: #3f2a20;
+
+    font-family: inherit;
+
+    font-size: 1rem;
+
+    line-height: 1.4;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+
+.campo textarea {
+    min-height: 108px;
+
+    resize: vertical;
+}
+
+
+/* Placeholder */
+
+.campo input::placeholder,
+.campo textarea::placeholder {
+    color: #9a897c;
+}
+
+
+/* Foco */
+
+.campo input:focus,
+.campo textarea:focus {
+    outline: none;
+
+    border-color: #80583f;
+
+    background: #fffdfb;
+
+    box-shadow:
+        0 0 0 3px rgba(128, 88, 63, 0.10);
+}
+
+
+/* Campo inválido */
+
+.campo input[aria-invalid="true"],
+.campo textarea[aria-invalid="true"] {
+    border-color: #a33e32;
+}
+
+
+/* =========================================================
+   NOME + SOBRENOME
+   ========================================================= */
+
+.campos-duplos {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr) minmax(0, 1fr);
+
+    gap: 18px;
+}
+
+
+/* =========================================================
+   PERFIS
+   ========================================================= */
+
+.perfil-fieldset {
+    width: 100%;
+
+    margin: 0;
+
+    padding: 0;
+
+    border: 0;
+}
+
+
+.perfil-opcoes {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 8px;
+}
+
+
+.perfil-opcao {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    min-width: 0;
+
+    min-height: 45px;
+
+    margin: 0;
+
+    padding:
+        8px 10px;
+
+    border:
+        1px solid #ddd2ca;
+
+    background: #ffffff;
+
+    color: #4a3529;
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    font-size: 0.88rem;
+
+    font-weight: 400;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.perfil-opcao:hover {
+    border-color: #a98b75;
+
+    background: #faf5ef;
+}
+
+
+.perfil-opcao:has(input:checked) {
+    border-color: #80583f;
+
+    background: #f7eee6;
+}
+
+
+.perfil-opcao input {
+    flex: 0 0 auto;
+
+    width: 16px;
+    height: 16px;
+
+    margin: 0;
+
+    accent-color: #80583f;
+}
+
+
+/* =========================================================
+   MENSAGENS DE ERRO
+   ========================================================= */
+
+.error-msg {
+    display: block;
+
+    min-height: 17px;
+
+    margin-top: 5px;
+
+    color: #a33e32;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 0.78rem;
+
+    line-height: 1.35;
+}
+
+
+/* =========================================================
+   FORÇA DA SENHA
+   ========================================================= */
+
+.strength-container {
+    width: 100%;
+
+    height: 6px;
+
+    margin-top: 8px;
+
+    overflow: hidden;
+
+    border-radius: 4px;
+
+    background: #e1d9d2;
+}
+
+
+.strength-bar {
+    width: 0%;
+
+    height: 100%;
+
+    border-radius: inherit;
+
+    background: #a33e32;
+
+    transition:
+        width 0.3s ease,
+        background-color 0.3s ease;
+}
+
+
+.strength-text {
+    display: block;
+
+    min-height: 17px;
+
+    margin-top: 5px;
+
+    color: #735c4c;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 0.78rem;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   BOTÃO DOS FORMULÁRIOS
+   ========================================================= */
+
+.botao-formulario {
+    align-self: flex-start;
+
+    min-width: 140px;
+
+    min-height: 48px;
+
+    margin-top: 2px;
+
+    padding:
+        0 28px;
+
+    border: 0;
+
+    border-radius: 999px;
+
+    background: #422a1e;
+
+    color: #ffffff;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 0.92rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.botao-formulario:hover {
+    background: #5a392a;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 18px rgba(66, 42, 30, 0.16);
+}
+
+
+.botao-formulario:focus-visible {
+    outline:
+        3px solid rgba(128, 88, 63, 0.30);
+
+    outline-offset: 3px;
+}
+
+
+.botao-formulario:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   FEEDBACK
+   ========================================================= */
+
+.feedback-box {
+    min-height: 22px;
+
+    margin-top: 0;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 0.85rem;
+
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+
+.feedback-box.success {
+    color: #32704b;
+}
+
+
+.feedback-box.error {
+    color: #a33e32;
+}
+
+
+/* =========================================================
+   PAINEL DIREITO
+   ========================================================= */
+
+.acesso-painel {
+    position: relative;
+
+    min-width: 0;
+    min-height: 0;
+
+    overflow: hidden;
+
+    display: flex;
+
+    align-items: center;
+
+    padding:
+        clamp(36px, 6vw, 72px);
+
+    background:
+        linear-gradient(145deg,
+            #80583f 0%,
+            #6e4b38 50%,
+            #53372a 100%);
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   CÍRCULOS DECORATIVOS
+   ========================================================= */
+
+.acesso-painel::before {
+    content: "";
+
+    position: absolute;
+
+    width: 560px;
+    height: 560px;
+
+    top: -300px;
+    right: -170px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.12);
+
+    border-radius: 50%;
+}
+
+
+.acesso-painel::after {
+    content: "";
+
+    position: absolute;
+
+    width: 500px;
+    height: 500px;
+
+    bottom: -330px;
+    left: -220px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.09);
+
+    border-radius: 50%;
+}
+
+
+/* =========================================================
+   CONTEÚDO DO PAINEL
+   ========================================================= */
+
+.painel-conteudo {
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+
+    max-width: 470px;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transform: translateY(20px);
+
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease,
+        visibility 0.35s ease;
+}
+
+
+.painel-conteudo.ativo {
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   TEXTO DO PAINEL
+   ========================================================= */
+
+.painel-etiqueta {
+    display: block;
+
+    margin-bottom: 24px;
+
+    color:
+        rgba(255, 255, 255, 0.70);
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 0.74rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.20em;
+
+    text-transform: uppercase;
+}
+
+
+.painel-conteudo h2 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size:
+        clamp(2.8rem, 5vw, 4.7rem);
+
+    font-weight: 400;
+
+    line-height: 0.98;
+
+    letter-spacing: -0.025em;
+}
+
+
+.painel-conteudo h2 span {
+    display: block;
+
+    font-style: italic;
+}
+
+
+.painel-conteudo p {
+    max-width: 410px;
+
+    margin:
+        28px 0 32px;
+
+    color:
+        rgba(255, 255, 255, 0.82);
+
+    font-size:
+        clamp(0.95rem, 1.5vw, 1.08rem);
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   BOTÃO DO PAINEL
+   ========================================================= */
+
+.botao-painel {
+    min-height: 48px;
+
+    padding:
+        0 28px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.75);
+
+    border-radius: 999px;
+
+    background: transparent;
+
+    color: #ffffff;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 0.92rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.botao-painel:hover {
+    background: #ffffff;
+
+    color: #5a392a;
+
+    transform: translateY(-2px);
+}
+
+
+.botao-painel:focus-visible {
+    outline:
+        3px solid rgba(255, 255, 255, 0.35);
+
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   RODAPÉ
+   ========================================================= */
+
+.rodape-acesso {
+    width: 100%;
+
+    max-width: 1180px;
+
+    margin: 12px auto 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 16px;
+
+    color: #765f50;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 0.76rem;
+}
+
+
+.rodape-acesso a {
+    color: inherit;
+
+    text-decoration: none;
+}
+
+
+.rodape-acesso a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+    body.pagina-acesso {
+        padding: 16px;
+    }
+
+
+    .acesso-container {
+        height: calc(100vh - 62px);
+
+        min-height: 580px;
+
+        grid-template-columns:
+            minmax(0, 1fr) minmax(300px, 0.82fr);
+    }
+
+
+    .formulario-wrapper {
+        padding:
+            38px 38px;
+    }
+
+
+    .acesso-painel {
+        padding:
+            38px;
+    }
+
+
+    .perfil-opcoes {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .painel-conteudo h2 {
+        font-size: 3.4rem;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 720px) {
+
+    body.pagina-acesso {
+        display: block;
+
+        min-height: 100vh;
+
+        padding: 0;
+
+        background: #fffaf4;
+    }
+
+
+    .acesso-container {
+        width: 100%;
+
+        min-height: 100vh;
+
+        height: auto;
+
+        display: flex;
+
+        flex-direction: column;
+
+        border-radius: 0;
+
+        box-shadow: none;
+    }
+
+
+    /* Painel passa para cima */
+
+    .acesso-painel {
+        order: -1;
+
+        flex: 0 0 auto;
+
+        min-height: 340px;
+
+        padding:
+            42px 28px;
+    }
+
+
+    .painel-conteudo h2 {
+        font-size: clamp(2.7rem, 12vw, 4rem);
+    }
+
+
+    /* Área dos formulários */
+
+    .acesso-formularios {
+        flex: 1;
+
+        min-height: 0;
+
+        overflow: visible;
+    }
+
+
+    .formulario-wrapper {
+        position: relative;
+
+        inset: auto;
+
+        display: none;
+
+        padding:
+            40px 28px;
+    }
+
+
+    .formulario-wrapper.ativo {
+        display: block;
+    }
+
+
+    .formulario-scroll {
+        height: auto;
+
+        overflow: visible;
+
+        padding-right: 0;
+    }
+
+
+    .formulario-wrapper h1 {
+        font-size:
+            clamp(2.6rem, 12vw, 4rem);
+    }
+
+
+    .campos-duplos {
+        grid-template-columns: 1fr;
+
+        gap: 18px;
+    }
+
+
+    .perfil-opcoes {
+        grid-template-columns: 1fr;
+    }
+
+
+    .rodape-acesso {
+        margin: 0;
+
+        padding:
+            20px 24px;
+
+        flex-wrap: wrap;
+
+        justify-content: center;
+
+        background: #f7efe5;
+
+        text-align: center;
+    }
+
+}
+
+
+/* =========================================================
+   CELULARES PEQUENOS
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    .acesso-painel {
+        min-height: 300px;
+
+        padding:
+            34px 22px;
+    }
+
+
+    .formulario-wrapper {
+        padding:
+            32px 22px;
+    }
+
+
+    .formulario-introducao {
+        margin-top: 22px;
+
+        margin-bottom: 28px;
+    }
+
+
+    #loginForm,
+    #cadastroForm {
+        gap: 16px;
+    }
+
+
+    .botao-formulario {
+        width: 100%;
+    }
+
+
+    .botao-painel {
+        width: 100%;
+    }
+
+}
+
+
+/* =========================================================
+   REDUÇÃO DE MOVIMENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .formulario-wrapper,
+    .painel-conteudo,
+    .botao-formulario,
+    .botao-painel,
+    .campo input,
+    .campo textarea {
+        transition: none;
+    }
+
+}
