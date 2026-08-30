@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Explore uma obra de arte por meio de uma sequência visual e narrativa.">
+
+    <title>Arte Guiada | A Boba</title>
+
+    <link rel="stylesheet" href="../public/css/galeria.css">
+</head>
+
+<body>
+
+    <a class="skip-link" href="#conteudo-principal">
+        Ir para o conteúdo principal
+    </a>
+
+    <header class="site-header">
+
+        <a href="../index.html" class="site-logo" aria-label="Arte Guiada - página inicial">
+            Arte Guiada
+        </a>
+
+        <button class="fullscreen-button" type="button" id="fullscreenButton" aria-label="Entrar em tela cheia">
+            <span aria-hidden="true">⛶</span>
+            <span class="fullscreen-text">Tela cheia</span>
+        </button>
+
+    </header>
+
+
+    <main id="conteudo-principal" class="gallery">
+
+        <!--
+            ÁREA VISUAL
+            A obra permanece como elemento dominante.
+        -->
+
+        <section class="artwork-section" aria-label="Obra em destaque">
+
+            <div class="artwork-frame">
+
+                <div class="artwork-layer artwork-layer-current" id="artworkCurrent" aria-hidden="true">
+                    <img id="currentImage" src="" alt="">
+                </div>
+
+                <div class="artwork-layer artwork-layer-next" id="artworkNext" aria-hidden="true">
+                    <img id="nextImage" src="" alt="">
+                </div>
+
+                <div class="artwork-caption" id="artworkCaption">
+                    <span id="artistName"></span>
+                    <strong id="artworkTitle"></strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!--
+            ÁREA NARRATIVA
+            Somente uma explicação é apresentada por vez.
+        -->
+
+        <section class="narrative-section" aria-live="polite" aria-atomic="true">
+
+            <div class="narrative-top">
+
+                <p class="section-label">
+                    Detalhe
+                </p>
+
+                <p class="slide-counter" id="slideCounter" aria-label="Detalhe atual">
+                    01 / 02
+                </p>
+
+            </div>
+
+
+            <div class="narrative-content">
+
+                <p class="detail-number" id="detailNumber">
+                    01
+                </p>
+
+                <h1 id="detailTitle">
+                    O rosto
+                </h1>
+
+                <p class="detail-description" id="detailDescription">
+                </p>
+
+            </div>
+
+
+            <div class="narrative-navigation">
+
+                <button type="button" class="navigation-button navigation-button-prev" id="previousButton">
+                    <span aria-hidden="true">←</span>
+                    <span>Anterior</span>
+                </button>
+
+                <button type="button" class="navigation-button navigation-button-next" id="nextButton">
+                    <span>Próximo</span>
+                    <span aria-hidden="true">→</span>
+                </button>
+
+            </div>
+
+
+            <div class="progress-area">
+
+                <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="2" aria-valuenow="1"
+                    aria-label="Progresso da exploração" id="progressBar">
+                    <span id="progressFill"></span>
+                </div>
+
+                <p id="progressText">
+                    1 de 2 detalhes
+                </p>
+
+            </div>
+
+
+            <div class="exploration-message">
+
+                <p>
+                    Explore a composição no seu próprio ritmo.
+                </p>
+
+                <button type="button" id="viewCompleteButton" class="text-button">
+                    Ver obra completa
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!--
+        MODO OBRA COMPLETA
+        Não é um modal pesado.
+        É uma expansão simples da própria imagem.
+    -->
+
+    <div class="complete-artwork" id="completeArtwork" aria-hidden="true">
+
+        <button type="button" class="complete-close" id="closeCompleteButton"
+            aria-label="Fechar visualização da obra completa">
+            <span aria-hidden="true">×</span>
+        </button>
+
+        <figure>
+
+            <img id="completeImage" src="" alt="">
+
+            <figcaption>
+                <span id="completeArtist"></span>
+                <strong id="completeTitle"></strong>
+            </figcaption>
+
+        </figure>
+
+    </div>
+
+
+    <footer class="site-footer">
+
+        <p>Arte Guiada</p>
+
+        <p>
+            Exploração visual e narrativa da obra.
+        </p>
+
+    </footer>
+
+
+    <script src="../public/js/galeria.js"></script>
+
+</body>
+
+</html>
