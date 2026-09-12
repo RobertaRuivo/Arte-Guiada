@@ -51,72 +51,14 @@ const loginFeedback = document.getElementById("login-feedback");
 
 
 /* =========================================================
-   ARMAZENAMENTO
-   ========================================================= */
-
-const STORAGE_KEY = "arteGuiadaUsuarios";
-
-
-/* =========================================================
    FUNÇÕES AUXILIARES
    ========================================================= */
-
-
-/*
- * Recupera os usuários salvos no navegador.
- *
- * Neste projeto não existe backend.
- * Portanto, o cadastro é armazenado localmente apenas
- * para que o protótipo tenha um fluxo funcional de
- * cadastro e login.
- */
-
-function obterUsuarios() {
-
-    try {
-
-        const usuarios = localStorage.getItem(STORAGE_KEY);
-
-        if (!usuarios) {
-            return [];
-        }
-
-        const dados = JSON.parse(usuarios);
-
-        return Array.isArray(dados) ? dados : [];
-
-    } catch (erro) {
-
-        console.error(
-            "Não foi possível recuperar os usuários.",
-            erro
-        );
-
-        return [];
-    }
-}
-
-
-/*
- * Salva os usuários no navegador.
- */
-
-function salvarUsuarios(usuarios) {
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(usuarios)
-    );
-}
-
 
 /*
  * Normaliza o e-mail para evitar diferenças
  * entre letras maiúsculas e minúsculas.
  */
-
 function normalizarEmail(email) {
-
     return email
         .trim()
         .toLowerCase();
@@ -126,9 +68,7 @@ function normalizarEmail(email) {
 /*
  * Validação de e-mail.
  */
-
 function validarEmail(email) {
-
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     return regex.test(email);
@@ -145,9 +85,7 @@ function validarEmail(email) {
  *
  * Não aceita números ou símbolos.
  */
-
 function validarNome(nome) {
-
     const regexApenasLetrasESpacos =
         /^[a-zA-ZÀ-ÿ\s]+$/;
 
@@ -161,24 +99,17 @@ function validarNome(nome) {
 /*
  * Remove mensagens de erro do cadastro.
  */
-
 function limparErrosCadastro() {
-
     document
         .querySelectorAll("#cadastroForm .error-msg")
         .forEach((elemento) => {
-
             elemento.textContent = "";
-
         });
-
 
     document
         .querySelectorAll("#cadastroForm input, #cadastroForm textarea")
         .forEach((elemento) => {
-
             elemento.removeAttribute("aria-invalid");
-
         });
 }
 
@@ -186,20 +117,14 @@ function limparErrosCadastro() {
 /*
  * Remove mensagens de erro do login.
  */
-
 function limparErrosLogin() {
-
     document
         .querySelectorAll("#loginForm .error-msg")
         .forEach((elemento) => {
-
             elemento.textContent = "";
-
         });
 
-
     loginEmailInput.removeAttribute("aria-invalid");
-
     loginSenhaInput.removeAttribute("aria-invalid");
 }
 
@@ -209,7 +134,6 @@ function limparErrosLogin() {
    ========================================================= */
 
 function mostrarTelaCadastro() {
-
     loginWrapper.classList.remove("ativo");
 
     cadastroWrapper.classList.add("ativo");
@@ -233,17 +157,13 @@ function mostrarTelaCadastro() {
      * Coloca o foco no primeiro campo do cadastro.
      * Isso melhora a navegação por teclado.
      */
-
     setTimeout(() => {
-
         nomeInput.focus();
-
     }, 350);
 }
 
 
 function mostrarTelaLogin() {
-
     cadastroWrapper.classList.remove("ativo");
 
     loginWrapper.classList.add("ativo");
@@ -262,11 +182,8 @@ function mostrarTelaLogin() {
         "false"
     );
 
-
     setTimeout(() => {
-
         loginEmailInput.focus();
-
     }, 350);
 }
 
@@ -279,7 +196,6 @@ mostrarCadastro.addEventListener(
     "click",
     mostrarTelaCadastro
 );
-
 
 mostrarLogin.addEventListener(
     "click",
@@ -298,7 +214,6 @@ passwordInput.addEventListener(
 
 
 function atualizarForcaSenha() {
-
     const senha = passwordInput.value;
 
     let forca = 0;
@@ -309,32 +224,20 @@ function atualizarForcaSenha() {
      */
 
     if (senha.length >= 8) {
-
         forca += 25;
-
     }
-
 
     if (/[A-Z]/.test(senha)) {
-
         forca += 25;
-
     }
-
 
     if (/[0-9]/.test(senha)) {
-
         forca += 25;
-
     }
-
 
     if (/[^A-Za-z0-9]/.test(senha)) {
-
         forca += 25;
-
     }
-
 
     strengthBar.style.width =
         `${forca}%`;
@@ -345,7 +248,6 @@ function atualizarForcaSenha() {
      */
 
     if (senha.length === 0) {
-
         strengthBar.style.width = "0%";
 
         strengthBar.style.backgroundColor =
@@ -362,7 +264,6 @@ function atualizarForcaSenha() {
      */
 
     if (forca <= 25) {
-
         strengthBar.style.backgroundColor =
             "#a33e32";
 
@@ -378,7 +279,6 @@ function atualizarForcaSenha() {
      */
 
     if (forca <= 75) {
-
         strengthBar.style.backgroundColor =
             "#c28a32";
 
@@ -412,9 +312,7 @@ cadastroForm.addEventListener(
 
 
 function cadastrarUsuario(event) {
-
     event.preventDefault();
-
 
     limparErrosCadastro();
 
@@ -422,7 +320,6 @@ function cadastrarUsuario(event) {
 
     formFeedback.className =
         "feedback-box";
-
 
     let formValido = true;
 
@@ -434,9 +331,7 @@ function cadastrarUsuario(event) {
     const nomeValor =
         nomeInput.value.trim();
 
-
     if (!validarNome(nomeValor)) {
-
         document.getElementById(
             "nome-error"
         ).textContent =
@@ -458,9 +353,7 @@ function cadastrarUsuario(event) {
     const sobrenomeValor =
         sobrenomeInput.value.trim();
 
-
     if (!validarNome(sobrenomeValor)) {
-
         document.getElementById(
             "sobrenome-error"
         ).textContent =
@@ -482,9 +375,7 @@ function cadastrarUsuario(event) {
     const emailValor =
         normalizarEmail(emailInput.value);
 
-
     if (!validarEmail(emailValor)) {
-
         document.getElementById(
             "email-error"
         ).textContent =
@@ -508,9 +399,7 @@ function cadastrarUsuario(event) {
             'input[name="loginTipo"]:checked'
         );
 
-
     if (!perfilSelecionado) {
-
         document.getElementById(
             "tipo-error"
         ).textContent =
@@ -527,9 +416,7 @@ function cadastrarUsuario(event) {
     const mensagemValor =
         mensagemInput.value.trim();
 
-
     if (mensagemValor.length < 5) {
-
         document.getElementById(
             "mensagem-error"
         ).textContent =
@@ -551,13 +438,10 @@ function cadastrarUsuario(event) {
     const senhaValor =
         passwordInput.value;
 
-
     const confirmaSenhaValor =
         passwordCheckInput.value;
 
-
     if (senhaValor.length < 8) {
-
         document.getElementById(
             "password-error"
         ).textContent =
@@ -573,7 +457,6 @@ function cadastrarUsuario(event) {
     } else if (
         senhaValor !== confirmaSenhaValor
     ) {
-
         document.getElementById(
             "password-error"
         ).textContent =
@@ -589,42 +472,10 @@ function cadastrarUsuario(event) {
 
 
     /* -----------------------------------------------------
-       VERIFICAÇÃO DO E-MAIL EXISTENTE
-       ----------------------------------------------------- */
-
-    const usuarios =
-        obterUsuarios();
-
-
-    const usuarioExistente =
-        usuarios.find(
-            (usuario) =>
-                usuario.email === emailValor
-        );
-
-
-    if (usuarioExistente) {
-
-        document.getElementById(
-            "email-error"
-        ).textContent =
-            "Já existe uma conta cadastrada com este e-mail.";
-
-        emailInput.setAttribute(
-            "aria-invalid",
-            "true"
-        );
-
-        formValido = false;
-    }
-
-
-    /* -----------------------------------------------------
        FORMULÁRIO INVÁLIDO
        ----------------------------------------------------- */
 
     if (!formValido) {
-
         formFeedback.textContent =
             "Por favor, corrija os erros sinalizados no formulário.";
 
@@ -633,33 +484,6 @@ function cadastrarUsuario(event) {
 
         return;
     }
-
-
-    /* -----------------------------------------------------
-       CRIA USUÁRIO
-       ----------------------------------------------------- */
-
-    const novoUsuario = {
-
-        nome: nomeValor,
-
-        sobrenome: sobrenomeValor,
-
-        email: emailValor,
-
-        perfil: perfilSelecionado.value,
-
-        mensagem: mensagemValor,
-
-        senha: senhaValor
-
-    };
-
-
-    usuarios.push(novoUsuario);
-
-
-    salvarUsuarios(usuarios);
 
 
     /* -----------------------------------------------------
@@ -674,9 +498,9 @@ function cadastrarUsuario(event) {
 
 
     /*
-     * Guarda o e-mail para facilitar o login.
+     * Preenche o e-mail no campo de login
+     * para facilitar o acesso após o cadastro.
      */
-
     loginEmailInput.value =
         emailValor;
 
@@ -684,9 +508,7 @@ function cadastrarUsuario(event) {
     /*
      * Limpa o formulário.
      */
-
     cadastroForm.reset();
-
 
     strengthBar.style.width =
         "0%";
@@ -701,19 +523,10 @@ function cadastrarUsuario(event) {
      * Depois de um pequeno intervalo,
      * retorna para a tela de login.
      */
-
     setTimeout(() => {
-
         formFeedback.textContent = "";
 
         mostrarTelaLogin();
-
-        loginFeedback.textContent =
-            "Conta criada com sucesso. Agora entre para continuar.";
-
-        loginFeedback.className =
-            "feedback-box success";
-
     }, 900);
 }
 
@@ -729,9 +542,7 @@ loginForm.addEventListener(
 
 
 function realizarLogin(event) {
-
     event.preventDefault();
-
 
     limparErrosLogin();
 
@@ -739,7 +550,6 @@ function realizarLogin(event) {
 
     loginFeedback.className =
         "feedback-box";
-
 
     let formValido = true;
 
@@ -753,9 +563,7 @@ function realizarLogin(event) {
             loginEmailInput.value
         );
 
-
     if (!validarEmail(email)) {
-
         document.getElementById(
             "login-email-error"
         ).textContent =
@@ -777,9 +585,7 @@ function realizarLogin(event) {
     const senha =
         loginSenhaInput.value;
 
-
     if (senha.length === 0) {
-
         document.getElementById(
             "login-senha-error"
         ).textContent =
@@ -794,8 +600,11 @@ function realizarLogin(event) {
     }
 
 
-    if (!formValido) {
+    /* -----------------------------------------------------
+       FORMULÁRIO INVÁLIDO
+       ----------------------------------------------------- */
 
+    if (!formValido) {
         loginFeedback.textContent =
             "Verifique os dados informados.";
 
@@ -807,79 +616,14 @@ function realizarLogin(event) {
 
 
     /* -----------------------------------------------------
-       PROCURA USUÁRIO
-       ----------------------------------------------------- */
-
-    const usuarios =
-        obterUsuarios();
-
-
-    const usuario =
-        usuarios.find(
-            (item) =>
-                item.email === email &&
-                item.senha === senha
-        );
-
-
-    /* -----------------------------------------------------
-       LOGIN INVÁLIDO
-       ----------------------------------------------------- */
-
-    if (!usuario) {
-
-        loginFeedback.textContent =
-            "E-mail ou senha incorretos.";
-
-        loginFeedback.className =
-            "feedback-box error";
-
-        loginSenhaInput.setAttribute(
-            "aria-invalid",
-            "true"
-        );
-
-        return;
-    }
-
-
-    /* -----------------------------------------------------
        LOGIN REALIZADO
        ----------------------------------------------------- */
 
     loginFeedback.textContent =
-        `Bem-vindo, ${usuario.nome}!`;
+        "Login realizado com sucesso!";
 
     loginFeedback.className =
         "feedback-box success";
-
-
-    /*
-     * Guarda uma sessão simples para o protótipo.
-     */
-
-    sessionStorage.setItem(
-        "arteGuiadaUsuario",
-        JSON.stringify({
-            nome: usuario.nome,
-            sobrenome: usuario.sobrenome,
-            email: usuario.email,
-            perfil: usuario.perfil
-        })
-    );
-
-
-    /*
-     * Aqui você poderá futuramente redirecionar
-     * para uma área autenticada do sistema.
-     *
-     * Exemplo:
-     *
-     * window.location.href = "../index.html";
-     */
-
-
-    loginForm.reset();
 }
 
 
@@ -899,10 +643,7 @@ document.addEventListener(
             event.key === "Escape" &&
             cadastroWrapper.classList.contains("ativo")
         ) {
-
             mostrarTelaLogin();
-
         }
-
     }
 );
