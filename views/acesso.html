@@ -1,454 +1,211 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
-
     <meta charset="utf-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Arte Guiada | Acesso</title>
-
     <meta name="description" content="Acesse sua conta ou crie uma nova conta no Arte Guiada.">
-
     <link rel="stylesheet" href="../public/css/style.css">
-
     <link rel="stylesheet" href="../public/css/acesso.css">
-
 </head>
-
 
 <body class="pagina-acesso">
 
+    <header class="cabecalho">
+        <nav class="nav-principal" aria-label="Navegação principal">
+            <a href="../index.html" class="logo">Arte Guiada</a>
+            <div class="nav-links">
+                <a href="../index.html">Início</a>
+                <a href="../index.html#obras">Obras</a>
+                <a href="../index.html#como-funciona">Como funciona</a>
+                <a href="acesso.html" aria-current="page">Login</a>
+            </div>
+        </nav>
+    </header>
+
     <main class="acesso-container">
+        <h1 class="sr-only">Acesso e Cadastro — Arte Guiada</h1>
 
+        <section class="acesso-formularios" aria-label="Área de acesso">
 
-        <!-- =====================================================
-         ÁREA DOS FORMULÁRIOS
-         ===================================================== -->
-
-        <section class="acesso-formularios">
-
-
-            <!-- ===================================================
-           LOGIN
-           =================================================== -->
-
-            <div class="formulario-wrapper formulario-login ativo" id="loginWrapper">
-
+            <div class="formulario-wrapper formulario-login ativo" id="loginWrapper" aria-hidden="false">
                 <div class="formulario-scroll">
+                    <span class="acesso-etiqueta">ACESSO</span>
 
-
-                    <span class="acesso-etiqueta">
-                        ACESSO
-                    </span>
-
-
-                    <h1>
-                        Bem-vindo de
-                        <span>volta.</span>
-                    </h1>
-
-
-                    <p class="formulario-introducao">
-                        Continue sua experiência pelo Arte Guiada.
-                    </p>
-
+                    <h2>Bem-vindo de <span>volta.</span></h2>
+                    <p class="formulario-introducao">Continue sua experiência pelo Arte Guiada.</p>
 
                     <form id="loginForm" novalidate>
-
-
-                        <!-- E-mail -->
-
                         <div class="campo">
-
-                            <label for="loginEmail">
-                                E-mail
-                            </label>
-
-                            <input type="email" id="loginEmail" name="loginEmail" autocomplete="email" required>
-
+                            <label for="loginEmail">E-mail</label>
+                            <input type="email" id="loginEmail" name="loginEmail" autocomplete="email"
+                                aria-describedby="login-email-error" required>
                             <span class="error-msg" id="login-email-error" aria-live="polite"></span>
-
                         </div>
-
-
-                        <!-- Senha -->
 
                         <div class="campo">
-
-                            <label for="loginSenha">
-                                Senha
-                            </label>
-
+                            <label for="loginSenha">Senha</label>
                             <input type="password" id="loginSenha" name="loginSenha" autocomplete="current-password"
-                                required>
-
+                                aria-describedby="login-senha-error" required>
                             <span class="error-msg" id="login-senha-error" aria-live="polite"></span>
-
                         </div>
 
-
-                        <button type="submit" class="botao-formulario">
-                            Entrar
-                        </button>
-
-
+                        <button type="submit" class="botao-formulario">Entrar</button>
                         <div id="login-feedback" class="feedback-box" aria-live="polite"></div>
-
-
                     </form>
-
                 </div>
-
             </div>
 
-
-            <!-- ===================================================
-           CADASTRO
-           =================================================== -->
-
-            <div class="formulario-wrapper formulario-cadastro" id="cadastroWrapper" aria-hidden="true">
-
+            <div class="formulario-wrapper formulario-cadastro" id="cadastroWrapper" aria-hidden="true" inert>
                 <div class="formulario-scroll">
+                    <span class="acesso-etiqueta">NOVA EXPERIÊNCIA</span>
 
-
-                    <span class="acesso-etiqueta">
-                        NOVA EXPERIÊNCIA
-                    </span>
-
-
-                    <h1>
-                        Crie sua
-                        <span>conta.</span>
-                    </h1>
-
-
+                    <h2>Crie sua <span>conta.</span></h2>
                     <p class="formulario-introducao">
-                        Entre para explorar o Arte Guiada e construir
-                        seu próprio olhar sobre a arte.
+                        Entre para explorar o Arte Guiada e construir seu próprio olhar sobre a arte.
                     </p>
 
-
                     <form id="cadastroForm" novalidate>
-
-
-                        <!-- =================================================
-                 NOME E SOBRENOME
-                 ================================================= -->
-
-                        <div class="campos-duplos">
-
-
-                            <div class="campo">
-
-                                <label for="nome">
-                                    Nome
-                                </label>
-
-                                <input type="text" id="nome" name="nome" autocomplete="given-name" required>
-
-                                <span class="error-msg" id="nome-error" aria-live="polite"></span>
-
+                        <div class="wizard-progress-wrapper">
+                            <div role="progressbar" id="wizard-progress" aria-valuemin="0" aria-valuemax="100"
+                                aria-valuenow="33" aria-label="Progresso do cadastro">
+                                <span id="wizard-progress-bar"></span>
                             </div>
-
-
-                            <div class="campo">
-
-                                <label for="sobrenome">
-                                    Sobrenome
-                                </label>
-
-                                <input type="text" id="sobrenome" name="sobrenome" autocomplete="family-name" required>
-
-                                <span class="error-msg" id="sobrenome-error" aria-live="polite"></span>
-
+                            <div class="wizard-progress-label" aria-live="polite">
+                                <span id="wizard-step-label">Etapa 1 de 3</span>
                             </div>
-
-
                         </div>
 
+                        <fieldset class="wizard-step active" id="step-1" data-step="1" aria-labelledby="step-1-title">
+                            <legend id="step-1-title">Dados pessoais</legend>
 
-                        <!-- =================================================
-                 E-MAIL
-                 ================================================= -->
+                            <div class="campos-duplos">
+                                <div class="campo">
+                                    <label for="nome">Nome</label>
+                                    <input type="text" id="nome" name="nome" autocomplete="given-name"
+                                        aria-describedby="nome-error" required>
+                                    <span class="error-msg" id="nome-error" aria-live="polite"></span>
+                                </div>
 
-                        <div class="campo">
-
-                            <label for="email">
-                                E-mail
-                            </label>
-
-                            <input type="email" id="email" name="email" autocomplete="email" required>
-
-                            <span class="error-msg" id="email-error" aria-live="polite"></span>
-
-                        </div>
-
-
-                        <!-- =================================================
-                 PERFIL
-                 ================================================= -->
-
-                        <fieldset class="perfil-fieldset">
-
-                            <legend>
-                                Perfil no sistema
-                            </legend>
-
-
-                            <div class="perfil-opcoes">
-
-
-                                <label class="perfil-opcao">
-
-                                    <input type="radio" name="loginTipo" value="Visitante">
-
-                                    <span>
-                                        Visitante
-                                    </span>
-
-                                </label>
-
-
-                                <label class="perfil-opcao">
-
-                                    <input type="radio" name="loginTipo" value="Editor">
-
-                                    <span>
-                                        Editor
-                                    </span>
-
-                                </label>
-
-
-                                <label class="perfil-opcao">
-
-                                    <input type="radio" name="loginTipo" value="Curador">
-
-                                    <span>
-                                        Curador
-                                    </span>
-
-                                </label>
-
-
-                                <label class="perfil-opcao">
-
-                                    <input type="radio" name="loginTipo" value="Estudante">
-
-                                    <span>
-                                        Estudante
-                                    </span>
-
-                                </label>
-
-
-                                <label class="perfil-opcao">
-
-                                    <input type="radio" name="loginTipo" value="Professor">
-
-                                    <span>
-                                        Professor
-                                    </span>
-
-                                </label>
-
-
-                                <label class="perfil-opcao">
-
-                                    <input type="radio" name="loginTipo" value="Pesquisador">
-
-                                    <span>
-                                        Pesquisador
-                                    </span>
-
-                                </label>
-
-
+                                <div class="campo">
+                                    <label for="sobrenome">Sobrenome</label>
+                                    <input type="text" id="sobrenome" name="sobrenome" autocomplete="family-name"
+                                        aria-describedby="sobrenome-error" required>
+                                    <span class="error-msg" id="sobrenome-error" aria-live="polite"></span>
+                                </div>
                             </div>
 
+                            <div class="campo">
+                                <label for="email">E-mail</label>
+                                <input type="email" id="email" name="email" autocomplete="email"
+                                    aria-describedby="email-error" required>
+                                <span class="error-msg" id="email-error" aria-live="polite"></span>
+                            </div>
 
-                            <span class="error-msg" id="tipo-error" aria-live="polite"></span>
-
-
+                            <div class="wizard-acoes wizard-acoes-end">
+                                <button type="button" class="btn-next botao-formulario">Próximo <span
+                                        aria-hidden="true">→</span></button>
+                            </div>
                         </fieldset>
 
+                        <fieldset class="wizard-step" id="step-2" data-step="2" aria-labelledby="step-2-title" hidden>
+                            <legend id="step-2-title">Perfil e mensagem</legend>
 
-                        <!-- =================================================
-                 MENSAGEM / BIOGRAFIA
-                 ================================================= -->
+                            <fieldset class="perfil-fieldset">
+                                <legend>Perfil no sistema</legend>
 
-                        <div class="campo">
+                                <div class="perfil-opcoes">
+                                    <label class="perfil-opcao"><input type="radio" name="loginTipo"
+                                            value="Visitante"><span>Visitante</span></label>
+                                    <label class="perfil-opcao"><input type="radio" name="loginTipo"
+                                            value="Editor"><span>Editor</span></label>
+                                    <label class="perfil-opcao"><input type="radio" name="loginTipo"
+                                            value="Curador"><span>Curador</span></label>
+                                    <label class="perfil-opcao"><input type="radio" name="loginTipo"
+                                            value="Estudante"><span>Estudante</span></label>
+                                    <label class="perfil-opcao"><input type="radio" name="loginTipo"
+                                            value="Professor"><span>Professor</span></label>
+                                    <label class="perfil-opcao"><input type="radio" name="loginTipo"
+                                            value="Pesquisador"><span>Pesquisador</span></label>
+                                </div>
 
-                            <label for="mensagem">
-                                Mensagem / Biografia curta
-                            </label>
+                                <span class="error-msg" id="tipo-error" aria-live="polite"></span>
+                            </fieldset>
 
-                            <textarea id="mensagem" name="mensagem" rows="4" required></textarea>
-
-                            <span class="error-msg" id="mensagem-error" aria-live="polite"></span>
-
-                        </div>
-
-
-                        <!-- =================================================
-                 SENHA
-                 ================================================= -->
-
-                        <div class="campo">
-
-                            <label for="senha">
-                                Senha
-                            </label>
-
-                            <input type="password" id="senha" name="senha" autocomplete="new-password" required>
-
-
-                            <div class="strength-container" aria-hidden="true">
-
-                                <div id="strength-bar" class="strength-bar"></div>
-
+                            <div class="campo">
+                                <label for="mensagem">Mensagem / Biografia curta</label>
+                                <textarea id="mensagem" name="mensagem" rows="4" aria-describedby="mensagem-error"
+                                    required></textarea>
+                                <span class="error-msg" id="mensagem-error" aria-live="polite"></span>
                             </div>
 
+                            <div class="wizard-acoes">
+                                <button type="button" class="btn-prev botao-secundario">Voltar</button>
+                                <button type="button" class="btn-next botao-formulario">Próximo <span
+                                        aria-hidden="true">→</span></button>
+                            </div>
+                        </fieldset>
 
-                            <span id="strength-text" class="strength-text" aria-live="polite"></span>
+                        <fieldset class="wizard-step" id="step-3" data-step="3" aria-labelledby="step-3-title" hidden>
+                            <legend id="step-3-title">Segurança</legend>
 
-                        </div>
+                            <div class="campo">
+                                <label for="senha">Senha</label>
+                                <input type="password" id="senha" name="senha" autocomplete="new-password"
+                                    aria-describedby="password-error strength-text" required>
 
+                                <div class="strength-container" role="meter" aria-label="Força da senha"
+                                    aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                    <div id="strength-bar" class="strength-bar"></div>
+                                </div>
 
-                        <!-- =================================================
-                 CONFIRMAÇÃO DA SENHA
-                 ================================================= -->
+                                <span id="strength-text" class="strength-text" aria-live="polite"></span>
+                            </div>
 
-                        <div class="campo">
+                            <div class="campo">
+                                <label for="confirmaSenha">Confirme a senha</label>
+                                <input type="password" id="confirmaSenha" name="confirmaSenha"
+                                    autocomplete="new-password" aria-describedby="password-error" required>
+                                <span class="error-msg" id="password-error" aria-live="polite"></span>
+                            </div>
 
-                            <label for="confirmaSenha">
-                                Confirme a senha
-                            </label>
-
-                            <input type="password" id="confirmaSenha" name="confirmaSenha" autocomplete="new-password"
-                                required>
-
-                            <span class="error-msg" id="password-error" aria-live="polite"></span>
-
-                        </div>
-
-
-                        <!-- =================================================
-                 BOTÃO
-                 ================================================= -->
-
-                        <button type="submit" class="botao-formulario">
-                            Criar conta
-                        </button>
-
-
-                        <!-- =================================================
-                 FEEDBACK
-                 ================================================= -->
+                            <div class="wizard-acoes">
+                                <button type="button" class="btn-prev botao-secundario">Voltar</button>
+                                <button type="submit" id="submitBtn" class="botao-formulario">Criar conta</button>
+                            </div>
+                        </fieldset>
 
                         <div id="form-feedback" class="feedback-box" aria-live="polite"></div>
-
-
                     </form>
-
                 </div>
-
             </div>
-
-
         </section>
 
-
-        <!-- =====================================================
-         PAINEL DE TRANSIÇÃO
-         ===================================================== -->
-
-        <aside class="acesso-painel">
-
-
-            <!-- Painel quando LOGIN está ativo -->
-
-            <div class="painel-conteudo painel-login ativo" id="painelLogin">
-
-                <span class="painel-etiqueta">
-                    ARTE GUIADA
-                </span>
-
-
-                <h2>
-                    Ainda não faz
-                    <span>parte?</span>
-                </h2>
-
-
-                <p>
-                    Crie sua conta e entre para uma experiência
-                    de observação, descoberta e interpretação da arte.
-                </p>
-
-
-                <button type="button" class="botao-painel" id="mostrarCadastro">
-                    Criar conta
-                </button>
-
+        <aside class="acesso-painel" aria-label="Alternância de acesso">
+            <div class="painel-conteudo painel-login ativo" id="painelLogin" aria-hidden="false">
+                <span class="painel-etiqueta">ARTE GUIADA</span>
+                <h2>Ainda não faz <span>parte?</span></h2>
+                <p>Crie sua conta e entre para uma experiência de observação, descoberta e interpretação da arte.</p>
+                <button type="button" class="botao-painel" id="mostrarCadastro">Criar conta</button>
             </div>
 
-
-            <!-- Painel quando CADASTRO está ativo -->
-
-            <div class="painel-conteudo painel-cadastro" id="painelCadastro">
-
-                <span class="painel-etiqueta">
-                    ARTE GUIADA
-                </span>
-
-
-                <h2>
-                    Já possui
-                    <span>uma conta?</span>
-                </h2>
-
-
-                <p>
-                    Entre novamente e continue sua experiência
-                    de observação e descoberta.
-                </p>
-
-
-                <button type="button" class="botao-painel" id="mostrarLogin">
-                    Fazer login
-                </button>
-
+            <div class="painel-conteudo painel-cadastro" id="painelCadastro" aria-hidden="true" inert>
+                <span class="painel-etiqueta">ARTE GUIADA</span>
+                <h2>Já possui <span>uma conta?</span></h2>
+                <p>Entre novamente e continue sua experiência de observação e descoberta.</p>
+                <button type="button" class="botao-painel" id="mostrarLogin">Fazer login</button>
             </div>
-
-
         </aside>
-
-
     </main>
 
-
     <footer class="rodape-acesso">
-
-        <span>
-            Arte Guiada
-        </span>
-
-        <a href="mailto:roberta.ruivo@unesp.br">
-            Email
-        </a>
-
-        <span>
-            Sistemas Computacionais 2 - 2026
-        </span>
-
+        <span>Arte Guiada</span>
+        <a href="mailto:roberta.ruivo@unesp.br">Email</a>
+        <span>Sistemas Computacionais 2 - 2026</span>
     </footer>
 
-
     <script src="../public/js/acesso.js"></script>
-
 </body>
 
 </html>
