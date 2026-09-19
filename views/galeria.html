@@ -45,11 +45,11 @@
             <div class="artwork-frame">
 
                 <div class="artwork-layer artwork-layer-current" id="artworkCurrent" aria-hidden="true">
-                    <img id="currentImage" src="" alt="">
+                    <img id="currentImage" src="../public/img/a_boba.jpg" alt="">
                 </div>
 
                 <div class="artwork-layer artwork-layer-next" id="artworkNext" aria-hidden="true">
-                    <img id="nextImage" src="" alt="">
+                    <img id="nextImage" src="../public/img/a_boba.jpg" alt="">
                 </div>
 
                 <div class="artwork-caption" id="artworkCaption">
@@ -75,7 +75,7 @@
                     Detalhe
                 </p>
 
-                <p class="slide-counter" id="slideCounter" aria-label="Detalhe atual">
+                <p class="slide-counter" id="slideCounter">
                     01 / 02
                 </p>
 
@@ -115,9 +115,16 @@
 
             <div class="progress-area">
 
-                <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="2" aria-valuenow="1"
-                    aria-label="Progresso da exploração" id="progressBar">
+                <div class="progress-track"
+                    role="progressbar"
+                    aria-valuemin="1"
+                    aria-valuemax="2"
+                    aria-valuenow="1"
+                    aria-label="Progresso da exploração"
+                    id="progressBar">
+
                     <span id="progressFill"></span>
+
                 </div>
 
                 <p id="progressText">
@@ -152,14 +159,20 @@
 
     <div class="complete-artwork" id="completeArtwork" aria-hidden="true">
 
-        <button type="button" class="complete-close" id="closeCompleteButton"
+        <button type="button"
+            class="complete-close"
+            id="closeCompleteButton"
             aria-label="Fechar visualização da obra completa">
+
             <span aria-hidden="true">×</span>
+
         </button>
 
         <figure>
 
-            <img id="completeImage" src="" alt="">
+            <img id="completeImage"
+                src="../public/img/a_boba.jpg"
+                alt="A Boba, de Anita Malfatti">
 
             <figcaption>
                 <span id="completeArtist"></span>

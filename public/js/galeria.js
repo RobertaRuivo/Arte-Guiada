@@ -38,7 +38,7 @@ const galleryData = {
             title: "O rosto",
 
             description:
-                "Uma técnica de pinceladas fortes e cores vivas aparece com destaque na região dos olhos e da expressão.",
+                "-----",
 
             /*
                Posição do enquadramento.
@@ -59,7 +59,7 @@ const galleryData = {
             title: "A assinatura",
 
             description:
-                "Na região inferior da pintura, a assinatura da artista aparece integrada aos tons mais escuros da composição. Observe como ela se relaciona visualmente com o restante da obra.",
+                "---",
 
             focusX: 52,
             focusY: 88,
