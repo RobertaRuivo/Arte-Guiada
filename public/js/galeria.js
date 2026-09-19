@@ -8,19 +8,6 @@
    1. DADOS DA GALERIA
    ========================================================= */
 
-/*
-   Para adicionar outra obra:
-
-   1. altere artist
-   2. altere title
-   3. altere image
-   4. substitua os detalhes
-
-   Não é necessário alterar o HTML.
-   Não é necessário alterar o CSS.
-   Não é necessário criar novos hotspots.
-*/
-
 const galleryData = {
 
     artist: "Anita Malfatti",
@@ -41,31 +28,33 @@ const galleryData = {
                 "-----",
 
             /*
-               Posição do enquadramento.
-
-               50 = centro
-               0  = esquerda / topo
-               100 = direita / baixo
+               Região do rosto da personagem.
             */
 
-            focusX: 48,
+            focusX: 70,
             focusY: 35,
 
-            zoom: 1.65
+            zoom: 2.0
         },
 
         {
-
             title: "A assinatura",
 
             description:
                 "---",
 
-            focusX: 52,
-            focusY: 88,
+            /*
+               A assinatura está no canto inferior
+               esquerdo da pintura.
 
-            zoom: 1.8
+               O zoom foi removido para preservar
+               uma área maior da composição.
+            */
 
+            focusX: 0,
+            focusY: 100,
+
+            zoom: 1.0
         }
 
     ]
@@ -97,6 +86,9 @@ const artistName =
 
 const artworkTitle =
     document.getElementById("artworkTitle");
+
+const artworkCaption =
+    document.getElementById("artworkCaption");
 
 const detailNumber =
     document.getElementById("detailNumber");
@@ -171,23 +163,27 @@ function initializeGallery() {
     artworkTitle.textContent =
         galleryData.title;
 
+
     currentImage.src =
         galleryData.image;
 
     currentImage.alt =
         galleryData.imageAlt;
 
+
     nextImage.src =
         galleryData.image;
 
     nextImage.alt =
-        "";
+        galleryData.imageAlt;
+
 
     completeImage.src =
         galleryData.image;
 
     completeImage.alt =
         galleryData.imageAlt;
+
 
     completeArtist.textContent =
         galleryData.artist;
@@ -200,6 +196,7 @@ function initializeGallery() {
         currentImage,
         galleryData.details[currentIndex]
     );
+
 
     updateContent(false);
 
@@ -216,15 +213,18 @@ function applyImageFocus(image, detail) {
         return;
     }
 
+
     image.style.setProperty(
         "--focus-x",
         `${detail.focusX}%`
     );
 
+
     image.style.setProperty(
         "--focus-y",
         `${detail.focusY}%`
     );
+
 
     image.style.setProperty(
         "--zoom",
@@ -243,13 +243,16 @@ function updateContent(animate = true) {
     const detail =
         galleryData.details[currentIndex];
 
+
     if (!detail) {
         return;
     }
 
 
     const number =
-        String(currentIndex + 1).padStart(2, "0");
+        String(currentIndex + 1)
+            .padStart(2, "0");
+
 
     const total =
         String(galleryData.details.length)
@@ -261,6 +264,7 @@ function updateContent(animate = true) {
         narrativeSection.classList.remove(
             "is-entering"
         );
+
 
         narrativeSection.classList.add(
             "is-changing"
@@ -274,23 +278,28 @@ function updateContent(animate = true) {
         detailNumber.textContent =
             number;
 
+
         detailTitle.textContent =
             detail.title;
+
 
         detailDescription.textContent =
             detail.description;
 
+
         slideCounter.textContent =
             `${number} / ${total}`;
+
 
         progressText.textContent =
             `${currentIndex + 1} de ${galleryData.details.length} detalhes`;
 
 
         const progress =
-            ((currentIndex + 1) /
-                galleryData.details.length) *
-            100;
+            (
+                (currentIndex + 1) /
+                galleryData.details.length
+            ) * 100;
 
 
         progressFill.style.width =
@@ -302,10 +311,30 @@ function updateContent(animate = true) {
             galleryData.details.length
         );
 
+
         progressBar.setAttribute(
             "aria-valuenow",
             currentIndex + 1
         );
+
+
+        /*
+           Durante o detalhe da assinatura,
+           a legenda é ocultada porque ocupa
+           a região inferior da pintura.
+        */
+
+        if (currentIndex === 1) {
+
+            artworkCaption.style.display =
+                "none";
+
+        } else {
+
+            artworkCaption.style.display =
+                "flex";
+
+        }
 
 
         updateNavigation();
@@ -316,6 +345,7 @@ function updateContent(animate = true) {
             narrativeSection.classList.remove(
                 "is-changing"
             );
+
 
             narrativeSection.classList.add(
                 "is-entering"
@@ -337,6 +367,7 @@ function updateNavigation() {
     previousButton.disabled =
         currentIndex === 0;
 
+
     nextButton.disabled =
         currentIndex ===
         galleryData.details.length - 1;
@@ -354,12 +385,14 @@ function goToSlide(index) {
         return;
     }
 
+
     if (
         index < 0 ||
         index >= galleryData.details.length
     ) {
         return;
     }
+
 
     if (index === currentIndex) {
         return;
@@ -383,6 +416,7 @@ function goToSlide(index) {
             ".artwork-layer-current"
         );
 
+
     const hiddenLayer =
         document.querySelector(
             ".artwork-layer-next"
@@ -391,6 +425,7 @@ function goToSlide(index) {
 
     const visibleImage =
         visibleLayer.querySelector("img");
+
 
     const hiddenImage =
         hiddenLayer.querySelector("img");
@@ -403,9 +438,14 @@ function goToSlide(index) {
     hiddenImage.src =
         galleryData.image;
 
-    hiddenImage.alt =
-        "";
 
+    hiddenImage.alt =
+        galleryData.imageAlt;
+
+
+    /*
+       Aplica o enquadramento do próximo detalhe.
+    */
 
     applyImageFocus(
         hiddenImage,
@@ -414,7 +454,7 @@ function goToSlide(index) {
 
 
     /*
-       A nova camada começa a aparecer.
+       Inicia a transição.
     */
 
     artworkFrame.classList.add(
@@ -432,7 +472,7 @@ function goToSlide(index) {
 
 
     /*
-       Finaliza o morph.
+       Finaliza a transição.
     */
 
     setTimeout(() => {
@@ -445,6 +485,7 @@ function goToSlide(index) {
             "artwork-layer-current"
         );
 
+
         visibleLayer.classList.add(
             "artwork-layer-next"
         );
@@ -453,6 +494,7 @@ function goToSlide(index) {
         hiddenLayer.classList.remove(
             "artwork-layer-next"
         );
+
 
         hiddenLayer.classList.add(
             "artwork-layer-current"
@@ -477,9 +519,11 @@ function goToSlide(index) {
             "--focus-x"
         );
 
+
         visibleImage.style.removeProperty(
             "--focus-y"
         );
+
 
         visibleImage.style.removeProperty(
             "--zoom"
@@ -530,12 +574,13 @@ document.addEventListener(
     (event) => {
 
         /*
-           Não interceptamos teclas enquanto
-           o usuário está digitando.
+           Não intercepta as teclas enquanto
+           o usuário estiver digitando.
         */
 
         const tag =
             document.activeElement.tagName;
+
 
         if (
             tag === "INPUT" ||
@@ -550,6 +595,7 @@ document.addEventListener(
 
             event.preventDefault();
 
+
             goToSlide(
                 currentIndex + 1
             );
@@ -560,6 +606,7 @@ document.addEventListener(
         if (event.key === "ArrowLeft") {
 
             event.preventDefault();
+
 
             goToSlide(
                 currentIndex - 1
@@ -588,13 +635,16 @@ function openCompleteArtwork() {
         "is-open"
     );
 
+
     completeArtwork.setAttribute(
         "aria-hidden",
         "false"
     );
 
+
     document.body.style.overflow =
         "hidden";
+
 
     closeCompleteButton.focus();
 
@@ -607,10 +657,12 @@ function closeCompleteArtwork() {
         "is-open"
     );
 
+
     completeArtwork.setAttribute(
         "aria-hidden",
         "true"
     );
+
 
     document.body.style.overflow =
         "";
