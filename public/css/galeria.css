@@ -526,8 +526,7 @@ img {
 }
 
 .detail-description {
-
-    max-width: 620px;
+    max-width: 680px;
 
     margin: 0;
 
@@ -535,12 +534,11 @@ img {
 
     font-family: var(--font-display);
 
-    font-size: clamp(1.15rem,
-            1.6vw,
-            1.45rem);
+    font-size: clamp(1rem, 1.3vw, 1.2rem);
 
     line-height: 1.55;
 
+    text-align: justify;
 }
 
 
