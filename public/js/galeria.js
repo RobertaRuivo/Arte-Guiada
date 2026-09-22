@@ -24,8 +24,11 @@ const galleryData = {
         {
             title: "O rosto",
 
-            description:
-                "-----",
+            description: Podemos observar o rosto da jovem como um dos elementos de maior destaque da obra.Sua expressão transmite uma sensação de introspecção e, ao mesmo tempo, certo estranhamento.Isso é reforçado pelas formas marcadas do rosto, pelo olhar e pelo uso de cores intensas.
+
+A maneira como Anita Malfatti representa a figura não busca reproduzir fielmente a aparência de uma pessoa.As formas são simplificadas e expressivas, enquanto as cores e as pinceladas ajudam a transmitir uma sensação e não apenas a aparência física da personagem.Essas características revelam a influência do expressionismo, com o qual Malfatti teve contato durante seus estudos no exterior.
+
+A influência estrangeira, porém, não significa uma simples reprodução do que era produzido na Europa.A experiência de Malfatti contribuiu para que ela desenvolvesse uma linguagem própria e participasse do processo de renovação da arte brasileira que marcou o modernismo.",
 
             /*
                Região do rosto da personagem.
@@ -41,7 +44,7 @@ const galleryData = {
             title: "A assinatura",
 
             description:
-                "---",
+                "No canto da tela, encontramos também a assinatura da artista. Ela aparece de forma discreta, em letra cursiva, integrada à composição sem chamar mais atenção do que os elementos principais da pintura.",
 
             /*
                A assinatura está no canto inferior
