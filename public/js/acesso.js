@@ -647,75 +647,94 @@ cadastroForm.addEventListener(
 );
 
 
-function cadastrarUsuario(event) {
+async function cadastrarUsuario(event) {
     event.preventDefault();
 
     limparErrosCadastro();
 
-    formFeedback.textContent =
-        "";
-
-    formFeedback.className =
-        "feedback-box";
-
+    formFeedback.textContent = "";
+    formFeedback.className = "feedback-box";
 
     const primeiraEtapaInvalida =
         encontrarPrimeiraEtapaInvalida();
 
-
-    if (
-        primeiraEtapaInvalida > 0
-    ) {
-        mostrarEtapa(
-            primeiraEtapaInvalida
-        );
-
+    if (primeiraEtapaInvalida > 0) {
+        mostrarEtapa(primeiraEtapaInvalida);
         return;
     }
 
+    const perfilSelecionado =
+        document.querySelector('input[name="loginTipo"]:checked');
 
-    formFeedback.textContent =
-        "Cadastro realizado com sucesso!";
+    const dados = {
+        nome: nomeInput.value.trim(),
+        sobrenome: sobrenomeInput.value.trim(),
+        email: normalizarEmail(emailInput.value),
+        senha: passwordInput.value,
+        perfil: perfilSelecionado ? perfilSelecionado.value : "",
+        mensagem: mensagemInput.value.trim()
+    };
 
-    formFeedback.className =
-        "feedback-box success";
-
-
-    loginEmailInput.value =
-        normalizarEmail(
-            emailInput.value
+    try {
+        const resposta = await fetch(
+            "../api/cadastro/cadastrar.php",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dados)
+            }
         );
 
+        const resultado = await resposta.json();
 
-    cadastroForm.reset();
+        if (!resposta.ok) {
+            formFeedback.textContent =
+                resultado.mensagem ||
+                "Não foi possível realizar o cadastro.";
 
+            formFeedback.className =
+                "feedback-box error";
 
-    strengthBar.style.width =
-        "0%";
+            return;
+        }
 
-    strengthBar.style.backgroundColor =
-        "transparent";
-
-
-    strengthBar.parentElement.setAttribute(
-        "aria-valuenow",
-        "0"
-    );
-
-
-    strengthText.textContent =
-        "";
-
-
-    setTimeout(() => {
         formFeedback.textContent =
-            "";
+            resultado.mensagem ||
+            "Cadastro realizado com sucesso!";
 
-        mostrarTelaLogin();
-    }, 900);
+        formFeedback.className =
+            "feedback-box success";
+
+        loginEmailInput.value =
+            normalizarEmail(emailInput.value);
+
+        cadastroForm.reset();
+
+        strengthBar.style.width = "0%";
+        strengthBar.style.backgroundColor = "transparent";
+
+        strengthBar.parentElement.setAttribute(
+            "aria-valuenow",
+            "0"
+        );
+
+        strengthText.textContent = "";
+
+        setTimeout(() => {
+            formFeedback.textContent = "";
+            mostrarTelaLogin();
+        }, 900);
+
+    } catch (erro) {
+        formFeedback.textContent =
+            "Não foi possível conectar ao servidor.";
+
+        formFeedback.className =
+            "feedback-box error";
+    }
 }
-
-
 /* =========================================================
    LOGIN
    ========================================================= */
