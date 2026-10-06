@@ -745,34 +745,24 @@ loginForm.addEventListener(
 );
 
 
-function realizarLogin(event) {
+
+async function realizarLogin(event) {
     event.preventDefault();
 
     limparErrosLogin();
 
-    loginFeedback.textContent =
-        "";
-
-    loginFeedback.className =
-        "feedback-box";
-
+    loginFeedback.textContent = "";
+    loginFeedback.className = "feedback-box";
 
     let formValido = true;
 
+    const email = normalizarEmail(
+        loginEmailInput.value
+    );
 
-    const email =
-        normalizarEmail(
-            loginEmailInput.value
-        );
+    const senha = loginSenhaInput.value;
 
-
-    const senha =
-        loginSenhaInput.value;
-
-
-    if (
-        !validarEmail(email)
-    ) {
+    if (!validarEmail(email)) {
         document.getElementById(
             "login-email-error"
         ).textContent =
@@ -785,7 +775,6 @@ function realizarLogin(event) {
 
         formValido = false;
     }
-
 
     if (senha.length === 0) {
         document.getElementById(
@@ -801,7 +790,6 @@ function realizarLogin(event) {
         formValido = false;
     }
 
-
     if (!formValido) {
         loginFeedback.textContent =
             "Verifique os dados informados.";
@@ -812,15 +800,51 @@ function realizarLogin(event) {
         return;
     }
 
+    const dados = {
+        email: email,
+        senha: senha
+    };
 
-    loginFeedback.textContent =
-        "Login realizado com sucesso!";
+    try {
+        const resposta = await fetch(
+            "../api/login/login.php",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dados)
+            }
+        );
 
-    loginFeedback.className =
-        "feedback-box success";
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+            loginFeedback.textContent =
+                resultado.mensagem ||
+                "E-mail ou senha incorretos.";
+
+            loginFeedback.className =
+                "feedback-box error";
+
+            return;
+        }
+
+        loginFeedback.textContent =
+            resultado.mensagem ||
+            "Login realizado com sucesso.";
+
+        loginFeedback.className =
+            "feedback-box success";
+
+    } catch (erro) {
+        loginFeedback.textContent =
+            "Não foi possível conectar ao servidor.";
+
+        loginFeedback.className =
+            "feedback-box error";
+    }
 }
-
-
 /* =========================================================
    TECLADO
    ========================================================= */
