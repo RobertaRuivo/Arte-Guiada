@@ -830,12 +830,37 @@ async function realizarLogin(event) {
             return;
         }
 
+        const destinosPorPerfil = {
+            visitante: "visitante.html",
+            editor: "editor.html",
+            admin: "admin.html"
+        };
+
+        const perfil = String(
+            resultado.usuario?.perfil ?? ""
+        ).trim().toLowerCase();
+
+        const destino = destinosPorPerfil[perfil];
+
+        if (!destino) {
+            loginFeedback.textContent =
+                "Sua conta não possui um perfil de acesso válido.";
+
+            loginFeedback.className =
+                "feedback-box error";
+
+            return;
+        }
+
         loginFeedback.textContent =
-            resultado.mensagem ||
-            "Login realizado com sucesso.";
+            resultado.mensagem || "Login realizado com sucesso.";
 
         loginFeedback.className =
             "feedback-box success";
+
+        setTimeout(() => {
+            window.location.href = destino;
+        }, 500);
 
     } catch (erro) {
         loginFeedback.textContent =

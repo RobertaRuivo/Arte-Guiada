@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore as obras publicadas no Arte Guiada.">
+    <title>Arte Guiada | Galeria de obras</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/painel.css">
+    <script src="../public/js/painel.js" defer></script>
+    <script src="../public/js/sessao-ui.js" defer></script>
+</head>
+<body class="pagina-painel pagina-catalogo">
+    <a class="skip-link-painel" href="#conteudo-principal">Pular para o conteúdo</a>
+    <header class="cabecalho">
+        <nav class="nav-principal" aria-label="Navegação principal">
+            <a href="../index.html" class="logo">Arte Guiada</a>
+            <div class="nav-links"><a href="../index.html">Início</a><a href="catalogo.html" aria-current="page">Galeria</a><a href="acesso.html">Entrar</a></div>
+        </nav>
+    </header>
+    <main id="conteudo-principal" class="painel-container">
+        <section class="catalogo-introducao"><span class="painel-etiqueta">GALERIA</span><h1>Obras para <span>olhar de perto.</span></h1><p>Explore as obras publicadas e percorra experiências guiadas construídas a partir de cada imagem.</p></section>
+        <section class="catalogo-filtros" aria-label="Busca de obras"><label for="buscaObra">Buscar por obra ou artista</label><input id="buscaObra" type="search" placeholder="Digite um título ou nome de artista" disabled><span class="ajuda-campo">A busca será ativada quando o catálogo estiver conectado à API.</span></section>
+        <section class="catalogo-listagem" aria-labelledby="titulo-listagem"><div class="secao-titulo-painel"><div><h2 id="titulo-listagem">Obras publicadas</h2><p>As obras em rascunho não aparecem nesta galeria.</p></div></div><div class="estado-vazio"><span class="estado-vazio-simbolo" aria-hidden="true">✳</span><h3>Uma galeria em construção</h3><p>Esta página será preenchida automaticamente com as obras publicadas no banco de dados. Nenhuma obra de exemplo está sendo exibida como se já viesse da API.</p><a class="botao botao-secundario" href="../index.html">Voltar ao início</a></div></section>
+    </main>
+    <footer class="rodape-painel"><a class="logo" href="../index.html">Arte Guiada</a><p>Observe com atenção. Explore com curiosidade. Interprete com liberdade.</p></footer>
+</body>
+</html>

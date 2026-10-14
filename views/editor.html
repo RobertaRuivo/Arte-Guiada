@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Área do editor do Arte Guiada para publicar e organizar obras.">
+    <title>Arte Guiada | Espaço do editor</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/painel.css">
+    <script src="../public/js/controle-acesso.js" defer></script>
+    <script src="../public/js/painel.js" defer></script>
+    <script src="../public/js/editor.js" defer></script>
+</head>
+<body class="pagina-painel" data-perfis-permitidos="editor">
+    <a class="skip-link-painel" href="#conteudo-principal">Pular para o conteúdo</a>
+    <header class="cabecalho">
+        <nav class="nav-principal" aria-label="Navegação principal">
+            <a href="../index.html" class="logo">Arte Guiada</a>
+            <div class="nav-links" aria-label="Links do editor">
+                <a href="../index.html">Início</a>
+                <a href="catalogo.html">Galeria pública</a>
+                <a href="editor.html" aria-current="page">Espaço do editor</a>
+                <button class="link-botao" type="button" data-logout>Encerrar sessão</button>
+            </div>
+        </nav>
+    </header>
+
+    <main id="conteudo-principal" class="painel-container painel-editor">
+        <section class="painel-boas-vindas editor-boas-vindas">
+            <div>
+                <span class="painel-etiqueta">ESPAÇO DO EDITOR</span>
+                <h1>Suas obras, <span>suas histórias.</span></h1>
+                <p>Publique experiências guiadas, organize seus rascunhos e acompanhe as obras que fazem parte da sua biblioteca pessoal.</p>
+                <p class="painel-identificacao">Sessão ativa: <strong data-usuario-nome>editor</strong>. Sua sessão continuará ativa enquanto você navegar pelo site; use “Encerrar sessão” para sair.</p>
+            </div>
+            <button class="botao botao-principal" type="button" data-nova-obra>＋ Publicar obra</button>
+        </section>
+
+        <nav class="painel-navegacao" aria-label="Seções do editor">
+            <button type="button" class="painel-nav-item ativa" data-painel-target="resumo" aria-current="page">Visão geral</button>
+            <button type="button" class="painel-nav-item" data-painel-target="minhas-obras">Minhas obras</button>
+            <button type="button" class="painel-nav-item" data-nova-obra>Publicar obra</button>
+            <button type="button" class="painel-nav-item" data-painel-target="biblioteca">Minha biblioteca</button>
+        </nav>
+
+        <section class="painel-conteudo-secao ativa" data-painel-secao="resumo" aria-labelledby="titulo-resumo-editor">
+            <div class="secao-titulo-painel">
+                <div>
+                    <span class="painel-etiqueta">SEU ATELIÊ DIGITAL</span>
+                    <h2 id="titulo-resumo-editor">Visão geral</h2>
+                    <p>Acompanhe as publicações e retome os conteúdos que ainda estão em construção.</p>
+                </div>
+                <button class="botao botao-secundario" type="button" data-painel-target="minhas-obras">Gerenciar obras</button>
+            </div>
+            <div class="biblioteca-resumo">
+                <article class="resumo-card"><span class="resumo-icone" aria-hidden="true">▧</span><div><p>Publicadas por mim</p><strong data-contagem-editor="publicadas">—</strong></div><span class="resumo-nota">Disponíveis na galeria</span></article>
+                <article class="resumo-card"><span class="resumo-icone" aria-hidden="true">✎</span><div><p>Rascunhos</p><strong data-contagem-editor="rascunhos">—</strong></div><span class="resumo-nota">Em desenvolvimento</span></article>
+                <article class="resumo-card"><span class="resumo-icone" aria-hidden="true">♡</span><div><p>Favoritos</p><strong data-contagem-editor="favoritos">—</strong></div><span class="resumo-nota">Da sua biblioteca pessoal</span></article>
+            </div>
+            <div class="painel-destaque-editor">
+                <div class="destaque-editor-simbolo" aria-hidden="true">✦</div>
+                <div><h3>Uma obra de cada vez. Um olhar de cada vez.</h3><p>Use o padrão de <em>A Boba</em> para montar uma experiência com imagem, etapas explicativas e regiões de zoom escolhidas por você.</p></div>
+                <button class="botao botao-principal" type="button" data-nova-obra>Começar publicação</button>
+            </div>
+        </section>
+
+        <section class="painel-conteudo-secao" data-painel-secao="minhas-obras" aria-labelledby="titulo-minhas-obras" hidden>
+            <div class="secao-titulo-painel">
+                <div><span class="painel-etiqueta">GERENCIAMENTO</span><h2 id="titulo-minhas-obras">Minhas obras</h2><p>Você pode editar e excluir as obras que criou. Obras de outros editores permanecem somente para exploração.</p></div>
+                <button class="botao botao-principal" type="button" data-nova-obra>＋ Nova obra</button>
+            </div>
+            <div class="colecao-abas" role="tablist" aria-label="Estado das minhas obras">
+                <button type="button" class="colecao-aba ativa" role="tab" aria-selected="true" data-obras-filtro="publicadas">Publicadas</button>
+                <button type="button" class="colecao-aba" role="tab" aria-selected="false" data-obras-filtro="rascunhos">Rascunhos</button>
+            </div>
+            <p class="feedback-obras" id="feedbackMinhasObras" role="status" aria-live="polite"></p>
+            <div class="colecao-conteudo lista-obras-editor" id="listaMinhasObras" aria-live="polite"><div class="estado-vazio"><span class="estado-vazio-simbolo" aria-hidden="true">▧</span><h3>Carregando suas obras...</h3><p>Vamos buscar seus rascunhos e publicações salvos no banco de dados.</p></div></div>
+        </section>
+
+        <section class="painel-conteudo-secao" data-painel-secao="publicar" aria-labelledby="titulo-publicar" hidden>
+            <div class="secao-titulo-painel">
+                <div><span class="painel-etiqueta">NOVA PUBLICAÇÃO</span><h2 id="titulo-publicar">Configure sua obra</h2><p>Uma única estrutura gera a visualização da obra e de todas as suas etapas. Não é necessário criar um HTML para cada publicação.</p></div>
+            </div>
+            <form id="formPublicacao" class="form-publicacao" enctype="multipart/form-data" novalidate>
+                <input type="hidden" id="obraId" name="obra_id" value="">
+                <fieldset class="bloco-form-publicacao">
+                    <legend>01 · Identificação da obra</legend>
+                    <div class="form-grid-publicacao">
+                        <label class="campo-publicacao" for="tituloObra">Nome da obra<input id="tituloObra" name="titulo" maxlength="200" required placeholder="Ex.: A Boba"></label>
+                        <label class="campo-publicacao" for="autorObra">Autor<input id="autorObra" name="autor" maxlength="200" required placeholder="Nome do artista"></label>
+                        <label class="campo-publicacao campo-publicacao-largo" for="imagemObra">Imagem principal<input id="imagemObra" name="imagem" type="file" accept="image/jpeg,image/png,image/webp" required aria-describedby="ajudaImagem"><span class="ajuda-campo" id="ajudaImagem">Formatos aceitos: JPEG, PNG ou WebP. Tamanho máximo: 7 MB.</span></label>
+                        <label class="campo-publicacao campo-publicacao-largo" for="altObra">Descrição da imagem (acessibilidade)<input id="altObra" name="texto_alternativo" maxlength="255" required placeholder="Descreva os elementos visuais principais"></label>
+                    </div>
+                    <div class="previa-obra" id="previaObra"><span>A prévia da imagem aparecerá aqui.</span><img id="imagemObraPreview" alt="" hidden></div>
+                </fieldset>
+
+                <fieldset class="bloco-form-publicacao">
+                    <legend>02 · Etapas de exploração</legend>
+                    <p class="texto-apoio-form">Adicione uma etapa para cada detalhe que deseja explicar. Para cada etapa, selecione uma região de zoom diferente na imagem.</p>
+                    <div id="etapasEditor" class="etapas-editor">
+                        <article class="etapa-editor" data-etapa-editor="1">
+                            <div class="etapa-editor-cabecalho"><span class="etapa-editor-numero">01</span><div><h3>Etapa 1</h3><p>Texto explicativo e detalhe visual</p></div><button class="botao-remover-etapa" type="button" data-remover-etapa hidden>Remover</button></div>
+                            <div class="form-grid-publicacao">
+                                <label class="campo-publicacao campo-publicacao-largo">Título da etapa<input name="etapas[0][titulo]" maxlength="150" required placeholder="Ex.: O olhar da figura"></label>
+                                <label class="campo-publicacao campo-publicacao-largo">Texto explicativo<textarea name="etapas[0][texto]" rows="4" required placeholder="Explique o detalhe que o visitante deverá observar..."></textarea></label>
+                            </div>
+                            <div class="seletor-zoom" data-seletor-zoom>
+                                <div class="seletor-zoom-cabecalho"><div><strong>Região de zoom</strong><p>Arraste para desenhar um retângulo na imagem. Ajuste a região pelas alças.</p></div><button type="button" class="botao-pequeno" data-limpar-zoom>Limpar seleção</button></div>
+                                <div class="imagem-selecao-zoom"><span class="zoom-sem-imagem">Envie a imagem principal para selecionar a região.</span><div class="zoom-canvas" data-zoom-canvas hidden><img data-zoom-imagem alt=""><div class="zoom-caixa" data-zoom-caixa hidden><button type="button" class="zoom-alca" aria-label="Redimensionar região de zoom" data-zoom-alca></button></div></div></div>
+                                <input type="hidden" name="etapas[0][zoom_x]" data-zoom-valor="x"><input type="hidden" name="etapas[0][zoom_y]" data-zoom-valor="y"><input type="hidden" name="etapas[0][zoom_largura]" data-zoom-valor="largura"><input type="hidden" name="etapas[0][zoom_altura]" data-zoom-valor="altura">
+                            </div>
+                        </article>
+                    </div>
+                    <button class="botao botao-secundario" type="button" id="adicionarEtapa">＋ Adicionar etapa</button>
+                </fieldset>
+
+                <div class="acoes-publicacao"><p class="aviso-integracao">Salve um rascunho para continuar depois ou publique quando todos os dados e as regiões de zoom estiverem prontos. Após salvar, você voltará a Minhas obras e poderá começar outra publicação.</p><div><button class="botao botao-secundario" type="button" data-salvar-rascunho>Salvar rascunho</button><button class="botao botao-principal" type="submit">Publicar obra</button></div></div>
+                <p class="feedback-publicacao" id="feedbackPublicacao" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+
+        <section class="painel-conteudo-secao" data-painel-secao="biblioteca" aria-labelledby="titulo-biblioteca-editor" hidden>
+            <div class="secao-titulo-painel"><div><span class="painel-etiqueta">COLEÇÃO PESSOAL</span><h2 id="titulo-biblioteca-editor">Minha biblioteca</h2><p>Como visitante, você também pode guardar obras de outros autores, organizar futuras explorações e acompanhar suas experiências concluídas.</p></div></div>
+            <div class="colecao-abas" role="tablist" aria-label="Coleções pessoais do editor"><button type="button" class="colecao-aba ativa" data-biblioteca-editor="favoritos" aria-selected="true">Favoritos</button><button type="button" class="colecao-aba" data-biblioteca-editor="quero-explorar" aria-selected="false">Quero explorar</button><button type="button" class="colecao-aba" data-biblioteca-editor="exploradas" aria-selected="false">Já explorei</button></div>
+            <div class="colecao-conteudo"><div class="estado-vazio"><span class="estado-vazio-simbolo" aria-hidden="true">♡</span><h3>Sua coleção pessoal</h3><p>Esta seção já está organizada visualmente, mas a gravação e a leitura dos favoritos e das explorações ainda serão conectadas à API da biblioteca. Suas obras publicadas e rascunhos ficam em “Minhas obras”.</p><a class="botao botao-secundario" href="catalogo.html">Explorar a galeria</a></div></div>
+        </section>
+    </main>
+
+    <footer class="rodape-painel rodape-editor">
+        <div class="rodape-editor-marca">
+            <a class="logo" href="../index.html">Arte Guiada</a>
+            <p>Observe com atenção. Explore com curiosidade. Interprete com liberdade.</p>
+        </div>
+        <nav class="rodape-editor-links" aria-label="Navegação do rodapé do editor">
+            <a href="../index.html">Início</a>
+            <a href="catalogo.html">Galeria pública</a>
+            <button type="button" data-painel-target="minhas-obras">Minhas obras</button>
+            <button type="button" data-nova-obra>Nova obra</button>
+            <button type="button" data-painel-target="biblioteca">Minha biblioteca</button>
+            <button class="link-botao" type="button" data-logout>Encerrar sessão</button>
+        </nav>
+    </footer>
+</body>
+</html>

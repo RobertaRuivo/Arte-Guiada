@@ -1,5 +1,15 @@
 <?php
 
+session_set_cookie_params([
+    "lifetime" => 0,
+    "path" => "/Arte-Guiada/",
+    "secure" => false,
+    "httponly" => true,
+    "samesite" => "Lax"
+]);
+
+session_start();
+
 require_once "../../config/banco.php";
 
 header("Content-Type: application/json; charset=UTF-8");
@@ -40,28 +50,20 @@ $sql = "SELECT id, nome, sobrenome, email, senha, perfil
         FROM usuarios
         WHERE email = ?";
 
-$stmt = $conn->prepare($sql);
-
-if (!$stmt) {
-    http_response_code(500);
-
-    echo json_encode([
-        "sucesso" => false,
-        "mensagem" => "Erro ao preparar o login."
-    ]);
-
-    exit;
-}
-
-$stmt->bind_param("s", $email);
-
 try {
+    $stmt = $conn->prepare($sql);
+
+    $stmt->bind_param("s", $email);
+
     $stmt->execute();
 
     $resultado = $stmt->get_result();
     $usuario = $resultado->fetch_assoc();
 
-    if (!$usuario) {
+    if (
+        !$usuario ||
+        !password_verify($senha, $usuario["senha"])
+    ) {
         http_response_code(401);
 
         echo json_encode([
@@ -69,19 +71,26 @@ try {
             "mensagem" => "E-mail ou senha incorretos."
         ]);
 
-        exit;
-    }
-
-    if (!password_verify($senha, $usuario["senha"])) {
-        http_response_code(401);
-
-        echo json_encode([
-            "sucesso" => false,
-            "mensagem" => "E-mail ou senha incorretos."
-        ]);
+        $stmt->close();
+        $conn->close();
 
         exit;
     }
+
+    // A sessão só é criada após validar as credenciais.
+    session_regenerate_id(true);
+
+    $perfil = strtolower(
+        trim($usuario["perfil"])
+    );
+
+    if ($perfil === "administrador") {
+        $perfil = "admin";
+    }
+
+    $_SESSION["usuario_id"] = (int) $usuario["id"];
+    $_SESSION["nome"] = $usuario["nome"];
+    $_SESSION["perfil"] = $perfil;
 
     echo json_encode([
         "sucesso" => true,
@@ -91,9 +100,12 @@ try {
             "nome" => $usuario["nome"],
             "sobrenome" => $usuario["sobrenome"],
             "email" => $usuario["email"],
-            "perfil" => $usuario["perfil"]
+            "perfil" => $perfil
         ]
     ]);
+
+    $stmt->close();
+    $conn->close();
 
 } catch (mysqli_sql_exception $erro) {
     http_response_code(500);
@@ -102,7 +114,6 @@ try {
         "sucesso" => false,
         "mensagem" => "Erro ao realizar o login."
     ]);
-}
 
-$stmt->close();
-$conn->close();
+    $conn->close();
+}
