@@ -1,0 +1,31 @@
+/* Ações da biblioteca na experiência de exploração. Não altera o cabeçalho ou o rodapé. */
+.biblioteca-obra-acoes {
+    width: min(100% - 32px, 920px);
+    margin: clamp(18px, 3vw, 30px) auto;
+    padding: clamp(16px, 2.6vw, 24px);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px 20px;
+    border: 1px solid #D8C7B4;
+    border-radius: 12px;
+    background: #FFFAF4;
+    color: #2F1F1A;
+    box-sizing: border-box;
+}
+.biblioteca-obra-acoes .biblioteca-acoes-texto { flex: 1 1 220px; min-width: 0; }
+.biblioteca-obra-acoes strong { display: block; margin-bottom: 4px; color: #3A241B; font-size: 1rem; }
+.biblioteca-obra-acoes [data-biblioteca-feedback] { margin: 0; color: #624C40; font: .92rem/1.5 Arial, sans-serif; }
+.biblioteca-obra-acoes .biblioteca-acoes-botoes { display: flex; flex-wrap: wrap; gap: 10px; }
+.biblioteca-obra-acoes button,
+.biblioteca-obra-acoes a { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 15px; border: 1px solid #3A241B; border-radius: 8px; background: transparent; color: #3A241B; font: 700 .92rem/1.25 Arial, sans-serif; text-decoration: none; cursor: pointer; }
+.biblioteca-obra-acoes button[aria-pressed="true"] { background: #3A241B; color: #FFFAF4; }
+.biblioteca-obra-acoes .biblioteca-link-entrar { border-color: #9B6048; color: #8B6047; }
+.biblioteca-obra-acoes button:focus-visible,
+.biblioteca-obra-acoes a:focus-visible { outline: 3px solid #9B6048; outline-offset: 3px; }
+@media (max-width: 620px) {
+    .biblioteca-obra-acoes { width: calc(100% - 24px); flex-direction: column; align-items: stretch; }
+    .biblioteca-obra-acoes .biblioteca-acoes-botoes { display: grid; grid-template-columns: 1fr; }
+    .biblioteca-obra-acoes button, .biblioteca-obra-acoes a { width: 100%; }
+}

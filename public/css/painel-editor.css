@@ -1,0 +1,451 @@
+/* Arte Guiada: correções isoladas do formulário do editor.
+   Carregar depois de painel.css e painel-dashboard.css. */
+body.pagina-painel.dashboard-editor #formPublicacao,
+
+body.pagina-painel.dashboard-editor #formPublicacao {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: clamp(26px, 3.2vw, 38px) !important;
+    width: 100% !important;
+    max-width: 1120px !important;
+    margin: 0 auto !important;
+    font-size: 15px;
+    line-height: 1.65;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .bloco-form-publicacao {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: clamp(24px, 3.2vw, 38px) !important;
+    border: 1px solid #E2D0BD !important;
+    border-radius: 17px !important;
+    background: #FFFAF4 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .bloco-form-publicacao legend {
+    max-width: calc(100% - 18px);
+    padding: 0 12px !important;
+    color: #3A241B !important;
+    font: 700 clamp(18px, 1.55vw, 21px)/1.45 system-ui, -apple-system, "Segoe UI", sans-serif !important;
+    white-space: normal;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .form-section-description {
+    margin: 4px 0 28px !important;
+    max-width: 850px;
+    color: #765E50;
+    font-size: 15px !important;
+    line-height: 1.75 !important;
+}
+
+/* Force field layout to stack labels over controls, even if painel.css has older rules. */
+body.pagina-painel.dashboard-editor #formPublicacao .form-grid-publicacao {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    align-items: start !important;
+    column-gap: clamp(20px, 2.2vw, 30px) !important;
+    row-gap: 27px !important;
+    width: 100% !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 9px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    color: #563C2D !important;
+    font: 650 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao-largo {
+    grid-column: 1 / -1 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao > input:not([type="checkbox"]),
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao > textarea {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 52px !important;
+    margin: 0 !important;
+    padding: 13px 15px !important;
+    border: 1px solid #D4BDA7 !important;
+    border-radius: 10px !important;
+    background: #FFFCF8 !important;
+    color: #2F1F1A !important;
+    font: 400 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif !important;
+    box-shadow: none;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao > input[type="file"] {
+    min-height: 54px !important;
+    padding: 9px !important;
+    font-size: 15px !important;
+    cursor: pointer;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao > input[type="file"]::file-selector-button {
+    min-height: 36px;
+    margin-right: 12px;
+    padding: 8px 13px;
+    border: 1px solid #D4BDA7;
+    border-radius: 7px;
+    background: #F2E2D1;
+    color: #3A241B;
+    font: 650 14px/1.3 system-ui, -apple-system, "Segoe UI", sans-serif;
+    cursor: pointer;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao > textarea {
+    min-height: 170px !important;
+    resize: vertical;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .campo-publicacao input:focus-visible,
+body.pagina-painel.dashboard-editor #formPublicacao .campo-publicacao textarea:focus-visible {
+    border-color: #966947 !important;
+    outline: 3px solid rgba(138, 98, 70, .2) !important;
+    outline-offset: 2px;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .ajuda-campo {
+    display: block;
+    margin-top: 0 !important;
+    color: #806D5E !important;
+    font: 400 13px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .previa-obra {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 14px !important;
+    width: 100% !important;
+    min-height: 180px !important;
+    margin-top: 28px !important;
+    padding: clamp(16px, 2.2vw, 24px) !important;
+    border: 1px dashed #CDB49A !important;
+    border-radius: 12px !important;
+    background: #FCF6EF !important;
+    color: #806D5E !important;
+    text-align: center !important;
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .previa-obra img {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: min(100%, 820px) !important;
+    max-height: clamp(220px, 34vw, 390px) !important;
+    object-fit: contain !important;
+    border-radius: 5px;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .bloco-etapas-publicacao > .form-section-description {
+    margin-bottom: 30px !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .etapas-editor {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 28px !important;
+    margin: 0 0 26px !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: clamp(22px, 2.8vw, 32px) !important;
+    border: 1px solid #E2D0BD !important;
+    border-radius: 14px !important;
+    background: #FFFCF8 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor-cabecalho {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+    margin: 0 0 28px !important;
+    padding: 0 0 20px !important;
+    border-bottom: 1px solid #EFE2D5 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor-numero {
+    display: grid !important;
+    place-items: center !important;
+    flex: 0 0 46px !important;
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 50% !important;
+    background: #F2E2D1 !important;
+    color: #3A241B !important;
+    font: 700 15px/1 system-ui, sans-serif !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor-titulo {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor-cabecalho h3 {
+    margin: 0 0 5px !important;
+    color: #3A241B !important;
+    font: 600 21px/1.35 Georgia, "Times New Roman", serif !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor-cabecalho p {
+    margin: 0 !important;
+    color: #765E50 !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .botao,
+body.pagina-painel.dashboard-editor #formPublicacao button.botao {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px;
+    min-height: 48px !important;
+    padding: 12px 20px !important;
+    border-radius: 9px !important;
+    font: 650 15px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif !important;
+    text-align: center;
+    white-space: normal;
+    cursor: pointer;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .botao-principal {
+    border: 1px solid #3A241B !important;
+    background: #3A241B !important;
+    color: #FFFAF4 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .botao-secundario {
+    border: 1px solid #CDB49A !important;
+    background: #FFFCF8 !important;
+    color: #3A241B !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .botao-remover-etapa,
+body.pagina-painel.dashboard-editor #formPublicacao .botao-pequeno {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 40px !important;
+    padding: 9px 13px !important;
+    font: 650 13px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom {
+    margin-top: 28px !important;
+    padding: clamp(18px, 2.5vw, 27px) !important;
+    border: 1px solid #E2D0BD !important;
+    border-radius: 12px !important;
+    background: #F8EFE5 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom-cabecalho {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 18px !important;
+    margin: 0 0 19px !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom-cabecalho strong {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom-cabecalho p {
+    margin: 7px 0 0 !important;
+    font-size: 14px !important;
+    line-height: 1.7 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .imagem-selecao-zoom {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 160px !important;
+    padding: 12px !important;
+    overflow: auto !important;
+    border: 1px solid #D9C4AF !important;
+    border-radius: 10px !important;
+    background: #FFFCF8 !important;
+    touch-action: none;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 900px !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    overflow: hidden !important;
+    line-height: 0 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas img {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    max-height: none !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .adicionar-etapa-area {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 15px 20px !important;
+    padding-top: 4px !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .adicionar-etapa-area p {
+    flex: 1 1 260px;
+    margin: 0 !important;
+    color: #765E50;
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 22px !important;
+    width: 100% !important;
+    padding: 24px !important;
+    border: 1px solid #DDC8B3 !important;
+    border-radius: 13px !important;
+    background: #F4E7D9 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao > p {
+    margin: 0 !important;
+    font-size: 14px !important;
+    line-height: 1.7 !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao .acoes-publicacao-botoes {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+}
+
+body.pagina-painel.dashboard-editor #formPublicacao .feedback-publicacao {
+    min-height: 1.5em;
+    margin: -12px 0 0 !important;
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+}
+
+/* Mensagens de validação acessíveis e visualmente destacadas. */
+body.pagina-painel.dashboard-editor #formPublicacao .resumo-erros-publicacao {
+    padding: 20px 22px;
+    border: 2px solid #B93B32;
+    border-left-width: 7px;
+    border-radius: 12px;
+    background: #FFF0EE;
+    color: #74251F;
+    font: 500 15px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+body.pagina-painel.dashboard-editor #formPublicacao .resumo-erros-publicacao[hidden] { display: none !important; }
+body.pagina-painel.dashboard-editor #formPublicacao .resumo-erros-publicacao h3 {
+    margin: 0 0 8px;
+    color: #74251F;
+    font: 750 17px/1.4 system-ui, sans-serif;
+}
+body.pagina-painel.dashboard-editor #formPublicacao .resumo-erros-publicacao ul {
+    margin: 0;
+    padding-left: 23px;
+}
+body.pagina-painel.dashboard-editor #formPublicacao .resumo-erros-publicacao li + li { margin-top: 4px; }
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao-invalido {
+    color: #922E27 !important;
+}
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao-invalido input,
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao-invalido textarea {
+    border: 2px solid #B93B32 !important;
+    background: #FFF4F2 !important;
+    box-shadow: 0 0 0 3px rgba(185, 59, 50, .10) !important;
+}
+body.pagina-painel.dashboard-editor #formPublicacao .campo-publicacao-invalido .ajuda-campo { color: #922E27 !important; }
+body.pagina-painel.dashboard-editor #formPublicacao .mensagem-erro-campo {
+    display: block;
+    margin: 0 !important;
+    color: #9B2F27 !important;
+    font: 650 13px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif !important;
+}
+body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor-invalida {
+    border: 2px solid #B93B32 !important;
+    box-shadow: 0 0 0 4px rgba(185, 59, 50, .09) !important;
+}
+body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom-invalido {
+    border: 2px solid #B93B32 !important;
+    background: #FFF0EE !important;
+}
+body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom-invalido .imagem-selecao-zoom {
+    border: 2px dashed #B93B32 !important;
+}
+body.pagina-painel.dashboard-editor #formPublicacao [aria-invalid="true"]:focus-visible {
+    outline: 3px solid rgba(185, 59, 50, .28) !important;
+    outline-offset: 2px;
+}
+
+/* Icones vetoriais não dependem de glifos instalados no computador. */
+.dashboard-editor .dashboard-nav-icon,
+.dashboard-editor .dashboard-stat-icon { display: inline-grid; place-items: center; flex: 0 0 auto; }
+.dashboard-editor .dashboard-nav-icon svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.dashboard-editor .dashboard-stat-icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+@media (max-width: 1000px) {
+    body.pagina-painel.dashboard-editor #formPublicacao .form-grid-publicacao {
+        grid-template-columns: minmax(0, 1fr) !important;
+        row-gap: 23px !important;
+    }
+    body.pagina-painel.dashboard-editor #formPublicacao .campo-publicacao-largo {
+        grid-column: 1 / -1 !important;
+    }
+    body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+    body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao .acoes-publicacao-botoes {
+        justify-content: flex-start !important;
+    }
+}
+
+@media (max-width: 620px) {
+    body.pagina-painel.dashboard-editor #formPublicacao .bloco-form-publicacao { padding: 22px 17px !important; }
+    body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor { padding: 20px 16px !important; }
+    body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor-cabecalho { flex-wrap: wrap !important; }
+    body.pagina-painel.dashboard-editor #formPublicacao .botao-remover-etapa { margin-left: auto; }
+    body.pagina-painel.dashboard-editor #formPublicacao .previa-obra { min-height: 130px !important; padding: 14px !important; }
+    body.pagina-painel.dashboard-editor #formPublicacao .previa-obra img { max-height: 280px !important; }
+    body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom-cabecalho { flex-direction: column !important; }
+    body.pagina-painel.dashboard-editor #formPublicacao .botao-pequeno { align-self: flex-start; }
+    body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao { padding: 18px !important; }
+    body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao .acoes-publicacao-botoes { width: 100% !important; flex-direction: column !important; align-items: stretch !important; }
+    body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao .acoes-publicacao-botoes .botao { width: 100% !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.pagina-painel.dashboard-editor #formPublicacao * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}

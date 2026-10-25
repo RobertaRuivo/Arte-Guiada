@@ -23,7 +23,18 @@
             else botao.removeAttribute("aria-current");
         });
 
-        alvo.scrollIntoView({ behavior: "smooth", block: "start" });
+        const tituloPainel = document.getElementById("dashboardPageTitle");
+        const titulos = {
+            resumo: "Visão geral",
+            "minhas-obras": "Minhas obras",
+            publicar: document.getElementById("titulo-publicar")?.textContent || "Nova obra",
+            biblioteca: "Minha biblioteca"
+        };
+        if (tituloPainel) tituloPainel.textContent = titulos[nome] || "Espaço do editor";
+
+        if (!alvo.contains(document.activeElement)) {
+            alvo.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
         document.dispatchEvent(new CustomEvent("painel:secao-aberta", {
             detail: { nome }
         }));
@@ -35,6 +46,15 @@
 
     botoesPainel.forEach((botao) => {
         botao.addEventListener("click", () => abrirSecao(botao.dataset.painelTarget));
+    });
+
+    document.querySelectorAll("[data-dashboard-filter]").forEach((atalho) => {
+        atalho.addEventListener("click", () => {
+            abrirSecao("minhas-obras");
+            const filtro = atalho.dataset.dashboardFilter;
+            const botaoFiltro = document.querySelector(`[data-obras-filtro="${filtro}"]`);
+            if (botaoFiltro) botaoFiltro.click();
+        });
     });
 
     const mensagensColecao = {
@@ -115,30 +135,7 @@
         });
     });
 
-    document.querySelectorAll("[data-logout]").forEach((botao) => {
-        botao.addEventListener("click", async () => {
-            botao.disabled = true;
-            const textoOriginal = botao.textContent;
-            botao.textContent = "Encerrando sessão…";
+    // O cabeçalho global (sessao-ui.js) é o único responsável pelo logout.
+    // Isso evita dois handlers concorrentes nas páginas de painel.
 
-            try {
-                const resposta = await fetch("../api/login/logout.php", {
-                    method: "POST",
-                    credentials: "same-origin",
-                    cache: "no-store",
-                    headers: { "Accept": "application/json" }
-                });
-                const resultado = await resposta.json().catch(() => null);
-                if (!resposta.ok || !resultado?.sucesso) {
-                    throw new Error(resultado?.mensagem || "O servidor não confirmou o encerramento da sessão.");
-                }
-                window.location.replace("acesso.html");
-            } catch (erro) {
-                // Não mostramos o usuário como deslogado quando o servidor não confirmou o logout.
-                window.alert(erro.message || "Não foi possível encerrar a sessão. Tente novamente.");
-                botao.disabled = false;
-                botao.textContent = textoOriginal;
-            }
-        });
-    });
 })();
