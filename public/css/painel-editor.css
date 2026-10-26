@@ -67,8 +67,8 @@ body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao-largo
     grid-column: 1 / -1 !important;
 }
 
-body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao > input:not([type="checkbox"]),
-body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao > textarea {
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao>input:not([type="checkbox"]),
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao>textarea {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
@@ -84,14 +84,14 @@ body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao > tex
     box-shadow: none;
 }
 
-body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao > input[type="file"] {
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao>input[type="file"] {
     min-height: 54px !important;
     padding: 9px !important;
     font-size: 15px !important;
     cursor: pointer;
 }
 
-body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao > input[type="file"]::file-selector-button {
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao>input[type="file"]::file-selector-button {
     min-height: 36px;
     margin-right: 12px;
     padding: 8px 13px;
@@ -103,7 +103,7 @@ body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao > inp
     cursor: pointer;
 }
 
-body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao > textarea {
+body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao>textarea {
     min-height: 170px !important;
     resize: vertical;
 }
@@ -151,7 +151,7 @@ body.pagina-painel.dashboard-editor #formPublicacao .previa-obra img {
     border-radius: 5px;
 }
 
-body.pagina-painel.dashboard-editor #formPublicacao .bloco-etapas-publicacao > .form-section-description {
+body.pagina-painel.dashboard-editor #formPublicacao .bloco-etapas-publicacao>.form-section-description {
     margin-bottom: 30px !important;
 }
 
@@ -276,36 +276,98 @@ body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom-cabecalho p {
     line-height: 1.7 !important;
 }
 
+/* Área de seleção: não recortar a obra. */
+/* Área reservada à seleção do detalhe */
 body.pagina-painel.dashboard-editor #formPublicacao .imagem-selecao-zoom {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-height: 160px !important;
+    display: block !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+
     padding: 12px !important;
-    overflow: auto !important;
+    margin: 0 0 20px !important;
+
+    overflow: hidden !important;
+
     border: 1px solid #D9C4AF !important;
     border-radius: 10px !important;
     background: #FFFCF8 !important;
+
     touch-action: none;
 }
 
+/* Área de seleção: não cortar a imagem */
+body.pagina-painel.dashboard-editor #formPublicacao .imagem-selecao-zoom {
+    display: flex !important;
+    position: relative !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    box-sizing: border-box !important;
+    width: 100% !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-height: none !important;
+
+    padding: 12px !important;
+    margin: 0 0 20px !important;
+
+    overflow: visible !important;
+
+    border: 1px solid #D9C4AF !important;
+    border-radius: 10px !important;
+    background: #FFFCF8 !important;
+
+    touch-action: none;
+}
+
+/* O canvas deve acompanhar as dimensões reais da imagem */
 body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas {
     display: block !important;
     position: relative !important;
-    width: 100% !important;
-    max-width: 900px !important;
+
+    box-sizing: border-box !important;
+    flex: 0 0 auto !important;
+
     min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+
     margin: 0 auto !important;
-    overflow: hidden !important;
+    padding: 0 !important;
+
+    overflow: visible !important;
     line-height: 0 !important;
 }
 
+/* Exibir a obra inteira, sem recortes */
 body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas img {
     display: block !important;
+    position: relative !important;
+
+    box-sizing: border-box !important;
     width: 100% !important;
-    height: auto !important;
-    max-width: 100% !important;
+    height: 100% !important;
+
+    max-width: none !important;
     max-height: none !important;
+
+    object-fit: contain !important;
+    object-position: center !important;
+    aspect-ratio: auto !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 body.pagina-painel.dashboard-editor #formPublicacao .adicionar-etapa-area {
@@ -336,7 +398,7 @@ body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao {
     background: #F4E7D9 !important;
 }
 
-body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao > p {
+body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao>p {
     margin: 0 !important;
     font-size: 14px !important;
     line-height: 1.7 !important;
@@ -367,44 +429,62 @@ body.pagina-painel.dashboard-editor #formPublicacao .resumo-erros-publicacao {
     color: #74251F;
     font: 500 15px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
 }
-body.pagina-painel.dashboard-editor #formPublicacao .resumo-erros-publicacao[hidden] { display: none !important; }
+
+body.pagina-painel.dashboard-editor #formPublicacao .resumo-erros-publicacao[hidden] {
+    display: none !important;
+}
+
 body.pagina-painel.dashboard-editor #formPublicacao .resumo-erros-publicacao h3 {
     margin: 0 0 8px;
     color: #74251F;
     font: 750 17px/1.4 system-ui, sans-serif;
 }
+
 body.pagina-painel.dashboard-editor #formPublicacao .resumo-erros-publicacao ul {
     margin: 0;
     padding-left: 23px;
 }
-body.pagina-painel.dashboard-editor #formPublicacao .resumo-erros-publicacao li + li { margin-top: 4px; }
+
+body.pagina-painel.dashboard-editor #formPublicacao .resumo-erros-publicacao li+li {
+    margin-top: 4px;
+}
+
 body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao-invalido {
     color: #922E27 !important;
 }
+
 body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao-invalido input,
 body.pagina-painel.dashboard-editor #formPublicacao label.campo-publicacao-invalido textarea {
     border: 2px solid #B93B32 !important;
     background: #FFF4F2 !important;
     box-shadow: 0 0 0 3px rgba(185, 59, 50, .10) !important;
 }
-body.pagina-painel.dashboard-editor #formPublicacao .campo-publicacao-invalido .ajuda-campo { color: #922E27 !important; }
+
+body.pagina-painel.dashboard-editor #formPublicacao .campo-publicacao-invalido .ajuda-campo {
+    color: #922E27 !important;
+}
+
 body.pagina-painel.dashboard-editor #formPublicacao .mensagem-erro-campo {
     display: block;
     margin: 0 !important;
     color: #9B2F27 !important;
     font: 650 13px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif !important;
 }
+
 body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor-invalida {
     border: 2px solid #B93B32 !important;
     box-shadow: 0 0 0 4px rgba(185, 59, 50, .09) !important;
 }
+
 body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom-invalido {
     border: 2px solid #B93B32 !important;
     background: #FFF0EE !important;
 }
+
 body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom-invalido .imagem-selecao-zoom {
     border: 2px dashed #B93B32 !important;
 }
+
 body.pagina-painel.dashboard-editor #formPublicacao [aria-invalid="true"]:focus-visible {
     outline: 3px solid rgba(185, 59, 50, .28) !important;
     outline-offset: 2px;
@@ -412,40 +492,140 @@ body.pagina-painel.dashboard-editor #formPublicacao [aria-invalid="true"]:focus-
 
 /* Icones vetoriais não dependem de glifos instalados no computador. */
 .dashboard-editor .dashboard-nav-icon,
-.dashboard-editor .dashboard-stat-icon { display: inline-grid; place-items: center; flex: 0 0 auto; }
-.dashboard-editor .dashboard-nav-icon svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.dashboard-editor .dashboard-stat-icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.dashboard-editor .dashboard-stat-icon {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+}
+
+.dashboard-editor .dashboard-nav-icon svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.dashboard-editor .dashboard-stat-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
 
 @media (max-width: 1000px) {
     body.pagina-painel.dashboard-editor #formPublicacao .form-grid-publicacao {
         grid-template-columns: minmax(0, 1fr) !important;
         row-gap: 23px !important;
     }
+
     body.pagina-painel.dashboard-editor #formPublicacao .campo-publicacao-largo {
         grid-column: 1 / -1 !important;
     }
+
     body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao {
         grid-template-columns: minmax(0, 1fr) !important;
     }
+
     body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao .acoes-publicacao-botoes {
         justify-content: flex-start !important;
     }
 }
 
 @media (max-width: 620px) {
-    body.pagina-painel.dashboard-editor #formPublicacao .bloco-form-publicacao { padding: 22px 17px !important; }
-    body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor { padding: 20px 16px !important; }
-    body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor-cabecalho { flex-wrap: wrap !important; }
-    body.pagina-painel.dashboard-editor #formPublicacao .botao-remover-etapa { margin-left: auto; }
-    body.pagina-painel.dashboard-editor #formPublicacao .previa-obra { min-height: 130px !important; padding: 14px !important; }
-    body.pagina-painel.dashboard-editor #formPublicacao .previa-obra img { max-height: 280px !important; }
-    body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom-cabecalho { flex-direction: column !important; }
-    body.pagina-painel.dashboard-editor #formPublicacao .botao-pequeno { align-self: flex-start; }
-    body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao { padding: 18px !important; }
-    body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao .acoes-publicacao-botoes { width: 100% !important; flex-direction: column !important; align-items: stretch !important; }
-    body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao .acoes-publicacao-botoes .botao { width: 100% !important; }
+    body.pagina-painel.dashboard-editor #formPublicacao .bloco-form-publicacao {
+        padding: 22px 17px !important;
+    }
+
+    body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor {
+        padding: 20px 16px !important;
+    }
+
+    body.pagina-painel.dashboard-editor #formPublicacao .etapa-editor-cabecalho {
+        flex-wrap: wrap !important;
+    }
+
+    body.pagina-painel.dashboard-editor #formPublicacao .botao-remover-etapa {
+        margin-left: auto;
+    }
+
+    body.pagina-painel.dashboard-editor #formPublicacao .previa-obra {
+        min-height: 130px !important;
+        padding: 14px !important;
+    }
+
+    body.pagina-painel.dashboard-editor #formPublicacao .previa-obra img {
+        max-height: 280px !important;
+    }
+
+    body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom-cabecalho {
+        flex-direction: column !important;
+    }
+
+    body.pagina-painel.dashboard-editor #formPublicacao .botao-pequeno {
+        align-self: flex-start;
+    }
+
+    body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao {
+        padding: 18px !important;
+    }
+
+    body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao .acoes-publicacao-botoes {
+        width: 100% !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    body.pagina-painel.dashboard-editor #formPublicacao .acoes-publicacao .acoes-publicacao-botoes .botao {
+        width: 100% !important;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    body.pagina-painel.dashboard-editor #formPublicacao * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+    body.pagina-painel.dashboard-editor #formPublicacao * {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* O seletor de zoom não deve escurecer a página nem criar uma máscara. */
+body.pagina-painel.dashboard-editor #formPublicacao .imagem-selecao-zoom,
+body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas,
+body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas img {
+    filter: none !important;
+    opacity: 1 !important;
+}
+
+/* Impede que sombras ou pseudo-elementos criem uma camada escura. */
+body.pagina-painel.dashboard-editor #formPublicacao .imagem-selecao-zoom::before,
+body.pagina-painel.dashboard-editor #formPublicacao .imagem-selecao-zoom::after,
+body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas::before,
+body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas::after,
+body.pagina-painel.dashboard-editor #formPublicacao .zoom-caixa::before,
+body.pagina-painel.dashboard-editor #formPublicacao .zoom-caixa::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* A seleção fica restrita ao retângulo, sem sombra externa. */
+body.pagina-painel.dashboard-editor #formPublicacao .zoom-caixa {
+    position: absolute !important;
+    z-index: 2 !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    background: rgba(211, 164, 112, 0.16) !important;
+}
+
+/* O canvas funciona como referência para o retângulo de seleção. */
+body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas {
+    position: relative !important;
+    flex-shrink: 0 !important;
 }
