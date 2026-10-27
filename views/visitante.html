@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,48 +8,49 @@
     <title>Arte Guiada | Minha biblioteca</title>
     <link rel="stylesheet" href="../public/css/style.css">
     <link rel="stylesheet" href="../public/css/painel.css">
+    <script src="../public/js/sessao-ui.js" defer></script>
     <script src="../public/js/controle-acesso.js" defer></script>
     <script src="../public/js/painel.js" defer></script>
 </head>
+
 <body class="pagina-painel" data-perfis-permitidos="visitante">
     <a class="skip-link-painel" href="#conteudo-principal">Pular para o conteúdo</a>
-    <header class="cabecalho">
-        <nav class="nav-principal" aria-label="Navegação principal">
-            <a href="../index.html" class="logo">Arte Guiada</a>
-            <div class="nav-links">
-                <a href="../index.html">Início</a>
-                <a href="catalogo.html" aria-current="page">Galeria</a>
-                <a href="visitante.html" aria-current="page">Minha biblioteca</a>
-                <button class="link-botao" type="button" data-logout>Sair</button>
-            </div>
-        </nav>
-    </header>
+    <header class="cabecalho" data-site-header></header>
 
     <main id="conteudo-principal" class="painel-container">
         <section class="painel-boas-vindas">
             <div>
                 <span class="painel-etiqueta">SEU ESPAÇO</span>
                 <h1>Uma biblioteca para <span>o seu olhar.</span></h1>
-                <p>Guarde as obras que chamaram sua atenção, organize as próximas explorações e retome o que já descobriu.</p>
-                <p class="painel-identificacao">Você está conectado como <strong data-usuario-nome>visitante</strong>.</p>
+                <p>Guarde as obras que chamaram sua atenção, organize as próximas explorações e retome o que já
+                    descobriu.</p>
+                <p class="painel-identificacao">Você está conectado como <strong data-usuario-nome>visitante</strong>.
+                </p>
             </div>
-            <a class="botao botao-principal" href="catalogo.html">Explorar a galeria <span aria-hidden="true">↗</span></a>
+            <a class="botao botao-principal" href="catalogo.html">Explorar a galeria <span
+                    aria-hidden="true">↗</span></a>
         </section>
 
         <section class="biblioteca-resumo" aria-label="Resumo da biblioteca">
             <article class="resumo-card">
                 <span class="resumo-icone" aria-hidden="true">♡</span>
-                <div><p>Favoritos</p><strong data-contagem="favoritos">—</strong></div>
+                <div>
+                    <p>Favoritos</p><strong data-contagem="favoritos">—</strong>
+                </div>
                 <span class="resumo-nota">Obras que você quer guardar</span>
             </article>
             <article class="resumo-card">
                 <span class="resumo-icone" aria-hidden="true">◷</span>
-                <div><p>Quero explorar</p><strong data-contagem="quero-explorar">—</strong></div>
+                <div>
+                    <p>Quero explorar</p><strong data-contagem="quero-explorar">—</strong>
+                </div>
                 <span class="resumo-nota">Sua próxima visita à arte</span>
             </article>
             <article class="resumo-card">
                 <span class="resumo-icone" aria-hidden="true">✓</span>
-                <div><p>Já explorei</p><strong data-contagem="exploradas">—</strong></div>
+                <div>
+                    <p>Já explorei</p><strong data-contagem="exploradas">—</strong>
+                </div>
                 <span class="resumo-nota">Experiências concluídas</span>
             </article>
         </section>
@@ -58,14 +60,18 @@
                 <div>
                     <span class="painel-etiqueta">COLEÇÃO PESSOAL</span>
                     <h2 id="titulo-biblioteca">Minha biblioteca</h2>
-                    <p>As listas são independentes. Uma obra pode estar nos favoritos e também nas próximas explorações.</p>
+                    <p>As listas são independentes. Uma obra pode estar nos favoritos e também nas próximas explorações.
+                    </p>
                 </div>
             </div>
 
             <div class="colecao-abas" role="tablist" aria-label="Coleções da biblioteca">
-                <button type="button" class="colecao-aba ativa" role="tab" aria-selected="true" data-colecao="favoritos">Favoritos</button>
-                <button type="button" class="colecao-aba" role="tab" aria-selected="false" data-colecao="quero-explorar">Quero explorar</button>
-                <button type="button" class="colecao-aba" role="tab" aria-selected="false" data-colecao="exploradas">Já explorei</button>
+                <button type="button" class="colecao-aba ativa" role="tab" aria-selected="true"
+                    data-colecao="favoritos">Favoritos</button>
+                <button type="button" class="colecao-aba" role="tab" aria-selected="false"
+                    data-colecao="quero-explorar">Quero explorar</button>
+                <button type="button" class="colecao-aba" role="tab" aria-selected="false" data-colecao="exploradas">Já
+                    explorei</button>
             </div>
 
             <div class="colecao-conteudo" id="colecaoConteudo" aria-live="polite">
@@ -85,4 +91,5 @@
         <p>Observe com atenção. Explore com curiosidade. Interprete com liberdade.</p>
     </footer>
 </body>
+
 </html>

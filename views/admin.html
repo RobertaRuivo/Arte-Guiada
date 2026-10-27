@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,62 +8,125 @@
     <title>Arte Guiada | Administração</title>
     <link rel="stylesheet" href="../public/css/style.css">
     <link rel="stylesheet" href="../public/css/painel.css">
+    <script src="../public/js/sessao-ui.js" defer></script>
     <script src="../public/js/controle-acesso.js" defer></script>
     <script src="../public/js/painel.js" defer></script>
 </head>
+
 <body class="pagina-painel" data-perfis-permitidos="admin">
     <a class="skip-link-painel" href="#conteudo-principal">Pular para o conteúdo</a>
-    <header class="cabecalho">
-        <nav class="nav-principal" aria-label="Navegação principal">
-            <a href="../index.html" class="logo">Arte Guiada</a>
-            <div class="nav-links">
-                <a href="../index.html">Início</a>
-                <a href="catalogo.html">Galeria</a>
-                <a href="admin.html" aria-current="page">Administração</a>
-                <button class="link-botao" type="button" data-logout>Sair</button>
-            </div>
-        </nav>
-    </header>
+    <header class="cabecalho" data-site-header></header>
 
     <main id="conteudo-principal" class="painel-container painel-admin">
         <section class="painel-boas-vindas admin-boas-vindas">
-            <div><span class="painel-etiqueta">ADMINISTRAÇÃO</span><h1>O cuidado por trás <span>da galeria.</span></h1><p>Gerencie editores, acompanhe problemas relatados e organize as obras em destaque no Arte Guiada.</p><p class="painel-identificacao">Conectado como <strong data-usuario-nome>administrador</strong>.</p></div>
+            <div><span class="painel-etiqueta">ADMINISTRAÇÃO</span>
+                <h1>O cuidado por trás <span>da galeria.</span></h1>
+                <p>Gerencie editores, acompanhe problemas relatados e organize as obras em destaque no Arte Guiada.</p>
+                <p class="painel-identificacao">Conectado como <strong data-usuario-nome>administrador</strong>.</p>
+            </div>
         </section>
 
         <nav class="painel-navegacao" aria-label="Seções administrativas">
-            <button type="button" class="painel-nav-item ativa" data-painel-target="visao-geral" aria-current="page">Visão geral</button>
+            <button type="button" class="painel-nav-item ativa" data-painel-target="visao-geral"
+                aria-current="page">Visão geral</button>
             <button type="button" class="painel-nav-item" data-painel-target="problemas">Obras com problemas</button>
             <button type="button" class="painel-nav-item" data-painel-target="editores">Gerenciar editores</button>
             <button type="button" class="painel-nav-item" data-painel-target="destaques">Galeria e destaques</button>
         </nav>
 
-        <section class="painel-conteudo-secao ativa" data-painel-secao="visao-geral" aria-labelledby="titulo-visao-geral-admin">
-            <div class="secao-titulo-painel"><div><span class="painel-etiqueta">CENTRAL DE CONTROLE</span><h2 id="titulo-visao-geral-admin">Visão geral</h2><p>As informações e ações serão carregadas das APIs administrativas.</p></div></div>
-            <div class="admin-atalhos">
-                <button class="admin-atalho" type="button" data-painel-target="problemas"><span class="admin-atalho-icone" aria-hidden="true">!</span><span><strong>Obras com problemas</strong><small>Consultar relatos pendentes e acompanhar resoluções.</small></span><span class="admin-atalho-seta" aria-hidden="true">↗</span></button>
-                <button class="admin-atalho" type="button" data-painel-target="editores"><span class="admin-atalho-icone" aria-hidden="true">♙</span><span><strong>Gerenciar editores</strong><small>Controlar permissões e convites individuais.</small></span><span class="admin-atalho-seta" aria-hidden="true">↗</span></button>
-                <button class="admin-atalho" type="button" data-painel-target="destaques"><span class="admin-atalho-icone" aria-hidden="true">✦</span><span><strong>Galeria e destaques</strong><small>Organizar as obras principais da página inicial.</small></span><span class="admin-atalho-seta" aria-hidden="true">↗</span></button>
+        <section class="painel-conteudo-secao ativa" data-painel-secao="visao-geral"
+            aria-labelledby="titulo-visao-geral-admin">
+            <div class="secao-titulo-painel">
+                <div><span class="painel-etiqueta">CENTRAL DE CONTROLE</span>
+                    <h2 id="titulo-visao-geral-admin">Visão geral</h2>
+                    <p>As informações e ações serão carregadas das APIs administrativas.</p>
+                </div>
             </div>
-            <p class="aviso-integracao">A estrutura visual está criada. As tabelas existem no banco, mas as operações administrativas ainda serão implementadas nas APIs.</p>
+            <div class="admin-atalhos">
+                <button class="admin-atalho" type="button" data-painel-target="problemas"><span
+                        class="admin-atalho-icone" aria-hidden="true">!</span><span><strong>Obras com
+                            problemas</strong><small>Consultar relatos pendentes e acompanhar
+                            resoluções.</small></span><span class="admin-atalho-seta"
+                        aria-hidden="true">↗</span></button>
+                <button class="admin-atalho" type="button" data-painel-target="editores"><span
+                        class="admin-atalho-icone" aria-hidden="true">♙</span><span><strong>Gerenciar
+                            editores</strong><small>Controlar permissões e convites individuais.</small></span><span
+                        class="admin-atalho-seta" aria-hidden="true">↗</span></button>
+                <button class="admin-atalho" type="button" data-painel-target="destaques"><span
+                        class="admin-atalho-icone" aria-hidden="true">✦</span><span><strong>Galeria e
+                            destaques</strong><small>Organizar as obras principais da página
+                            inicial.</small></span><span class="admin-atalho-seta" aria-hidden="true">↗</span></button>
+            </div>
+            <p class="aviso-integracao">A estrutura visual está criada. As tabelas existem no banco, mas as operações
+                administrativas ainda serão implementadas nas APIs.</p>
         </section>
 
         <section class="painel-conteudo-secao" data-painel-secao="problemas" aria-labelledby="titulo-problemas" hidden>
-            <div class="secao-titulo-painel"><div><span class="painel-etiqueta">ATENDIMENTO</span><h2 id="titulo-problemas">Obras com problemas</h2><p>Consulte relatos enviados por usuários conectados. Cada relato será associado à obra e à conta de quem o enviou.</p></div></div>
-            <div class="filtros-admin" aria-label="Filtros de relatos"><span class="filtro-etiqueta">Estado</span><button type="button" class="filtro-chip ativa" data-filtro-relato="pendente">Pendentes</button><button type="button" class="filtro-chip" data-filtro-relato="em_analise">Em análise</button><button type="button" class="filtro-chip" data-filtro-relato="resolvido">Resolvidos</button></div>
-            <div class="colecao-conteudo"><div class="estado-vazio"><span class="estado-vazio-simbolo" aria-hidden="true">✓</span><h3>Relatos aparecerão aqui</h3><p>A listagem e a atualização de estado serão conectadas à API administrativa.</p></div></div>
+            <div class="secao-titulo-painel">
+                <div><span class="painel-etiqueta">ATENDIMENTO</span>
+                    <h2 id="titulo-problemas">Obras com problemas</h2>
+                    <p>Consulte relatos enviados por usuários conectados. Cada relato será associado à obra e à conta de
+                        quem o enviou.</p>
+                </div>
+            </div>
+            <div class="filtros-admin" aria-label="Filtros de relatos"><span
+                    class="filtro-etiqueta">Estado</span><button type="button" class="filtro-chip ativa"
+                    data-filtro-relato="pendente">Pendentes</button><button type="button" class="filtro-chip"
+                    data-filtro-relato="em_analise">Em análise</button><button type="button" class="filtro-chip"
+                    data-filtro-relato="resolvido">Resolvidos</button></div>
+            <div class="colecao-conteudo">
+                <div class="estado-vazio"><span class="estado-vazio-simbolo" aria-hidden="true">✓</span>
+                    <h3>Relatos aparecerão aqui</h3>
+                    <p>A listagem e a atualização de estado serão conectadas à API administrativa.</p>
+                </div>
+            </div>
         </section>
 
         <section class="painel-conteudo-secao" data-painel-secao="editores" aria-labelledby="titulo-editores" hidden>
-            <div class="secao-titulo-painel"><div><span class="painel-etiqueta">PERMISSÕES</span><h2 id="titulo-editores">Gerenciar editores</h2><p>Os convites serão individuais, vinculados a um e-mail autorizado e utilizáveis uma única vez.</p></div><button type="button" class="botao botao-principal" data-acao-admin="convite">＋ Criar convite</button></div>
-            <div class="admin-dois-cards"><article class="admin-info-card"><span class="painel-etiqueta">CONTROLE DE ACESSO</span><h3>Convites de editor</h3><p>Gerar, consultar, cancelar e verificar o uso de convites vinculados aos e-mails autorizados.</p><button type="button" class="botao botao-secundario" data-acao-admin="convite">Preparar convite</button></article><article class="admin-info-card"><span class="painel-etiqueta">CONTAS</span><h3>Permissões de usuários</h3><p>Consultar editores e administrar suas permissões, sem permitir que alguém escolha o perfil administrador pelo cadastro público.</p><button type="button" class="botao botao-secundario" data-acao-admin="usuarios">Consultar usuários</button></article></div>
-            <p class="aviso-integracao">A interface de gestão ainda não executa alterações. As operações serão implementadas com validação de perfil no PHP.</p>
+            <div class="secao-titulo-painel">
+                <div><span class="painel-etiqueta">PERMISSÕES</span>
+                    <h2 id="titulo-editores">Gerenciar editores</h2>
+                    <p>Os convites serão individuais, vinculados a um e-mail autorizado e utilizáveis uma única vez.</p>
+                </div><button type="button" class="botao botao-principal" data-acao-admin="convite">＋ Criar
+                    convite</button>
+            </div>
+            <div class="admin-dois-cards">
+                <article class="admin-info-card"><span class="painel-etiqueta">CONTROLE DE ACESSO</span>
+                    <h3>Convites de editor</h3>
+                    <p>Gerar, consultar, cancelar e verificar o uso de convites vinculados aos e-mails autorizados.</p>
+                    <button type="button" class="botao botao-secundario" data-acao-admin="convite">Preparar
+                        convite</button>
+                </article>
+                <article class="admin-info-card"><span class="painel-etiqueta">CONTAS</span>
+                    <h3>Permissões de usuários</h3>
+                    <p>Consultar editores e administrar suas permissões, sem permitir que alguém escolha o perfil
+                        administrador pelo cadastro público.</p><button type="button" class="botao botao-secundario"
+                        data-acao-admin="usuarios">Consultar usuários</button>
+                </article>
+            </div>
+            <p class="aviso-integracao">A interface de gestão ainda não executa alterações. As operações serão
+                implementadas com validação de perfil no PHP.</p>
         </section>
 
         <section class="painel-conteudo-secao" data-painel-secao="destaques" aria-labelledby="titulo-destaques" hidden>
-            <div class="secao-titulo-painel"><div><span class="painel-etiqueta">CURADORIA</span><h2 id="titulo-destaques">Galeria e destaques</h2><p>Defina quais obras publicadas aparecem como principais e em que ordem são apresentadas.</p></div></div>
-            <div class="colecao-conteudo"><div class="estado-vazio"><span class="estado-vazio-simbolo" aria-hidden="true">✦</span><h3>Organize a seleção principal</h3><p>As obras publicadas e os controles de destaque serão carregados do banco quando a API administrativa estiver pronta.</p></div></div>
+            <div class="secao-titulo-painel">
+                <div><span class="painel-etiqueta">CURADORIA</span>
+                    <h2 id="titulo-destaques">Galeria e destaques</h2>
+                    <p>Defina quais obras publicadas aparecem como principais e em que ordem são apresentadas.</p>
+                </div>
+            </div>
+            <div class="colecao-conteudo">
+                <div class="estado-vazio"><span class="estado-vazio-simbolo" aria-hidden="true">✦</span>
+                    <h3>Organize a seleção principal</h3>
+                    <p>As obras publicadas e os controles de destaque serão carregados do banco quando a API
+                        administrativa estiver pronta.</p>
+                </div>
+            </div>
         </section>
     </main>
-    <footer class="rodape-painel"><a class="logo" href="../index.html">Arte Guiada</a><p>Observe com atenção. Explore com curiosidade. Interprete com liberdade.</p></footer>
+    <footer class="rodape-painel"><a class="logo" href="../index.html">Arte Guiada</a>
+        <p>Observe com atenção. Explore com curiosidade. Interprete com liberdade.</p>
+    </footer>
 </body>
+
 </html>

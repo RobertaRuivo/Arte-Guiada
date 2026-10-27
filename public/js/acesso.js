@@ -283,41 +283,10 @@ function validarEtapa(stepNumber) {
        ETAPA 2 - PERFIL E MENSAGEM
        ----------------------------------------------------- */
 
+    /* ETAPA 2: APRESENTAÇÃO */
+
     if (stepNumber === 2) {
-        const perfilSelecionado =
-            document.querySelector(
-                'input[name="loginTipo"]:checked'
-            );
-
-        const mensagemValor =
-            mensagemInput.value.trim();
-
-        if (!perfilSelecionado) {
-            const erro =
-                document.getElementById(
-                    "tipo-error"
-                );
-
-            if (erro) {
-                erro.textContent =
-                    "Por favor, selecione um perfil no sistema.";
-            }
-
-            const primeiroRadio =
-                document.querySelector(
-                    'input[name="loginTipo"]'
-                );
-
-            if (
-                primeiroRadio &&
-                !primeiroCampoInvalido
-            ) {
-                primeiroCampoInvalido =
-                    primeiroRadio;
-            }
-
-            valido = false;
-        }
+        const mensagemValor = mensagemInput.value.trim();
 
         if (mensagemValor.length < 5) {
             marcarInvalido(
@@ -327,7 +296,6 @@ function validarEtapa(stepNumber) {
             );
         }
     }
-
 
     /* -----------------------------------------------------
        ETAPA 3 - SEGURANÇA
@@ -663,15 +631,12 @@ async function cadastrarUsuario(event) {
         return;
     }
 
-    const perfilSelecionado =
-        document.querySelector('input[name="loginTipo"]:checked');
 
     const dados = {
         nome: nomeInput.value.trim(),
         sobrenome: sobrenomeInput.value.trim(),
         email: normalizarEmail(emailInput.value),
         senha: passwordInput.value,
-        perfil: perfilSelecionado ? perfilSelecionado.value : "",
         mensagem: mensagemInput.value.trim()
     };
 
