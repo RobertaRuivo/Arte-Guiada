@@ -116,13 +116,15 @@ if ($usuarioId <= 0) {
     ]);
 }
 
+
 if (!in_array($perfil, ["editor", "admin"], true)) {
     responderJson(403, [
         "sucesso" => false,
         "mensagem" => "Você não tem permissão para salvar obras."
     ]);
 }
-
+require_once __DIR__ . '/../../config/protecao-csrf.php';
+exigirOrigemConfiavelCsrf();
 
 /*
  * Se o tamanho da requisição ultrapassar post_max_size,

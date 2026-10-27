@@ -21,6 +21,9 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit;
 }
 
+require_once __DIR__ . '/../../config/protecao-csrf.php';
+exigirOrigemConfiavelCsrf();
+
 $_SESSION = [];
 
 if (ini_get("session.use_cookies")) {

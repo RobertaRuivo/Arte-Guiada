@@ -25,6 +25,9 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit;
 }
 
+require_once __DIR__ . '/../../config/protecao-csrf.php';
+exigirOrigemConfiavelCsrf();
+
 $dados = json_decode(
     file_get_contents("php://input"),
     true
@@ -79,14 +82,35 @@ try {
 
     // A sessão só é criada após validar as credenciais.
     session_regenerate_id(true);
-
     $perfil = strtolower(
-        trim($usuario["perfil"])
+        trim((string) ($usuario["perfil"] ?? ""))
     );
 
     if ($perfil === "administrador") {
         $perfil = "admin";
     }
+
+    $perfisPermitidos = [
+        "visitante",
+        "editor",
+        "admin"
+    ];
+
+    if (!in_array($perfil, $perfisPermitidos, true)) {
+        http_response_code(403);
+
+        echo json_encode([
+            "sucesso" => false,
+            "mensagem" => "Perfil de acesso inválido ou não autorizado."
+        ]);
+
+        $stmt->close();
+        $conn->close();
+
+        exit;
+    }
+
+    session_regenerate_id(true);
 
     $_SESSION["usuario_id"] = (int) $usuario["id"];
     $_SESSION["nome"] = $usuario["nome"];

@@ -25,6 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 $usuarioId = (int) ($_SESSION['usuario_id'] ?? 0);
 if ($usuarioId <= 0) responderJson(401, ['sucesso' => false, 'mensagem' => 'Entre na sua conta para registrar esta exploração.']);
+
+require_once __DIR__ . '/../../config/protecao-csrf.php';
+exigirOrigemConfiavelCsrf();
+
 $dados = json_decode((string) file_get_contents('php://input'), true);
 if (!is_array($dados)) responderJson(400, ['sucesso' => false, 'mensagem' => 'O conteúdo enviado é inválido.']);
 $obraId = filter_var($dados['obra_id'] ?? null, FILTER_VALIDATE_INT);
