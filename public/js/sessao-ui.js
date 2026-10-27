@@ -32,7 +32,6 @@
 
     const rotas = {
         inicio: "index.html",
-        galeria: "views/galeria.html",
         catalogo: "views/catalogo.html",
         biblioteca: "views/biblioteca.html",
         acesso: "views/acesso.html",
@@ -457,9 +456,22 @@
             ? "catalogo"
             : "galeria";
 
+        /*
+         * O item global "Galeria" sempre abre o catálogo.
+         * As páginas de exploração individual são acessadas
+         * pelos cartões do catálogo.
+         */
+        /*
+ * Links principais.
+ *
+ * O item Galeria sempre abre o catálogo, independentemente
+ * da página atual ou do estado de autenticação.
+ *
+ * A exploração individual é acessada pelos cartões do catálogo.
+ */
         const itens = [
             ["Início", rotas.inicio, "inicio"],
-            ["Galeria", rotaGaleria, chaveGaleria],
+            ["Galeria", rotas.catalogo, "catalogo"],
             ["Como funciona", rotas.comoFunciona, "como-funciona"],
             ["Minha biblioteca", rotas.biblioteca, "biblioteca"]
         ];
