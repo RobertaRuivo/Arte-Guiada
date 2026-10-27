@@ -1,7 +1,6 @@
 /*
  * Editor de obras do Arte Guiado.
- * Gerencia a prévia local, as etapas, a seleção de zoom e o envio
- * de rascunhos/publicações para a API PHP.
+ * Gerencia prévia de imagem, etapas, seleção de zoom, salvamento e listagem.
  */
 (() => {
     "use strict";
@@ -19,6 +18,7 @@
     const listaMinhasObras = document.getElementById("listaMinhasObras");
     const feedbackMinhasObras = document.getElementById("feedbackMinhasObras");
     const tituloFormulario = document.getElementById("titulo-publicar");
+
     const modeloEtapa = etapasContainer
         ?.querySelector(".etapa-editor")
         ?.cloneNode(true);
@@ -30,11 +30,6 @@
     ]);
 
     const TAMANHO_MAXIMO_IMAGEM = 7 * 1024 * 1024;
-
-    /*
-     * Limites visuais da imagem na seleção de zoom.
-     * A imagem mantém sua proporção original e nunca é cortada.
-     */
     const ALTURA_MAXIMA_ZOOM = 0.48;
     const LARGURA_MAXIMA_ZOOM = 760;
 
@@ -43,6 +38,7 @@
     let proximoIdEtapa = 2;
     let imagemPersistida = false;
     let enviando = false;
+    let excluindo = false;
     let obrasCache = [];
     let filtroObrasAtual = "publicadas";
     let mensagemListaPendente = "";
@@ -67,6 +63,16 @@
         return;
     }
 
+    /*
+     * A região de feedback também recebe o foco após ações importantes.
+     * Isso torna os resultados mais perceptíveis para quem usa teclado
+     * ou tecnologia assistiva.
+     */
+    feedbackMinhasObras.setAttribute("role", "status");
+    feedbackMinhasObras.setAttribute("aria-live", "polite");
+    feedbackMinhasObras.setAttribute("aria-atomic", "true");
+    feedbackMinhasObras.tabIndex = -1;
+
     function mostrarFeedback(mensagem, tipo = "erro") {
         feedback.textContent = mensagem;
         feedback.dataset.tipo = tipo;
@@ -80,11 +86,7 @@
     }
 
     /*
-     * Dimensiona o canvas e a imagem usando as dimensões naturais
-     * da obra como referência.
-     *
-     * A mesma escala é aplicada à largura e à altura. Assim, a imagem
-     * permanece inteira, sem cortes e sem distorção.
+     * Dimensiona o canvas e a imagem sem alterar a proporção original.
      */
     function dimensionarCanvasZoom(canvas, imagem) {
         if (
@@ -109,37 +111,28 @@
             (parseFloat(estilosArea.paddingLeft) || 0) +
             (parseFloat(estilosArea.paddingRight) || 0);
 
-        /*
-         * clientWidth inclui o padding, mas não inclui as bordas.
-         * Subtraímos o padding para obter a largura disponível à imagem.
-         */
-        let larguraDisponivel = area.clientWidth - paddingHorizontal;
+        let larguraDisponivel =
+            area.clientWidth - paddingHorizontal;
 
         /*
-         * Quando a seção do editor ainda está oculta, clientWidth pode
-         * ser zero. Nesse caso usamos uma largura provisória, que será
-         * recalculada quando o componente ficar visível.
+         * Quando o editor está oculto, a largura pode ser zero.
+         * Nesse caso usamos uma estimativa temporária.
          */
-        if (!Number.isFinite(larguraDisponivel) || larguraDisponivel <= 0) {
+        if (
+            !Number.isFinite(larguraDisponivel) ||
+            larguraDisponivel <= 0
+        ) {
             larguraDisponivel = Math.min(
                 LARGURA_MAXIMA_ZOOM,
                 window.innerWidth * 0.8
             );
         }
 
-        /*
-         * Limita também a altura para que a imagem não ocupe
-         * um espaço exagerado na tela.
-         */
         const alturaDisponivel = Math.max(
             1,
             window.innerHeight * ALTURA_MAXIMA_ZOOM
         );
 
-        /*
-         * Nunca amplia a imagem acima do tamanho natural.
-         * A escala respeita simultaneamente a largura e a altura.
-         */
         const escala = Math.min(
             1,
             larguraDisponivel / imagem.naturalWidth,
@@ -149,11 +142,6 @@
         const larguraFinal = imagem.naturalWidth * escala;
         const alturaFinal = imagem.naturalHeight * escala;
 
-        /*
-         * Canvas e imagem recebem exatamente as mesmas dimensões.
-         * O uso de !important evita que regras antigas do CSS imponham
-         * width: 100% ou outras dimensões incompatíveis.
-         */
         canvas.style.setProperty(
             "width",
             `${larguraFinal}px`,
@@ -204,15 +192,15 @@
     }
 
     /*
-     * Recalcula o tamanho de todas as imagens utilizadas nas etapas.
-     * As coordenadas dos retângulos são percentuais, por isso continuam
-     * proporcionais quando a imagem muda de tamanho.
+     * Redimensiona as imagens de todas as etapas existentes.
      */
     function redimensionarTodasAsImagensZoom() {
         etapasContainer
             .querySelectorAll("[data-zoom-canvas]")
             .forEach((canvas) => {
-                const imagem = canvas.querySelector("[data-zoom-imagem]");
+                const imagem = canvas.querySelector(
+                    "[data-zoom-imagem]"
+                );
 
                 if (
                     imagem &&
@@ -225,9 +213,7 @@
     }
 
     /*
-     * Observa mudanças de tamanho nas áreas de seleção.
-     * Isso permite recalcular a imagem quando a seção do editor,
-     * inicialmente oculta, passa a ser exibida.
+     * Observa alterações de tamanho das áreas de zoom.
      */
     let observadorZoom = null;
 
@@ -235,8 +221,14 @@
         observadorZoom = new ResizeObserver((entradas) => {
             entradas.forEach((entrada) => {
                 const area = entrada.target;
-                const canvas = area.querySelector("[data-zoom-canvas]");
-                const imagem = canvas?.querySelector("[data-zoom-imagem]");
+
+                const canvas = area.querySelector(
+                    "[data-zoom-canvas]"
+                );
+
+                const imagem = canvas?.querySelector(
+                    "[data-zoom-imagem]"
+                );
 
                 if (
                     canvas &&
@@ -251,14 +243,14 @@
         });
     }
 
-    /*
-     * Recalcula quando a janela muda de tamanho.
-     */
     window.addEventListener(
         "resize",
         redimensionarTodasAsImagensZoom
     );
 
+    /*
+     * Limpa a seleção de zoom e os valores associados.
+     */
     function limparSelecaoZoom(etapa) {
         const caixa = etapa.querySelector("[data-zoom-caixa]");
 
@@ -276,8 +268,7 @@
     }
 
     /*
-     * Aplica a imagem à etapa e ajusta seu tamanho antes da seleção.
-     * Também trata imagens que já estejam carregadas no navegador.
+     * Aplica uma imagem à etapa.
      */
     function aplicarImagemNaEtapa(etapa, url) {
         const canvas = etapa.querySelector("[data-zoom-canvas]");
@@ -291,10 +282,6 @@
         limparSelecaoZoom(etapa);
 
         if (url) {
-            /*
-             * O redimensionamento acontece após o carregamento.
-             * Atribuir o manipulador antes do src evita perder o evento.
-             */
             imagem.onload = () => {
                 dimensionarCanvasZoom(canvas, imagem);
             };
@@ -311,10 +298,6 @@
             canvas.hidden = false;
             texto.hidden = true;
 
-            /*
-             * Registra a área para recalcular a imagem quando ela
-             * se tornar visível ou mudar de tamanho.
-             */
             if (observadorZoom) {
                 const area = canvas.closest(".imagem-selecao-zoom");
 
@@ -326,9 +309,7 @@
             imagem.src = url;
 
             /*
-             * Se o navegador já tiver a imagem em cache, onload pode
-             * não precisar ocorrer novamente. Por isso verificamos
-             * também se ela já terminou de carregar.
+             * Trata imagens que já estejam carregadas em cache.
              */
             if (imagem.complete && imagem.naturalWidth > 0) {
                 dimensionarCanvasZoom(canvas, imagem);
@@ -339,10 +320,6 @@
 
             imagem.removeAttribute("src");
 
-            /*
-             * Remove os tamanhos inline para não reaproveitar
-             * as dimensões da imagem anterior.
-             */
             [
                 "width",
                 "height",
@@ -362,6 +339,9 @@
         }
     }
 
+    /*
+     * Libera a URL temporária de uma imagem local.
+     */
     function liberarImagemLocal() {
         if (urlImagemAtual) {
             URL.revokeObjectURL(urlImagemAtual);
@@ -369,6 +349,9 @@
         }
     }
 
+    /*
+     * Atualiza a prévia após a escolha de um arquivo.
+     */
     function atualizarPreviaImagem(arquivo) {
         liberarImagemLocal();
 
@@ -413,6 +396,9 @@
             });
     }
 
+    /*
+     * Carrega a imagem de uma obra já salva no servidor.
+     */
     function aplicarImagemPersistida(obraId) {
         liberarImagemLocal();
 
@@ -437,12 +423,20 @@
             });
     }
 
+    /*
+     * Aguarda uma imagem carregar ou retorna um erro.
+     */
     function esperarImagem(imagem) {
         if (imagem.complete && imagem.naturalWidth > 0) {
             return Promise.resolve();
         }
 
         return new Promise((resolve, reject) => {
+            const limpar = () => {
+                imagem.removeEventListener("load", carregada);
+                imagem.removeEventListener("error", falhou);
+            };
+
             const carregada = () => {
                 limpar();
                 resolve();
@@ -450,14 +444,12 @@
 
             const falhou = () => {
                 limpar();
-                reject(
-                    new Error("Não foi possível carregar a imagem da obra.")
-                );
-            };
 
-            const limpar = () => {
-                imagem.removeEventListener("load", carregada);
-                imagem.removeEventListener("error", falhou);
+                reject(
+                    new Error(
+                        "Não foi possível carregar a imagem da obra."
+                    )
+                );
             };
 
             imagem.addEventListener("load", carregada, { once: true });
@@ -465,6 +457,9 @@
         });
     }
 
+    /*
+     * Validação do arquivo escolhido.
+     */
     entradaImagem.addEventListener("change", () => {
         const arquivo = entradaImagem.files?.[0] || null;
 
@@ -476,16 +471,22 @@
         if (!TIPOS_IMAGEM.has(arquivo.type)) {
             entradaImagem.value = "";
             atualizarPreviaImagem(null);
-            mostrarFeedback("Escolha uma imagem JPEG, PNG ou WebP.");
+
+            mostrarFeedback(
+                "Escolha uma imagem JPEG, PNG ou WebP."
+            );
+
             return;
         }
 
         if (arquivo.size > TAMANHO_MAXIMO_IMAGEM) {
             entradaImagem.value = "";
             atualizarPreviaImagem(null);
+
             mostrarFeedback(
                 "A imagem ultrapassa o limite de 7 MB. Escolha um arquivo menor."
             );
+
             return;
         }
 
@@ -493,6 +494,9 @@
         atualizarPreviaImagem(arquivo);
     });
 
+    /*
+     * Atualiza a numeração e os nomes das etapas.
+     */
     function reindexarEtapas() {
         const etapas = Array.from(
             etapasContainer.querySelectorAll(".etapa-editor")
@@ -501,8 +505,13 @@
         etapas.forEach((etapa, indice) => {
             etapa.dataset.etapaEditor = String(indice + 1);
 
-            const numero = etapa.querySelector(".etapa-editor-numero");
-            const titulo = etapa.querySelector(".etapa-editor-cabecalho h3");
+            const numero = etapa.querySelector(
+                ".etapa-editor-numero"
+            );
+
+            const titulo = etapa.querySelector(
+                ".etapa-editor-cabecalho h3"
+            );
 
             if (numero) {
                 numero.textContent = String(indice + 1).padStart(2, "0");
@@ -519,7 +528,9 @@
                 );
             });
 
-            const remover = etapa.querySelector("[data-remover-etapa]");
+            const remover = etapa.querySelector(
+                "[data-remover-etapa]"
+            );
 
             if (remover) {
                 remover.hidden = etapas.length === 1;
@@ -527,6 +538,9 @@
         });
     }
 
+    /*
+     * Adiciona uma etapa em branco.
+     */
     adicionarEtapa.addEventListener("click", () => {
         const base = etapasContainer.querySelector(".etapa-editor");
 
@@ -569,8 +583,17 @@
         nova.querySelector('input[name$="[titulo]"]')?.focus();
     });
 
+    /*
+     * Remove uma etapa, preservando sempre pelo menos uma.
+     */
     etapasContainer.addEventListener("click", (evento) => {
-        const botao = evento.target.closest("[data-remover-etapa]");
+        const alvo = evento.target;
+
+        if (!(alvo instanceof Element)) {
+            return;
+        }
+
+        const botao = alvo.closest("[data-remover-etapa]");
 
         if (
             !botao ||
@@ -594,6 +617,9 @@
         reindexarEtapas();
     });
 
+    /*
+     * Lê as coordenadas normalizadas do retângulo de zoom.
+     */
     function lerRetangulo(caixa) {
         return {
             x: parseFloat(caixa.style.left) / 100,
@@ -603,6 +629,9 @@
         };
     }
 
+    /*
+     * Atualiza a representação visual e os campos de coordenadas.
+     */
     function escreverRetangulo(etapa, caixa, retangulo) {
         const x = limitar(retangulo.x, 0, 1);
         const y = limitar(retangulo.y, 0, 1);
@@ -617,9 +646,11 @@
 
         const campoX = etapa.querySelector('[data-zoom-valor="x"]');
         const campoY = etapa.querySelector('[data-zoom-valor="y"]');
+
         const campoLargura = etapa.querySelector(
             '[data-zoom-valor="largura"]'
         );
+
         const campoAltura = etapa.querySelector(
             '[data-zoom-valor="altura"]'
         );
@@ -631,14 +662,17 @@
     }
 
     /*
-     * Seleção de zoom:
-     * - só permite iniciar a seleção sobre a imagem;
-     * - calcula as coordenadas em relação à imagem realmente exibida;
-     * - mantém a caixa de seleção proporcional ao canvas;
-     * - permite desenhar, mover e redimensionar o retângulo.
+     * Seleção de zoom por mouse ou toque.
+     * Permite desenhar, mover e redimensionar a região.
      */
     etapasContainer.addEventListener("pointerdown", (evento) => {
-        const canvas = evento.target.closest("[data-zoom-canvas]");
+        const alvo = evento.target;
+
+        if (!(alvo instanceof Element)) {
+            return;
+        }
+
+        const canvas = alvo.closest("[data-zoom-canvas]");
 
         if (
             !canvas ||
@@ -648,7 +682,7 @@
             return;
         }
 
-        if (evento.target.closest("[data-limpar-zoom]")) {
+        if (alvo.closest("[data-limpar-zoom]")) {
             return;
         }
 
@@ -669,14 +703,10 @@
                 "A imagem ainda está carregando. Aguarde um instante e tente selecionar a região novamente.",
                 "info"
             );
+
             return;
         }
 
-        /*
-         * O canvas e a imagem recebem as mesmas dimensões na função
-         * dimensionarCanvasZoom. A caixa usa percentuais do canvas,
-         * portanto a referência geométrica deve coincidir.
-         */
         const limitesImagem = imagem.getBoundingClientRect();
         const limitesCanvas = canvas.getBoundingClientRect();
 
@@ -690,7 +720,7 @@
         }
 
         /*
-         * Não permite desenhar fora da imagem.
+         * Impede começar uma seleção fora da área da imagem.
          */
         if (
             evento.clientX < limitesImagem.left ||
@@ -701,10 +731,6 @@
             return;
         }
 
-        /*
-         * Converte a posição do mouse ou toque em coordenadas
-         * normalizadas entre 0 e 1.
-         */
         const ponto = (e) => ({
             x: limitar(
                 (e.clientX - limitesCanvas.left) / limitesCanvas.width,
@@ -719,8 +745,8 @@
         });
 
         const inicio = ponto(evento);
-        const alca = evento.target.closest("[data-zoom-alca]");
-        const clicouNaCaixa = evento.target.closest("[data-zoom-caixa]");
+        const alca = alvo.closest("[data-zoom-alca]");
+        const clicouNaCaixa = alvo.closest("[data-zoom-caixa]");
         const tinhaSelecao = !caixa.hidden;
 
         let modo = "desenhar";
@@ -746,7 +772,7 @@
         try {
             canvas.setPointerCapture(evento.pointerId);
         } catch (erro) {
-            /* A captura do ponteiro é opcional. */
+            // A captura do ponteiro é opcional.
         }
 
         const mover = (movimento) => {
@@ -805,7 +831,7 @@
                     canvas.releasePointerCapture(evento.pointerId);
                 }
             } catch (erro) {
-                /* A captura já pode ter sido liberada pelo navegador. */
+                // A captura pode já ter sido liberada.
             }
 
             const w = parseFloat(caixa.style.width) / 100;
@@ -833,8 +859,17 @@
         canvas.addEventListener("pointercancel", finalizar, { once: true });
     });
 
+    /*
+     * Limpa a região de zoom de uma etapa.
+     */
     etapasContainer.addEventListener("click", (evento) => {
-        const botao = evento.target.closest("[data-limpar-zoom]");
+        const alvo = evento.target;
+
+        if (!(alvo instanceof Element)) {
+            return;
+        }
+
+        const botao = alvo.closest("[data-limpar-zoom]");
 
         if (!botao) {
             return;
@@ -847,12 +882,18 @@
         }
     });
 
+    /*
+     * Valida os dados antes de salvar ou publicar.
+     */
     function coletarErros(status) {
         const erros = [];
 
         const titulo = document.getElementById("tituloObra").value.trim();
         const autor = document.getElementById("autorObra").value.trim();
-        const textoAlternativo = document.getElementById("altObra").value.trim();
+
+        const textoAlternativo =
+            document.getElementById("altObra").value.trim();
+
         const arquivo = entradaImagem.files?.[0] || null;
 
         const etapas = Array.from(
@@ -867,6 +908,10 @@
             erros.push("A imagem deve ter no máximo 7 MB.");
         }
 
+        /*
+         * Os rascunhos podem ser salvos incompletos.
+         * As exigências completas são aplicadas ao publicar.
+         */
         if (status === "publicada") {
             if (!titulo) {
                 erros.push("Informe o nome da obra.");
@@ -968,8 +1013,11 @@
         return erros;
     }
 
+    /*
+     * Envia o formulário à API para salvar rascunho ou publicação.
+     */
     async function salvarObra(status) {
-        if (enviando) {
+        if (enviando || excluindo) {
             return;
         }
 
@@ -1023,20 +1071,15 @@
             const resultado = await resposta.json().catch(() => null);
 
             if (!resposta.ok || !resultado?.sucesso) {
-                if (
-                    resposta.status === 401 ||
-                    resposta.status === 403
-                ) {
-                    mostrarFeedback(
-                        resultado?.mensagem ||
-                        "Sua sessão não permite esta operação."
-                    );
-                } else {
-                    mostrarFeedback(
-                        resultado?.mensagem ||
-                        "Não foi possível salvar a obra. Verifique os dados e tente novamente."
-                    );
-                }
+                mostrarFeedback(
+                    resultado?.mensagem ||
+                    (
+                        resposta.status === 401 ||
+                            resposta.status === 403
+                            ? "Sua sessão não permite esta operação."
+                            : "Não foi possível salvar a obra. Verifique os dados e tente novamente."
+                    )
+                );
 
                 return;
             }
@@ -1048,7 +1091,9 @@
             imagemPersistida = Boolean(resultado.imagem_salva);
 
             definirFiltroObras(
-                status === "rascunho" ? "rascunhos" : "publicadas"
+                status === "rascunho"
+                    ? "rascunhos"
+                    : "publicadas"
             );
 
             mensagemListaPendente = resultado.mensagem ||
@@ -1061,7 +1106,10 @@
             if (typeof window.abrirSecaoPainel === "function") {
                 window.abrirSecaoPainel("minhas-obras");
             } else {
-                mostrarFeedback(mensagemListaPendente, "sucesso");
+                mostrarFeedback(
+                    mensagemListaPendente,
+                    "sucesso"
+                );
             }
         } catch (erro) {
             mostrarFeedback(
@@ -1078,6 +1126,9 @@
         }
     }
 
+    /*
+     * Seleciona qual coleção será exibida.
+     */
     function definirFiltroObras(filtro) {
         filtroObrasAtual = filtro;
 
@@ -1091,6 +1142,9 @@
         renderizarMinhasObras();
     }
 
+    /*
+     * Atualiza a mensagem da seção Minhas obras.
+     */
     function mostrarFeedbackObras(mensagem = "", tipo = "info") {
         feedbackMinhasObras.textContent = mensagem;
 
@@ -1124,6 +1178,9 @@
         }).format(data);
     }
 
+    /*
+     * Cria um botão sem inserir texto diretamente no HTML.
+     */
     function criarBotao(texto, classe, atributo, valor) {
         const botao = document.createElement("button");
 
@@ -1135,6 +1192,12 @@
         return botao;
     }
 
+    /*
+     * Monta os cartões das obras.
+     *
+     * Cada cartão contém apenas um botão de edição e um botão de exclusão.
+     * A confirmação fica separada e começa oculta.
+     */
     function renderizarMinhasObras() {
         const filtradas = obrasCache.filter((obra) =>
             obra.status === (
@@ -1170,6 +1233,9 @@
             );
         }
 
+        /*
+         * Estado vazio para a coleção selecionada.
+         */
         if (filtradas.length === 0) {
             const estado = document.createElement("div");
             estado.className = "estado-vazio";
@@ -1177,16 +1243,21 @@
             const simbolo = document.createElement("span");
             simbolo.className = "estado-vazio-simbolo";
             simbolo.setAttribute("aria-hidden", "true");
+
             simbolo.textContent =
-                filtroObrasAtual === "rascunhos" ? "✎" : "▧";
+                filtroObrasAtual === "rascunhos"
+                    ? "✎"
+                    : "▧";
 
             const titulo = document.createElement("h3");
+
             titulo.textContent =
                 filtroObrasAtual === "rascunhos"
                     ? "Você ainda não tem rascunhos"
                     : "Você ainda não publicou uma obra";
 
             const texto = document.createElement("p");
+
             texto.textContent =
                 filtroObrasAtual === "rascunhos"
                     ? "Quando salvar uma obra como rascunho, ela aparecerá aqui. Você poderá retomá-la depois ou começar outra obra sem perder este rascunho."
@@ -1205,6 +1276,10 @@
             return;
         }
 
+        /*
+         * Um único conjunto de ações por cartão.
+         * Não repetir os append antigos abaixo deste bloco.
+         */
         filtradas.forEach((obra) => {
             const cartao = document.createElement("article");
             cartao.className = "obra-editor-card";
@@ -1213,10 +1288,13 @@
             cabecalho.className = "obra-editor-cabecalho";
 
             const nome = document.createElement("h3");
+
             nome.textContent =
-                obra.titulo || `Obra sem título · rascunho #${obra.id}`;
+                obra.titulo ||
+                `Obra sem título · rascunho #${obra.id}`;
 
             const etiqueta = document.createElement("span");
+
             etiqueta.className =
                 `estado-obra ${obra.status === "rascunho"
                     ? "estado-obra-rascunho"
@@ -1224,18 +1302,22 @@
                 }`;
 
             etiqueta.textContent =
-                obra.status === "rascunho" ? "Rascunho" : "Publicada";
+                obra.status === "rascunho"
+                    ? "Rascunho"
+                    : "Publicada";
 
             cabecalho.append(nome, etiqueta);
 
             const autoria = document.createElement("p");
             autoria.className = "obra-editor-autor";
+
             autoria.textContent = obra.autor
                 ? `Autor: ${obra.autor}`
                 : "Autor ainda não informado";
 
             const meta = document.createElement("p");
             meta.className = "obra-editor-meta";
+
             meta.textContent =
                 `Atualizada em ${formatarData(obra.atualizada_em)} · ` +
                 `${obra.total_etapas} ` +
@@ -1244,23 +1326,237 @@
             const acoes = document.createElement("div");
             acoes.className = "obra-editor-acoes";
 
-            acoes.appendChild(
-                criarBotao(
-                    obra.status === "rascunho"
-                        ? "Continuar editando"
-                        : "Editar obra",
-                    "botao botao-secundario",
-                    "editarObra",
-                    obra.id
-                )
+            const botaoEditar = criarBotao(
+                obra.status === "rascunho"
+                    ? "Continuar editando"
+                    : "Editar obra",
+                "botao botao-secundario",
+                "editarObra",
+                obra.id
             );
 
-            cartao.append(cabecalho, autoria, meta, acoes);
+            const botaoExcluir = criarBotao(
+                "Excluir obra",
+                "botao botao-excluir-obra",
+                "excluirObra",
+                obra.id
+            );
+
+            const idConfirmacao =
+                `confirmacao-exclusao-${obra.id}`;
+
+            botaoExcluir.setAttribute(
+                "aria-controls",
+                idConfirmacao
+            );
+
+            botaoExcluir.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+            const confirmacao = document.createElement("div");
+
+            confirmacao.className = "confirmacao-exclusao-obra";
+            confirmacao.id = idConfirmacao;
+            confirmacao.hidden = true;
+            confirmacao.setAttribute("role", "group");
+
+            confirmacao.setAttribute(
+                "aria-labelledby",
+                `${idConfirmacao}-titulo`
+            );
+
+            const tituloConfirmacao = document.createElement("p");
+
+            tituloConfirmacao.id = `${idConfirmacao}-titulo`;
+
+            tituloConfirmacao.textContent =
+                `Deseja excluir "${nome.textContent}"?`;
+
+            const explicacaoConfirmacao = document.createElement("p");
+
+            explicacaoConfirmacao.textContent =
+                "A obra deixará de aparecer nas listagens. " +
+                "Essa ação não poderá ser desfeita pela interface.";
+
+            const acoesConfirmacao = document.createElement("div");
+
+            acoesConfirmacao.className =
+                "confirmacao-exclusao-acoes";
+
+            const botaoCancelar = criarBotao(
+                "Cancelar",
+                "botao botao-secundario",
+                "cancelarExclusao",
+                obra.id
+            );
+
+            const botaoConfirmar = criarBotao(
+                "Confirmar exclusão",
+                "botao botao-excluir-obra",
+                "confirmarExclusao",
+                obra.id
+            );
+
+            acoesConfirmacao.append(
+                botaoCancelar,
+                botaoConfirmar
+            );
+
+            confirmacao.append(
+                tituloConfirmacao,
+                explicacaoConfirmacao,
+                acoesConfirmacao
+            );
+
+            acoes.append(
+                botaoEditar,
+                botaoExcluir
+            );
+
+            cartao.append(
+                cabecalho,
+                autoria,
+                meta,
+                acoes,
+                confirmacao
+            );
 
             listaMinhasObras.appendChild(cartao);
         });
     }
 
+    /*
+     * Executa a exclusão após a confirmação no próprio cartão.
+     */
+    async function excluirObra(id, botaoConfirmar) {
+        if (enviando || excluindo) {
+            return;
+        }
+
+        const obra = obrasCache.find(
+            (item) => String(item.id) === String(id)
+        );
+
+        if (!obra) {
+            mostrarFeedbackObras(
+                "Não foi possível localizar essa obra na lista atual.",
+                "erro"
+            );
+
+            feedbackMinhasObras.focus();
+            return;
+        }
+
+        const cartao = botaoConfirmar?.closest(
+            ".obra-editor-card"
+        );
+
+        if (!cartao) {
+            mostrarFeedbackObras(
+                "Não foi possível identificar o cartão da obra.",
+                "erro"
+            );
+
+            feedbackMinhasObras.focus();
+            return;
+        }
+
+        const confirmacao = cartao.querySelector(
+            ".confirmacao-exclusao-obra"
+        );
+
+        excluindo = true;
+
+        /*
+         * Desativa os controles do cartão durante a requisição.
+         * Isso impede cliques repetidos que enviariam várias solicitações.
+         */
+        cartao.querySelectorAll("button").forEach((botao) => {
+            botao.disabled = true;
+        });
+
+        mostrarFeedbackObras(
+            "Excluindo obra...",
+            "info"
+        );
+
+        try {
+            const resposta = await fetch("../api/obras/excluir.php", {
+                method: "POST",
+                credentials: "same-origin",
+                cache: "no-store",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    obra_id: Number(id)
+                })
+            });
+
+            const resultado = await resposta.json().catch(() => null);
+
+            if (!resposta.ok || !resultado?.sucesso) {
+                mostrarFeedbackObras(
+                    resultado?.mensagem ||
+                    `Não foi possível excluir a obra. Código HTTP: ${resposta.status}.`,
+                    "erro"
+                );
+
+                return;
+            }
+
+            /*
+             * Retira a obra da lista local somente após a confirmação
+             * de sucesso enviada pela API.
+             */
+            obrasCache = obrasCache.filter(
+                (item) => String(item.id) !== String(id)
+            );
+
+            renderizarMinhasObras();
+
+            mostrarFeedbackObras(
+                resultado.mensagem ||
+                "Obra excluída com sucesso.",
+                "sucesso"
+            );
+
+            /*
+             * O cartão foi removido. O foco passa para a mensagem,
+             * evitando que o usuário perca a referência da interface.
+             */
+            feedbackMinhasObras.focus();
+
+        } catch (erro) {
+            console.error("Erro ao excluir obra:", erro);
+
+            mostrarFeedbackObras(
+                "Não foi possível conectar ao servidor. " +
+                "Confira a lista antes de tentar novamente.",
+                "erro"
+            );
+
+        } finally {
+            excluindo = false;
+
+            /*
+             * Se ocorreu erro, mantém a confirmação aberta e reativa
+             * os botões para permitir cancelar ou tentar novamente.
+             */
+            if (confirmacao?.isConnected) {
+                cartao.querySelectorAll("button").forEach((botao) => {
+                    botao.disabled = false;
+                });
+            }
+        }
+    }
+
+    /*
+     * Obtém as obras persistidas pela API.
+     */
     async function carregarMinhasObras(mensagem = "") {
         mostrarFeedbackObras(
             mensagem,
@@ -1291,19 +1587,15 @@
                 !resultado?.sucesso ||
                 !Array.isArray(resultado.obras)
             ) {
-                if (resposta.status === 401) {
-                    mostrarFeedbackObras(
-                        resultado?.mensagem ||
-                        "Sua sessão expirou. Entre novamente.",
-                        "erro"
-                    );
-                } else {
-                    mostrarFeedbackObras(
-                        resultado?.mensagem ||
-                        "Não foi possível carregar suas obras.",
-                        "erro"
-                    );
-                }
+                mostrarFeedbackObras(
+                    resultado?.mensagem ||
+                    (
+                        resposta.status === 401
+                            ? "Sua sessão expirou. Entre novamente."
+                            : "Não foi possível carregar suas obras."
+                    ),
+                    "erro"
+                );
 
                 listaMinhasObras.replaceChildren();
 
@@ -1313,6 +1605,7 @@
             obrasCache = resultado.obras;
 
             renderizarMinhasObras();
+
         } catch (erro) {
             listaMinhasObras.replaceChildren();
 
@@ -1323,6 +1616,9 @@
         }
     }
 
+    /*
+     * Restaura uma única etapa vazia ao iniciar uma nova obra.
+     */
     function redefinirEtapas() {
         etapasContainer.replaceChildren();
 
@@ -1353,8 +1649,11 @@
         reindexarEtapas();
     }
 
+    /*
+     * Limpa o formulário e abre a seção para criar uma obra.
+     */
     function iniciarNovaObra() {
-        if (enviando) {
+        if (enviando || excluindo) {
             return;
         }
 
@@ -1381,15 +1680,15 @@
         if (typeof window.abrirSecaoPainel === "function") {
             window.abrirSecaoPainel("publicar");
 
-            /*
-             * Recalcula as dimensões depois que a seção é exibida.
-             */
-            requestAnimationFrame(() => {
-                redimensionarTodasAsImagensZoom();
-            });
+            requestAnimationFrame(
+                redimensionarTodasAsImagensZoom
+            );
         }
     }
 
+    /*
+     * Carrega uma obra existente para edição.
+     */
     async function carregarObraParaEdicao(id) {
         mostrarFeedbackObras(
             "Carregando a obra para edição...",
@@ -1445,6 +1744,9 @@
                     ? obra.etapas
                     : [{}];
 
+            /*
+             * Cria etapas até alcançar a quantidade salva.
+             */
             while (
                 etapasContainer.querySelectorAll(".etapa-editor").length <
                 etapas.length
@@ -1475,12 +1777,18 @@
                 etapasContainer.appendChild(nova);
             }
 
+            /*
+             * Remove etapas excedentes.
+             */
             while (
                 etapasContainer.querySelectorAll(".etapa-editor").length >
                 etapas.length
             ) {
                 const ultima = etapasContainer.lastElementChild;
-                const area = ultima?.querySelector(".imagem-selecao-zoom");
+
+                const area = ultima?.querySelector(
+                    ".imagem-selecao-zoom"
+                );
 
                 if (area && observadorZoom) {
                     observadorZoom.unobserve(area);
@@ -1491,6 +1799,9 @@
 
             reindexarEtapas();
 
+            /*
+             * Restaura títulos, textos e coordenadas salvas.
+             */
             Array.from(
                 etapasContainer.querySelectorAll(".etapa-editor")
             ).forEach((elemento, indice) => {
@@ -1539,18 +1850,21 @@
                 const imagens = [
                     previaImagem,
                     ...Array.from(
-                        etapasContainer.querySelectorAll("[data-zoom-imagem]")
+                        etapasContainer.querySelectorAll(
+                            "[data-zoom-imagem]"
+                        )
                     )
                 ];
 
-                await Promise.all(imagens.map(esperarImagem));
+                await Promise.all(
+                    imagens.map(esperarImagem)
+                );
 
-                /*
-                 * Garante que o canvas seja dimensionado antes de restaurar
-                 * os retângulos de zoom salvos.
-                 */
                 redimensionarTodasAsImagensZoom();
 
+                /*
+                 * Restaura a seleção visual de cada etapa.
+                 */
                 Array.from(
                     etapasContainer.querySelectorAll(".etapa-editor")
                 ).forEach((elemento, indice) => {
@@ -1633,14 +1947,11 @@
             if (typeof window.abrirSecaoPainel === "function") {
                 window.abrirSecaoPainel("publicar");
 
-                /*
-                 * A área pode ter estado oculta enquanto a imagem carregava.
-                 * Recalcula depois de abrir a seção de publicação.
-                 */
-                requestAnimationFrame(() => {
-                    redimensionarTodasAsImagensZoom();
-                });
+                requestAnimationFrame(
+                    redimensionarTodasAsImagensZoom
+                );
             }
+
         } catch (erro) {
             console.error(
                 "Erro ao carregar a obra para edição:",
@@ -1654,6 +1965,9 @@
         }
     }
 
+    /*
+     * Prepara o formulário para editar sem navegar entre seções.
+     */
     function iniciarNovaObraSemNavegar() {
         formulario.reset();
         campoObraId.value = "";
@@ -1676,29 +1990,50 @@
         mostrarFeedback("", "info");
     }
 
+    /*
+     * Atualiza os dados quando o painel abre determinada seção.
+     */
     document.addEventListener("painel:secao-aberta", (evento) => {
         if (evento.detail?.nome === "minhas-obras") {
             const mensagem = mensagemListaPendente;
+
             mensagemListaPendente = "";
 
             carregarMinhasObras(mensagem);
         }
 
         if (evento.detail?.nome === "publicar") {
-            requestAnimationFrame(() => {
-                redimensionarTodasAsImagensZoom();
-            });
+            requestAnimationFrame(
+                redimensionarTodasAsImagensZoom
+            );
         }
     });
 
+    /*
+     * Controles de filtro: publicadas e rascunhos.
+     */
     document.querySelectorAll("[data-obras-filtro]").forEach((botao) => {
         botao.addEventListener("click", () => {
             definirFiltroObras(botao.dataset.obrasFiltro);
         });
     });
 
+    /*
+     * Tratamento centralizado dos controles dos cartões.
+     * A delegação de eventos continua funcionando após renderizar
+     * novamente a lista, sem adicionar ouvintes repetidos.
+     */
     document.addEventListener("click", (evento) => {
-        const botaoNova = evento.target.closest("[data-nova-obra]");
+        const alvo = evento.target;
+
+        if (!(alvo instanceof Element)) {
+            return;
+        }
+
+        /*
+         * Criar nova obra.
+         */
+        const botaoNova = alvo.closest("[data-nova-obra]");
 
         if (botaoNova) {
             evento.preventDefault();
@@ -1706,30 +2041,149 @@
             return;
         }
 
-        const botaoEditar = evento.target.closest("[data-editar-obra]");
+        /*
+         * Confirmar a exclusão.
+         */
+        const botaoConfirmar = alvo.closest(
+            "[data-confirmar-exclusao]"
+        );
+
+        if (botaoConfirmar) {
+            evento.preventDefault();
+
+            excluirObra(
+                botaoConfirmar.dataset.confirmarExclusao,
+                botaoConfirmar
+            );
+
+            return;
+        }
+
+        /*
+         * Cancelar a exclusão e devolver o foco ao botão original.
+         */
+        const botaoCancelar = alvo.closest(
+            "[data-cancelar-exclusao]"
+        );
+
+        if (botaoCancelar) {
+            evento.preventDefault();
+
+            const cartao = botaoCancelar.closest(
+                ".obra-editor-card"
+            );
+
+            const confirmacao = cartao?.querySelector(
+                ".confirmacao-exclusao-obra"
+            );
+
+            const botaoExcluir = cartao?.querySelector(
+                "[data-excluir-obra]"
+            );
+
+            if (confirmacao) {
+                confirmacao.hidden = true;
+            }
+
+            if (botaoExcluir) {
+                botaoExcluir.hidden = false;
+
+                botaoExcluir.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                botaoExcluir.focus();
+            }
+
+            return;
+        }
+
+        /*
+         * Abrir a confirmação dentro do cartão.
+         * O botão original fica oculto enquanto a confirmação está aberta.
+         */
+        const botaoExcluir = alvo.closest("[data-excluir-obra]");
+
+        if (botaoExcluir) {
+            evento.preventDefault();
+
+            if (enviando || excluindo) {
+                return;
+            }
+
+            const cartao = botaoExcluir.closest(
+                ".obra-editor-card"
+            );
+
+            const confirmacao = cartao?.querySelector(
+                ".confirmacao-exclusao-obra"
+            );
+
+            if (!confirmacao) {
+                mostrarFeedbackObras(
+                    "Não foi possível abrir a confirmação de exclusão.",
+                    "erro"
+                );
+
+                return;
+            }
+
+            confirmacao.hidden = false;
+            botaoExcluir.hidden = true;
+
+            botaoExcluir.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+            confirmacao
+                .querySelector("[data-confirmar-exclusao]")
+                ?.focus();
+
+            return;
+        }
+
+        /*
+         * Editar uma obra existente.
+         */
+        const botaoEditar = alvo.closest("[data-editar-obra]");
 
         if (botaoEditar) {
             evento.preventDefault();
-            carregarObraParaEdicao(botaoEditar.dataset.editarObra);
+
+            carregarObraParaEdicao(
+                botaoEditar.dataset.editarObra
+            );
         }
     });
 
+    /*
+     * Salvar rascunho.
+     */
     botaoRascunho.addEventListener("click", () => {
         salvarObra("rascunho");
     });
 
+    /*
+     * Publicar obra.
+     */
     formulario.addEventListener("submit", (evento) => {
         evento.preventDefault();
+
         salvarObra("publicada");
     });
 
     /*
-     * Carrega a lista para preencher as contagens do painel.
-     * Ao abrir "Minhas obras", a lista é atualizada novamente.
+     * Carrega a lista inicial para preencher as contagens.
      */
     carregarMinhasObras();
 
-    window.addEventListener("beforeunload", () => {
-        liberarImagemLocal();
-    });
+    /*
+     * Libera recursos temporários ao sair da página.
+     */
+    window.addEventListener(
+        "beforeunload",
+        liberarImagemLocal
+    );
 })();

@@ -1,6 +1,5 @@
 /* Arte Guiada: correções isoladas do formulário do editor.
    Carregar depois de painel.css e painel-dashboard.css. */
-body.pagina-painel.dashboard-editor #formPublicacao,
 
 body.pagina-painel.dashboard-editor #formPublicacao {
     display: grid !important;
@@ -40,7 +39,7 @@ body.pagina-painel.dashboard-editor #formPublicacao .form-section-description {
     line-height: 1.75 !important;
 }
 
-/* Force field layout to stack labels over controls, even if painel.css has older rules. */
+/* Campos em coluna, com rótulos acima dos controles. */
 body.pagina-painel.dashboard-editor #formPublicacao .form-grid-publicacao {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -276,95 +275,55 @@ body.pagina-painel.dashboard-editor #formPublicacao .seletor-zoom-cabecalho p {
     line-height: 1.7 !important;
 }
 
-/* Área de seleção: não recortar a obra. */
-/* Área reservada à seleção do detalhe */
-body.pagina-painel.dashboard-editor #formPublicacao .imagem-selecao-zoom {
-    display: block !important;
-    position: relative !important;
-    box-sizing: border-box !important;
-
-    width: 100% !important;
-    min-width: 0 !important;
-    height: auto !important;
-    min-height: 0 !important;
-
-    padding: 12px !important;
-    margin: 0 0 20px !important;
-
-    overflow: hidden !important;
-
-    border: 1px solid #D9C4AF !important;
-    border-radius: 10px !important;
-    background: #FFFCF8 !important;
-
-    touch-action: none;
-}
-
-/* Área de seleção: não cortar a imagem */
+/* Área de seleção: uma única regra consolidada, sem overflow conflitante. */
 body.pagina-painel.dashboard-editor #formPublicacao .imagem-selecao-zoom {
     display: flex !important;
     position: relative !important;
     align-items: center !important;
     justify-content: center !important;
-
     box-sizing: border-box !important;
     width: 100% !important;
     height: auto !important;
     min-width: 0 !important;
     min-height: 0 !important;
     max-height: none !important;
-
     padding: 12px !important;
     margin: 0 0 20px !important;
-
     overflow: visible !important;
-
     border: 1px solid #D9C4AF !important;
     border-radius: 10px !important;
     background: #FFFCF8 !important;
-
     touch-action: none;
 }
 
-/* O canvas deve acompanhar as dimensões reais da imagem */
 body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas {
     display: block !important;
     position: relative !important;
-
     box-sizing: border-box !important;
     flex: 0 0 auto !important;
-
     min-width: 0 !important;
     min-height: 0 !important;
     max-width: none !important;
     max-height: none !important;
-
     margin: 0 auto !important;
     padding: 0 !important;
-
     overflow: visible !important;
     line-height: 0 !important;
 }
 
-/* Exibir a obra inteira, sem recortes */
 body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas img {
     display: block !important;
     position: relative !important;
-
     box-sizing: border-box !important;
     width: 100% !important;
     height: 100% !important;
-
     max-width: none !important;
     max-height: none !important;
-
     object-fit: contain !important;
     object-position: center !important;
     aspect-ratio: auto !important;
-
     margin: 0 !important;
     padding: 0 !important;
-
     pointer-events: none;
     user-select: none;
     -webkit-user-drag: none;
@@ -490,7 +449,7 @@ body.pagina-painel.dashboard-editor #formPublicacao [aria-invalid="true"]:focus-
     outline-offset: 2px;
 }
 
-/* Icones vetoriais não dependem de glifos instalados no computador. */
+/* Ícones vetoriais do dashboard. */
 .dashboard-editor .dashboard-nav-icon,
 .dashboard-editor .dashboard-stat-icon {
     display: inline-grid;
@@ -594,7 +553,7 @@ body.pagina-painel.dashboard-editor #formPublicacao [aria-invalid="true"]:focus-
     }
 }
 
-/* O seletor de zoom não deve escurecer a página nem criar uma máscara. */
+/* O seletor de zoom não escurece a página nem cria uma máscara. */
 body.pagina-painel.dashboard-editor #formPublicacao .imagem-selecao-zoom,
 body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas,
 body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas img {
@@ -602,7 +561,6 @@ body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas img {
     opacity: 1 !important;
 }
 
-/* Impede que sombras ou pseudo-elementos criem uma camada escura. */
 body.pagina-painel.dashboard-editor #formPublicacao .imagem-selecao-zoom::before,
 body.pagina-painel.dashboard-editor #formPublicacao .imagem-selecao-zoom::after,
 body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas::before,
@@ -613,7 +571,6 @@ body.pagina-painel.dashboard-editor #formPublicacao .zoom-caixa::after {
     display: none !important;
 }
 
-/* A seleção fica restrita ao retângulo, sem sombra externa. */
 body.pagina-painel.dashboard-editor #formPublicacao .zoom-caixa {
     position: absolute !important;
     z-index: 2 !important;
@@ -624,8 +581,62 @@ body.pagina-painel.dashboard-editor #formPublicacao .zoom-caixa {
     background: rgba(211, 164, 112, 0.16) !important;
 }
 
-/* O canvas funciona como referência para o retângulo de seleção. */
-body.pagina-painel.dashboard-editor #formPublicacao .zoom-canvas {
-    position: relative !important;
-    flex-shrink: 0 !important;
+/* Ação destrutiva nos cartões de obra. */
+.obra-editor-acoes .botao-excluir-obra {
+    border: 1px solid #B42318;
+    color: #B42318;
+    background: transparent;
+}
+
+.obra-editor-acoes .botao-excluir-obra:hover:not(:disabled) {
+    color: #FFFFFF;
+    background: #B42318;
+}
+
+.obra-editor-acoes .botao-excluir-obra:focus-visible {
+    outline: 3px solid #B42318;
+    outline-offset: 3px;
+}
+
+.obra-editor-acoes .botao-excluir-obra:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* Confirmação de exclusão dentro do cartão da obra. */
+.obra-editor-card .confirmacao-exclusao-obra {
+    display: block;
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #D4BDA7;
+    border-radius: 0.75rem;
+    background: #FFFAF4;
+    color: #3A241B;
+}
+
+.obra-editor-card .confirmacao-exclusao-obra[hidden] {
+    display: none !important;
+}
+
+.confirmacao-exclusao-obra p {
+    margin: 0 0 0.75rem;
+    line-height: 1.5;
+}
+
+.confirmacao-exclusao-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.confirmacao-exclusao-acoes .botao {
+    min-height: 44px;
+}
+
+/* Foco visível para navegação pelo teclado. */
+.obra-editor-card button:focus-visible,
+#feedbackMinhasObras:focus-visible {
+    outline: 3px solid #245DB5;
+    outline-offset: 3px;
 }
