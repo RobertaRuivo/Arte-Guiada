@@ -4,10 +4,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Arte Guiada | Acesso</title>
     <meta name="description" content="Acesse sua conta ou crie uma nova conta no Arte Guiada.">
+
     <link rel="stylesheet" href="../public/css/style.css">
     <link rel="stylesheet" href="../public/css/acesso.css">
+
     <script src="../public/js/sessao-ui.js" defer></script>
 </head>
 
@@ -15,177 +18,513 @@
 
     <header class="cabecalho">
         <nav class="nav-principal" aria-label="Navegação principal">
+
             <a href="../index.html" class="logo">Arte Guiada</a>
+
             <div class="nav-links">
                 <a href="../index.html">Início</a>
                 <a href="../index.html#obras">Obras</a>
                 <a href="../index.html#como-funciona">Como funciona</a>
                 <a href="acesso.html" aria-current="page">Login</a>
             </div>
+
         </nav>
     </header>
 
     <main class="acesso-container">
+
         <h1 class="sr-only">Acesso e Cadastro — Arte Guiada</h1>
 
         <section class="acesso-formularios" aria-label="Área de acesso">
 
+            <!-- =================================================
+                 LOGIN
+                 ================================================= -->
+
             <div class="formulario-wrapper formulario-login ativo" id="loginWrapper" aria-hidden="false">
+
                 <div class="formulario-scroll">
+
                     <span class="acesso-etiqueta">ACESSO</span>
 
-                    <h2>Bem-vindo de <span>volta.</span></h2>
-                    <p class="formulario-introducao">Continue sua experiência pelo Arte Guiada.</p>
+                    <div id="loginConteudo">
 
-                    <form id="loginForm" novalidate>
-                        <div class="campo">
-                            <label for="loginEmail">E-mail</label>
-                            <input type="email" id="loginEmail" name="loginEmail" autocomplete="email"
-                                aria-describedby="login-email-error" required>
-                            <span class="error-msg" id="login-email-error" aria-live="polite"></span>
+                        <h2>Bem-vindo de <span>volta.</span></h2>
+
+                        <p class="formulario-introducao">
+                            Continue sua experiência pelo Arte Guiada.
+                        </p>
+
+                        <form id="loginForm" novalidate>
+
+                            <div class="campo">
+                                <label for="loginEmail">E-mail</label>
+
+                                <input type="email" id="loginEmail" name="loginEmail" autocomplete="email"
+                                    aria-describedby="login-email-error" required>
+
+                                <span class="error-msg" id="login-email-error" aria-live="polite">
+                                </span>
+                            </div>
+
+                            <div class="campo">
+                                <label for="loginSenha">Senha</label>
+
+                                <div class="campo-senha">
+
+                                    <input type="password" id="loginSenha" name="loginSenha"
+                                        autocomplete="current-password" aria-describedby="login-senha-error" required>
+
+                                    <button type="button" class="botao-mostrar-senha" data-alvo-senha="loginSenha"
+                                        aria-label="Mostrar senha">
+                                        Mostrar
+                                    </button>
+
+                                </div>
+
+                                <span class="error-msg" id="login-senha-error" aria-live="polite">
+                                </span>
+                            </div>
+
+                            <button type="submit" class="botao-formulario">
+                                Entrar
+                            </button>
+
+                            <div id="login-feedback" class="feedback-box" aria-live="polite">
+                            </div>
+
+                            <button type="button" class="link-recuperacao" id="abrirRecuperacao">
+                                Esqueci minha senha
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                    <!-- =============================================
+                         RECUPERAÇÃO LOCAL DE SENHA
+                         ============================================= -->
+
+                    <section id="recuperacaoConteudo" aria-labelledby="recuperacaoTitulo" hidden>
+
+                        <span class="acesso-etiqueta">
+                            RECUPERAÇÃO LOCAL
+                        </span>
+
+                        <h2 id="recuperacaoTitulo">
+                            Recupere seu <span>acesso.</span>
+                        </h2>
+
+                        <p class="formulario-introducao">
+                            Esta versão gera um token apenas para testes
+                            no ambiente local. Nenhum e-mail será enviado.
+                        </p>
+
+                        <!-- Solicitar token -->
+
+                        <form id="recuperacaoSolicitarForm" novalidate>
+
+                            <div class="campo">
+
+                                <label for="recuperacaoEmail">
+                                    E-mail cadastrado
+                                </label>
+
+                                <input type="email" id="recuperacaoEmail" name="email" autocomplete="email"
+                                    aria-describedby="recuperacaoSolicitarFeedback" required>
+
+                            </div>
+
+                            <button type="submit" class="botao-formulario">
+                                Gerar token local
+                            </button>
+
+                        </form>
+
+                        <div id="recuperacaoSolicitarFeedback" class="feedback-box" aria-live="polite">
                         </div>
 
-                        <div class="campo">
-                            <label for="loginSenha">Senha</label>
-                            <input type="password" id="loginSenha" name="loginSenha" autocomplete="current-password"
-                                aria-describedby="login-senha-error" required>
-                            <span class="error-msg" id="login-senha-error" aria-live="polite"></span>
+                        <!-- Exibição do token para testes locais -->
+
+                        <div id="tokenLocalContainer" class="token-local-container" hidden>
+
+                            <p>
+                                <strong>Token de desenvolvimento</strong>
+                            </p>
+
+                            <p>
+                                Copie o token para utilizá-lo.
+                                Ele expira em 30 minutos.
+                            </p>
+
+                            <code id="tokenLocalValor" class="token-local-valor">
+                            </code>
+
                         </div>
 
-                        <button type="submit" class="botao-formulario">Entrar</button>
-                        <div id="login-feedback" class="feedback-box" aria-live="polite"></div>
-                    </form>
+                        <!-- Redefinir senha -->
+
+                        <form id="redefinirSenhaForm" novalidate hidden>
+
+                            <div class="campo">
+
+                                <label for="recuperacaoToken">
+                                    Token de recuperação
+                                </label>
+
+                                <input type="text" id="recuperacaoToken" name="token" autocomplete="off"
+                                    autocapitalize="off" spellcheck="false" maxlength="64" required>
+
+                            </div>
+
+                            <!-- Nova senha -->
+
+                            <div class="campo">
+
+                                <label for="recuperacaoNovaSenha">
+                                    Nova senha
+                                </label>
+
+                                <div class="campo-senha">
+
+                                    <input type="password" id="recuperacaoNovaSenha" name="nova_senha"
+                                        autocomplete="new-password" minlength="8" required>
+
+                                    <button type="button" class="botao-mostrar-senha"
+                                        data-alvo-senha="recuperacaoNovaSenha" aria-label="Mostrar senha">
+                                        Mostrar
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Confirmar nova senha -->
+
+                            <div class="campo">
+
+                                <label for="recuperacaoConfirmarSenha">
+                                    Confirme a nova senha
+                                </label>
+
+                                <div class="campo-senha">
+
+                                    <input type="password" id="recuperacaoConfirmarSenha" name="confirmar_senha"
+                                        autocomplete="new-password" minlength="8" required>
+
+                                    <button type="button" class="botao-mostrar-senha"
+                                        data-alvo-senha="recuperacaoConfirmarSenha" aria-label="Mostrar senha">
+                                        Mostrar
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                            <button type="submit" class="botao-formulario">
+                                Redefinir senha
+                            </button>
+
+                            <div id="recuperacaoRedefinirFeedback" class="feedback-box" aria-live="polite">
+                            </div>
+
+                        </form>
+
+                        <button type="button" class="botao-secundario voltar-login-recuperacao" id="voltarLogin">
+                            Voltar para login
+                        </button>
+
+                    </section>
+
                 </div>
             </div>
 
+            <!-- =================================================
+                 CADASTRO
+                 ================================================= -->
+
             <div class="formulario-wrapper formulario-cadastro" id="cadastroWrapper" aria-hidden="true" inert>
+
                 <div class="formulario-scroll">
-                    <span class="acesso-etiqueta">NOVA EXPERIÊNCIA</span>
+
+                    <span class="acesso-etiqueta">
+                        NOVA EXPERIÊNCIA
+                    </span>
 
                     <h2>Crie sua <span>conta.</span></h2>
+
                     <p class="formulario-introducao">
-                        Entre para explorar o Arte Guiada e construir seu próprio olhar sobre a arte.
+                        Entre para explorar o Arte Guiada e construir
+                        seu próprio olhar sobre a arte.
                     </p>
 
                     <form id="cadastroForm" novalidate>
+
                         <div class="wizard-progress-wrapper">
+
                             <div role="progressbar" id="wizard-progress" aria-valuemin="0" aria-valuemax="100"
                                 aria-valuenow="33" aria-label="Progresso do cadastro">
+
                                 <span id="wizard-progress-bar"></span>
+
                             </div>
+
                             <div class="wizard-progress-label" aria-live="polite">
-                                <span id="wizard-step-label">Etapa 1 de 3</span>
+
+                                <span id="wizard-step-label">
+                                    Etapa 1 de 3
+                                </span>
+
                             </div>
+
                         </div>
 
+                        <!-- Etapa 1: Dados pessoais -->
+
                         <fieldset class="wizard-step active" id="step-1" data-step="1" aria-labelledby="step-1-title">
-                            <legend id="step-1-title">Dados pessoais</legend>
+
+                            <legend id="step-1-title">
+                                Dados pessoais
+                            </legend>
 
                             <div class="campos-duplos">
+
                                 <div class="campo">
+
                                     <label for="nome">Nome</label>
+
                                     <input type="text" id="nome" name="nome" autocomplete="given-name"
                                         aria-describedby="nome-error" required>
-                                    <span class="error-msg" id="nome-error" aria-live="polite"></span>
+
+                                    <span class="error-msg" id="nome-error" aria-live="polite">
+                                    </span>
+
                                 </div>
 
                                 <div class="campo">
-                                    <label for="sobrenome">Sobrenome</label>
+
+                                    <label for="sobrenome">
+                                        Sobrenome
+                                    </label>
+
                                     <input type="text" id="sobrenome" name="sobrenome" autocomplete="family-name"
                                         aria-describedby="sobrenome-error" required>
-                                    <span class="error-msg" id="sobrenome-error" aria-live="polite"></span>
+
+                                    <span class="error-msg" id="sobrenome-error" aria-live="polite">
+                                    </span>
+
                                 </div>
+
                             </div>
 
                             <div class="campo">
+
                                 <label for="email">E-mail</label>
+
                                 <input type="email" id="email" name="email" autocomplete="email"
                                     aria-describedby="email-error" required>
-                                <span class="error-msg" id="email-error" aria-live="polite"></span>
+
+                                <span class="error-msg" id="email-error" aria-live="polite">
+                                </span>
+
                             </div>
 
                             <div class="wizard-acoes wizard-acoes-end">
-                                <button type="button" class="btn-next botao-formulario">Próximo <span
-                                        aria-hidden="true">→</span></button>
+
+                                <button type="button" class="btn-next botao-formulario">
+
+                                    Próximo
+                                    <span aria-hidden="true">→</span>
+
+                                </button>
+
                             </div>
+
                         </fieldset>
 
+                        <!-- Etapa 2: Mensagem -->
+
                         <fieldset class="wizard-step" id="step-2" data-step="2" aria-labelledby="step-2-title" hidden>
-                            <legend id="step-2-title">Mensagem</legend>
+
+                            <legend id="step-2-title">
+                                Mensagem
+                            </legend>
 
                             <div class="campo">
-                                <label for="mensagem">Mensagem / Biografia curta</label>
+
+                                <label for="mensagem">
+                                    Mensagem / Biografia curta
+                                </label>
+
                                 <textarea id="mensagem" name="mensagem" rows="4" aria-describedby="mensagem-error"
                                     required></textarea>
-                                <span class="error-msg" id="mensagem-error" aria-live="polite"></span>
+
+                                <span class="error-msg" id="mensagem-error" aria-live="polite">
+                                </span>
+
                             </div>
 
                             <div class="wizard-acoes">
-                                <button type="button" class="btn-prev botao-secundario">Voltar</button>
-                                <button type="button" class="btn-next botao-formulario">Próximo <span
-                                        aria-hidden="true">→</span></button>
+
+                                <button type="button" class="btn-prev botao-secundario">
+                                    Voltar
+                                </button>
+
+                                <button type="button" class="btn-next botao-formulario">
+
+                                    Próximo
+                                    <span aria-hidden="true">→</span>
+
+                                </button>
+
                             </div>
+
                         </fieldset>
 
+                        <!-- Etapa 3: Segurança -->
+
                         <fieldset class="wizard-step" id="step-3" data-step="3" aria-labelledby="step-3-title" hidden>
-                            <legend id="step-3-title">Segurança</legend>
+
+                            <legend id="step-3-title">
+                                Segurança
+                            </legend>
 
                             <div class="campo">
+
                                 <label for="senha">Senha</label>
-                                <input type="password" id="senha" name="senha" autocomplete="new-password"
-                                    aria-describedby="password-error strength-text" required>
+
+                                <div class="campo-senha">
+
+                                    <input type="password" id="senha" name="senha" autocomplete="new-password"
+                                        aria-describedby="password-error strength-text" required>
+
+                                    <button type="button" class="botao-mostrar-senha" data-alvo-senha="senha"
+                                        aria-label="Mostrar senha">
+                                        Mostrar
+                                    </button>
+
+                                </div>
 
                                 <div class="strength-container" role="meter" aria-label="Força da senha"
                                     aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                                    <div id="strength-bar" class="strength-bar"></div>
+
+                                    <div id="strength-bar" class="strength-bar">
+                                    </div>
+
                                 </div>
 
-                                <span id="strength-text" class="strength-text" aria-live="polite"></span>
+                                <span id="strength-text" class="strength-text" aria-live="polite">
+                                </span>
+
                             </div>
 
                             <div class="campo">
-                                <label for="confirmaSenha">Confirme a senha</label>
-                                <input type="password" id="confirmaSenha" name="confirmaSenha"
-                                    autocomplete="new-password" aria-describedby="password-error" required>
-                                <span class="error-msg" id="password-error" aria-live="polite"></span>
+
+                                <label for="confirmaSenha">
+                                    Confirme a senha
+                                </label>
+
+                                <div class="campo-senha">
+
+                                    <input type="password" id="confirmaSenha" name="confirmaSenha"
+                                        autocomplete="new-password" aria-describedby="password-error" required>
+
+                                    <button type="button" class="botao-mostrar-senha" data-alvo-senha="confirmaSenha"
+                                        aria-label="Mostrar senha">
+                                        Mostrar
+                                    </button>
+
+                                </div>
+
+                                <span class="error-msg" id="password-error" aria-live="polite">
+                                </span>
+
                             </div>
 
                             <div class="wizard-acoes">
-                                <button type="button" class="btn-prev botao-secundario">Voltar</button>
-                                <button type="submit" id="submitBtn" class="botao-formulario">Criar conta</button>
+
+                                <button type="button" class="btn-prev botao-secundario">
+                                    Voltar
+                                </button>
+
+                                <button type="submit" id="submitBtn" class="botao-formulario">
+                                    Criar conta
+                                </button>
+
                             </div>
+
                         </fieldset>
 
-                        <div id="form-feedback" class="feedback-box" aria-live="polite"></div>
+                        <div id="form-feedback" class="feedback-box" aria-live="polite">
+                        </div>
+
                     </form>
+
                 </div>
             </div>
+
         </section>
 
+        <!-- Painel lateral -->
+
         <aside class="acesso-painel" aria-label="Alternância de acesso">
+
             <div class="painel-conteudo painel-login ativo" id="painelLogin" aria-hidden="false">
-                <span class="painel-etiqueta">ARTE GUIADA</span>
+
+                <span class="painel-etiqueta">
+                    ARTE GUIADA
+                </span>
+
                 <h2>Ainda não faz <span>parte?</span></h2>
-                <p>Crie sua conta e entre para uma experiência de observação, descoberta e interpretação da arte.</p>
-                <button type="button" class="botao-painel" id="mostrarCadastro">Criar conta</button>
+
+                <p>
+                    Crie sua conta e entre para uma experiência
+                    de observação, descoberta e interpretação da arte.
+                </p>
+
+                <button type="button" class="botao-painel" id="mostrarCadastro">
+                    Criar conta
+                </button>
+
             </div>
 
             <div class="painel-conteudo painel-cadastro" id="painelCadastro" aria-hidden="true" inert>
-                <span class="painel-etiqueta">ARTE GUIADA</span>
+
+                <span class="painel-etiqueta">
+                    ARTE GUIADA
+                </span>
+
                 <h2>Já possui <span>uma conta?</span></h2>
-                <p>Entre novamente e continue sua experiência de observação e descoberta.</p>
-                <button type="button" class="botao-painel" id="mostrarLogin">Fazer login</button>
+
+                <p>
+                    Entre novamente e continue sua experiência
+                    de observação e descoberta.
+                </p>
+
+                <button type="button" class="botao-painel" id="mostrarLogin">
+                    Fazer login
+                </button>
+
             </div>
+
         </aside>
+
     </main>
 
     <footer class="rodape-acesso">
+
         <span>Arte Guiada</span>
-        <a href="mailto:roberta.ruivo@unesp.br">Email</a>
+
+        <a href="mailto:roberta.ruivo@unesp.br">
+            Email
+        </a>
+
         <span>Sistemas Computacionais 2 - 2026</span>
+
     </footer>
 
     <script src="../public/js/acesso.js"></script>
+
 </body>
 
 </html>

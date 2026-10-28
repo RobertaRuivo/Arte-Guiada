@@ -638,3 +638,125 @@ body.pagina-acesso {
         transition: none;
     }
 }
+
+/* Campo de senha com opção de visualização */
+.campo-senha {
+    position: relative;
+    width: 100%;
+}
+
+.campo-senha input {
+    padding-right: 76px !important;
+}
+
+.botao-mostrar-senha {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    padding: 6px 4px;
+    border: 0;
+    background: transparent;
+    color: #80583f;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.botao-mostrar-senha:hover {
+    color: #422a1e;
+    text-decoration: underline;
+}
+
+.botao-mostrar-senha:focus-visible {
+    outline: 2px solid #80583f;
+    outline-offset: 3px;
+    border-radius: 2px;
+}
+
+.botao-mostrar-senha[hidden] {
+    display: none;
+}
+
+/* =========================================================
+   RECUPERAÇÃO LOCAL DE SENHA
+   ========================================================= */
+
+/* Evita que regras de display sobrescrevam o atributo hidden. */
+body.pagina-acesso [hidden] {
+    display: none !important;
+}
+
+#recuperacaoSolicitarForm,
+#redefinirSenhaForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.link-recuperacao {
+    align-self: center;
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    color: #80583f;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+
+.link-recuperacao:hover {
+    color: #422a1e;
+}
+
+.link-recuperacao:focus-visible {
+    outline: 3px solid rgba(128, 88, 63, 0.28);
+    outline-offset: 3px;
+}
+
+.token-local-container {
+    margin: 16px 0;
+    padding: 14px;
+    border: 1px solid #d7ccc3;
+    background: #f7efe5;
+    color: #422a1e;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.token-local-container p {
+    margin: 0 0 8px;
+}
+
+.token-local-container p:last-of-type {
+    margin-bottom: 0;
+}
+
+.token-local-valor {
+    display: block;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #d7ccc3;
+    background: #fffaf4;
+    overflow-wrap: anywhere;
+    user-select: all;
+    color: #422a1e;
+    font-size: 0.82rem;
+}
+
+.voltar-login-recuperacao {
+    width: 100%;
+    margin-top: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .link-recuperacao {
+        transition: none;
+    }
+}
