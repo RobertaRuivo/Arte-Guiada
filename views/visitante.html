@@ -8,9 +8,11 @@
     <title>Arte Guiada | Minha biblioteca</title>
     <link rel="stylesheet" href="../public/css/style.css">
     <link rel="stylesheet" href="../public/css/painel.css">
+    <link rel="stylesheet" href="../public/css/biblioteca.css">
     <script src="../public/js/sessao-ui.js" defer></script>
     <script src="../public/js/controle-acesso.js" defer></script>
     <script src="../public/js/painel.js" defer></script>
+    <script src="../public/js/biblioteca.js" defer></script>
 </head>
 
 <body class="pagina-painel" data-perfis-permitidos="visitante">
@@ -66,24 +68,36 @@
             </div>
 
             <div class="colecao-abas" role="tablist" aria-label="Coleções da biblioteca">
-                <button type="button" class="colecao-aba ativa" role="tab" aria-selected="true"
-                    data-colecao="favoritos">Favoritos</button>
-                <button type="button" class="colecao-aba" role="tab" aria-selected="false"
-                    data-colecao="quero-explorar">Quero explorar</button>
-                <button type="button" class="colecao-aba" role="tab" aria-selected="false" data-colecao="exploradas">Já
-                    explorei</button>
+
+                <button type="button" id="aba-favoritos-visitante" class="colecao-aba ativa" role="tab"
+                    aria-selected="true" data-colecao="favoritos">
+                    Favoritos
+                </button>
+
+                <button type="button" id="aba-quero-explorar-visitante" class="colecao-aba" role="tab"
+                    aria-selected="false" data-colecao="quero-explorar">
+                    Quero explorar
+                </button>
+
+                <button type="button" id="aba-exploradas-visitante" class="colecao-aba" role="tab" aria-selected="false"
+                    data-colecao="exploradas">
+                    Já explorei
+                </button>
+
             </div>
 
-            <div class="colecao-conteudo" id="colecaoConteudo" aria-live="polite">
-                <div class="estado-vazio">
-                    <span class="estado-vazio-simbolo" aria-hidden="true">✳</span>
-                    <h3>Seus favoritos começam aqui</h3>
-                    <p>Quando você favoritar uma obra na galeria, ela aparecerá nesta coleção.</p>
-                    <a class="botao botao-secundario" href="catalogo.html">Encontrar uma obra</a>
+            <div class="colecao-conteudo biblioteca-grid" id="colecaoConteudo" data-biblioteca-lista role="tabpanel"
+                aria-labelledby="aba-favoritos-visitante" aria-live="polite">
+
+                <div class="biblioteca-carregando">
+                    Carregando sua biblioteca…
                 </div>
+
             </div>
-            <p class="aviso-integracao" data-status-biblioteca hidden></p>
-        </section>
+
+            <p class="biblioteca-feedback" id="bibliotecaFeedback" data-status-biblioteca role="status"
+                aria-live="polite">
+            </p>
     </main>
 
     <footer class="rodape-painel">

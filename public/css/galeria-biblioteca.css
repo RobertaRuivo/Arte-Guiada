@@ -1,31 +1,84 @@
-/* Ações da biblioteca na experiência de exploração. Não altera o cabeçalho ou o rodapé. */
-.biblioteca-obra-acoes {
-    width: min(100% - 32px, 920px);
-    margin: clamp(18px, 3vw, 30px) auto;
-    padding: clamp(16px, 2.6vw, 24px);
+/* Ações da biblioteca na experiência guiada. */
+
+.biblioteca-galeria-acoes {
     display: flex;
-    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
-    gap: 14px 20px;
-    border: 1px solid #D8C7B4;
-    border-radius: 12px;
-    background: #FFFAF4;
-    color: #2F1F1A;
-    box-sizing: border-box;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: min(100%, 540px);
+    margin: 18px auto;
 }
-.biblioteca-obra-acoes .biblioteca-acoes-texto { flex: 1 1 220px; min-width: 0; }
-.biblioteca-obra-acoes strong { display: block; margin-bottom: 4px; color: #3A241B; font-size: 1rem; }
-.biblioteca-obra-acoes [data-biblioteca-feedback] { margin: 0; color: #624C40; font: .92rem/1.5 Arial, sans-serif; }
-.biblioteca-obra-acoes .biblioteca-acoes-botoes { display: flex; flex-wrap: wrap; gap: 10px; }
-.biblioteca-obra-acoes button,
-.biblioteca-obra-acoes a { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 15px; border: 1px solid #3A241B; border-radius: 8px; background: transparent; color: #3A241B; font: 700 .92rem/1.25 Arial, sans-serif; text-decoration: none; cursor: pointer; }
-.biblioteca-obra-acoes button[aria-pressed="true"] { background: #3A241B; color: #FFFAF4; }
-.biblioteca-obra-acoes .biblioteca-link-entrar { border-color: #9B6048; color: #8B6047; }
-.biblioteca-obra-acoes button:focus-visible,
-.biblioteca-obra-acoes a:focus-visible { outline: 3px solid #9B6048; outline-offset: 3px; }
-@media (max-width: 620px) {
-    .biblioteca-obra-acoes { width: calc(100% - 24px); flex-direction: column; align-items: stretch; }
-    .biblioteca-obra-acoes .biblioteca-acoes-botoes { display: grid; grid-template-columns: 1fr; }
-    .biblioteca-obra-acoes button, .biblioteca-obra-acoes a { width: 100%; }
+
+.biblioteca-galeria-botao {
+    min-height: 44px;
+    padding: 11px 18px;
+    border: 1px solid #8B6047;
+    border-radius: 999px;
+    background: transparent;
+    color: #3A241B;
+    cursor: pointer;
+    font: 700 14px/1.3 Arial, sans-serif;
+    transition: background-color .2s ease, color .2s ease;
+}
+
+.biblioteca-galeria-botao:hover {
+    background: #F2E4D5;
+}
+
+.biblioteca-galeria-botao[aria-pressed="true"] {
+    background: #3A241B;
+    border-color: #3A241B;
+    color: #FFFAF4;
+}
+
+.biblioteca-galeria-botao:disabled {
+    cursor: wait;
+    opacity: .6;
+}
+
+.biblioteca-galeria-botao:focus-visible,
+.biblioteca-galeria-login:focus-visible {
+    outline: 3px solid #9B6048;
+    outline-offset: 3px;
+}
+
+.biblioteca-galeria-login {
+    color: #6A4936;
+    font: 600 14px/1.5 Arial, sans-serif;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-align: center;
+}
+
+.biblioteca-galeria-feedback {
+    flex: 1 0 100%;
+    margin: 0;
+    color: #624C40;
+    font: 13px/1.5 Arial, sans-serif;
+    text-align: center;
+}
+
+.biblioteca-galeria-feedback:empty {
+    display: none;
+}
+
+.biblioteca-galeria-acoes [hidden] {
+    display: none !important;
+}
+
+@media (max-width: 600px) {
+    .biblioteca-galeria-acoes {
+        flex-direction: column;
+    }
+
+    .biblioteca-galeria-botao {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .biblioteca-galeria-botao {
+        transition: none;
+    }
 }

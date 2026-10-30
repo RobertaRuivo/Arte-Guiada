@@ -11,6 +11,7 @@
     <title>Arte Guiada | A Boba</title>
 
     <link rel="stylesheet" href="../public/css/galeria.css">
+    <link rel="stylesheet" href="../public/css/galeria-biblioteca.css">
     <script src="../public/js/sessao-ui.js" defer></script>
 </head>
 
@@ -116,13 +117,8 @@
 
             <div class="progress-area">
 
-                <div class="progress-track"
-                    role="progressbar"
-                    aria-valuemin="1"
-                    aria-valuemax="2"
-                    aria-valuenow="1"
-                    aria-label="Progresso da exploração"
-                    id="progressBar">
+                <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="2" aria-valuenow="1"
+                    aria-label="Progresso da exploração" id="progressBar">
 
                     <span id="progressFill"></span>
 
@@ -140,6 +136,28 @@
                 <p>
                     Explore a composição no seu próprio ritmo.
                 </p>
+
+                <div class="biblioteca-galeria-acoes" aria-label="Ações da biblioteca">
+
+                    <button type="button" id="botaoFavorito" class="biblioteca-galeria-botao" aria-pressed="false"
+                        hidden>
+                        ♡ Favoritar
+                    </button>
+
+                    <button type="button" id="botaoQueroVer" class="biblioteca-galeria-botao" aria-pressed="false"
+                        hidden>
+                        + Quero ver
+                    </button>
+
+                    <a id="linkLoginBiblioteca" class="biblioteca-galeria-login" href="acesso.html" hidden>
+                        Entre para salvar esta obra na sua biblioteca.
+                    </a>
+
+                    <p id="feedbackBibliotecaGaleria" class="biblioteca-galeria-feedback" role="status"
+                        aria-live="polite">
+                    </p>
+
+                </div>
 
                 <button type="button" id="viewCompleteButton" class="text-button">
                     Ver obra completa
@@ -160,9 +178,7 @@
 
     <div class="complete-artwork" id="completeArtwork" aria-hidden="true">
 
-        <button type="button"
-            class="complete-close"
-            id="closeCompleteButton"
+        <button type="button" class="complete-close" id="closeCompleteButton"
             aria-label="Fechar visualização da obra completa">
 
             <span aria-hidden="true">×</span>
@@ -171,9 +187,7 @@
 
         <figure>
 
-            <img id="completeImage"
-                src="../public/img/a_boba.jpg"
-                alt="A Boba, de Anita Malfatti">
+            <img id="completeImage" src="../public/img/a_boba.jpg" alt="A Boba, de Anita Malfatti">
 
             <figcaption>
                 <span id="completeArtist"></span>

@@ -27,6 +27,16 @@
     const numeroDetalhe = document.getElementById("detailNumber");
     const tituloDetalhe = document.getElementById("detailTitle");
     const textoDetalhe = document.getElementById("detailDescription");
+    const botaoFavorito = document.getElementById("botaoFavorito");
+    const botaoQueroVer = document.getElementById("botaoQueroVer");
+
+    const linkLoginBiblioteca = document.getElementById(
+        "linkLoginBiblioteca"
+    );
+
+    const feedbackBibliotecaGaleria = document.getElementById(
+        "feedbackBibliotecaGaleria"
+    );
 
     const botaoAnterior = document.getElementById("previousButton");
     const botaoProximo = document.getElementById("nextButton");
@@ -96,6 +106,312 @@
 
     let focoAnteriorModal = null;
     let overflowAnterior = "";
+    // Estado das ações da biblioteca para a obra atual.
+    let estadoBiblioteca = {
+        favorito: false,
+        quero_explorar: false,
+        explorada: false
+    };
+
+    let bibliotecaAutenticada = false;
+    let atualizandoBiblioteca = false;
+
+    let conclusaoEmAndamento = false;
+    let conclusaoRegistrada = false;
+
+    function urlApiBiblioteca(arquivo) {
+        return new URL(
+            `../api/biblioteca/${arquivo}.php`,
+            document.baseURI
+        );
+    }
+
+    function mostrarFeedbackBiblioteca(mensagem = "") {
+        if (!feedbackBibliotecaGaleria) return;
+
+        feedbackBibliotecaGaleria.textContent = mensagem;
+        feedbackBibliotecaGaleria.hidden = !mensagem;
+    }
+
+    function mostrarLoginBiblioteca() {
+        bibliotecaAutenticada = false;
+
+        if (botaoFavorito) botaoFavorito.hidden = true;
+        if (botaoQueroVer) botaoQueroVer.hidden = true;
+
+        if (linkLoginBiblioteca) {
+            linkLoginBiblioteca.hidden = false;
+        }
+
+        mostrarFeedbackBiblioteca(
+            "Entre na sua conta para salvar e acompanhar suas obras."
+        );
+    }
+
+    function atualizarBotoesBiblioteca() {
+        if (!bibliotecaAutenticada) return;
+
+        if (botaoFavorito) {
+            botaoFavorito.hidden = false;
+            botaoFavorito.disabled = false;
+
+            botaoFavorito.textContent = estadoBiblioteca.favorito
+                ? "♥ Nos favoritos"
+                : "♡ Favoritar";
+
+            botaoFavorito.setAttribute(
+                "aria-pressed",
+                String(estadoBiblioteca.favorito)
+            );
+        }
+
+        if (botaoQueroVer) {
+            botaoQueroVer.hidden = false;
+            botaoQueroVer.disabled = false;
+
+            botaoQueroVer.textContent = estadoBiblioteca.quero_explorar
+                ? "✓ Na lista Quero ver"
+                : "+ Quero ver";
+
+            botaoQueroVer.setAttribute(
+                "aria-pressed",
+                String(estadoBiblioteca.quero_explorar)
+            );
+        }
+
+        if (linkLoginBiblioteca) {
+            linkLoginBiblioteca.hidden = true;
+        }
+    }
+
+    /*
+     * Consulta os estados já salvos para a obra atual.
+     */
+    async function carregarEstadoBiblioteca() {
+        if (!obraAtual) return;
+
+        try {
+            const destino = urlApiBiblioteca("estado");
+
+            destino.searchParams.set(
+                "obra_id",
+                String(obraAtual.id)
+            );
+
+            const resposta = await fetch(destino.href, {
+                method: "GET",
+                credentials: "same-origin",
+                cache: "no-store",
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            const dados = await resposta.json().catch(() => null);
+
+            if (resposta.status === 401) {
+                mostrarLoginBiblioteca();
+                return;
+            }
+
+            if (!resposta.ok || !dados?.sucesso || !dados.estado) {
+                throw new Error(
+                    dados?.mensagem ||
+                    "Não foi possível consultar sua biblioteca."
+                );
+            }
+
+            estadoBiblioteca = {
+                favorito: Boolean(dados.estado.favorito),
+                quero_explorar: Boolean(dados.estado.quero_explorar),
+                explorada: Boolean(dados.estado.explorada)
+            };
+
+            bibliotecaAutenticada = true;
+
+            if (estadoBiblioteca.explorada) {
+                conclusaoRegistrada = true;
+            }
+
+            atualizarBotoesBiblioteca();
+            mostrarFeedbackBiblioteca("");
+
+        } catch (erro) {
+            console.error(
+                "Erro ao consultar o estado da biblioteca:",
+                erro
+            );
+
+            mostrarFeedbackBiblioteca(
+                erro.message ||
+                "Não foi possível consultar sua biblioteca."
+            );
+        }
+    }
+
+    /*
+     * Adiciona ou remove a obra de Favoritos ou Quero ver.
+     */
+    async function alterarEstadoBiblioteca(acao) {
+        if (
+            !obraAtual ||
+            !bibliotecaAutenticada ||
+            atualizandoBiblioteca
+        ) {
+            return;
+        }
+
+        atualizandoBiblioteca = true;
+
+        const botao = acao === "favorito"
+            ? botaoFavorito
+            : botaoQueroVer;
+
+        if (botao) botao.disabled = true;
+
+        mostrarFeedbackBiblioteca("Atualizando sua biblioteca...");
+
+        try {
+            const resposta = await fetch(
+                urlApiBiblioteca("atualizar").href,
+                {
+                    method: "POST",
+                    credentials: "same-origin",
+                    cache: "no-store",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        obra_id: Number(obraAtual.id),
+                        acao,
+                        ativo: !estadoBiblioteca[acao]
+                    })
+                }
+            );
+
+            const dados = await resposta.json().catch(() => null);
+
+            if (resposta.status === 401) {
+                mostrarLoginBiblioteca();
+                return;
+            }
+
+            if (!resposta.ok || !dados?.sucesso || !dados.estado) {
+                throw new Error(
+                    dados?.mensagem ||
+                    "Não foi possível atualizar sua biblioteca."
+                );
+            }
+
+            estadoBiblioteca = {
+                favorito: Boolean(dados.estado.favorito),
+                quero_explorar: Boolean(dados.estado.quero_explorar),
+                explorada: Boolean(dados.estado.explorada)
+            };
+
+            atualizarBotoesBiblioteca();
+
+            const adicionado = Boolean(dados.estado[acao]);
+
+            mostrarFeedbackBiblioteca(
+                adicionado
+                    ? "Obra adicionada à sua biblioteca."
+                    : "Obra removida da coleção."
+            );
+
+        } catch (erro) {
+            console.error(
+                "Erro ao atualizar a biblioteca:",
+                erro
+            );
+
+            mostrarFeedbackBiblioteca(
+                erro.message ||
+                "Não foi possível atualizar sua biblioteca."
+            );
+
+        } finally {
+            atualizandoBiblioteca = false;
+
+            if (bibliotecaAutenticada) {
+                if (botaoFavorito) botaoFavorito.disabled = false;
+                if (botaoQueroVer) botaoQueroVer.disabled = false;
+            }
+        }
+    }
+
+    /*
+     * Registra automaticamente a conclusão quando a última etapa
+     * da experiência é apresentada.
+     */
+    async function registrarConclusaoAutomaticamente() {
+        if (
+            !obraAtual ||
+            etapas.length === 0 ||
+            indiceAtual !== etapas.length - 1 ||
+            conclusaoRegistrada ||
+            conclusaoEmAndamento
+        ) {
+            return;
+        }
+
+        conclusaoEmAndamento = true;
+
+        try {
+            const resposta = await fetch(
+                urlApiBiblioteca("concluir").href,
+                {
+                    method: "POST",
+                    credentials: "same-origin",
+                    cache: "no-store",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        obra_id: Number(obraAtual.id),
+                        etapas_concluidas: etapas.length
+                    })
+                }
+            );
+
+            const dados = await resposta.json().catch(() => null);
+
+            if (resposta.status === 401) {
+                mostrarLoginBiblioteca();
+                return;
+            }
+
+            if (!resposta.ok || !dados?.sucesso) {
+                throw new Error(
+                    dados?.mensagem ||
+                    "Não foi possível registrar a conclusão da experiência."
+                );
+            }
+
+            conclusaoRegistrada = true;
+            estadoBiblioteca.explorada = true;
+
+            mostrarFeedbackBiblioteca(
+                "Experiência concluída! A obra foi registrada em Já explorei."
+            );
+
+        } catch (erro) {
+            console.error(
+                "Erro ao registrar conclusão:",
+                erro
+            );
+
+            mostrarFeedbackBiblioteca(
+                erro.message ||
+                "Não foi possível registrar sua conclusão."
+            );
+
+        } finally {
+            conclusaoEmAndamento = false;
+        }
+    }
 
     // Consulta JSON e valida a resposta da API.
     async function consultarJson(url) {
@@ -441,6 +757,11 @@
     function mostrarNarrativa(etapa, indice, animar = true) {
         if (!animar) {
             atualizarNarrativa(etapa, indice);
+
+            if (indice === etapas.length - 1) {
+                registrarConclusaoAutomaticamente();
+            }
+
             return;
         }
 
@@ -449,6 +770,10 @@
 
         window.setTimeout(() => {
             atualizarNarrativa(etapa, indice);
+
+            if (indice === etapas.length - 1) {
+                registrarConclusaoAutomaticamente();
+            }
 
             secaoNarrativa.classList.remove("is-changing");
             secaoNarrativa.classList.add("is-entering");
@@ -739,6 +1064,8 @@
                 );
             }
 
+            carregarEstadoBiblioteca();
+
             if (!obraAtual.imagem_salva) {
                 throw new Error(
                     "Esta obra ainda não possui uma imagem salva."
@@ -820,6 +1147,18 @@
     }
 
     // Eventos dos controles da galeria.
+    if (botaoFavorito) {
+        botaoFavorito.addEventListener("click", () => {
+            alterarEstadoBiblioteca("favorito");
+        });
+    }
+
+    if (botaoQueroVer) {
+        botaoQueroVer.addEventListener("click", () => {
+            alterarEstadoBiblioteca("quero_explorar");
+        });
+    }
+    
     botaoAnterior.addEventListener("click", () => {
         navegarParaEtapa(indiceAtual - 1);
     });
