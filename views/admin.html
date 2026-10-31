@@ -8,9 +8,11 @@
     <title>Arte Guiada | Administração</title>
     <link rel="stylesheet" href="../public/css/style.css">
     <link rel="stylesheet" href="../public/css/painel.css">
+    <link rel="stylesheet" href="../public/css/relatos-admin.css">
     <script src="../public/js/sessao-ui.js" defer></script>
     <script src="../public/js/controle-acesso.js" defer></script>
     <script src="../public/js/painel.js" defer></script>
+    <script src="../public/js/relatos-admin.js" defer></script>
 </head>
 
 <body class="pagina-painel" data-perfis-permitidos="admin">
@@ -61,23 +63,47 @@
                 administrativas ainda serão implementadas nas APIs.</p>
         </section>
 
+
         <section class="painel-conteudo-secao" data-painel-secao="problemas" aria-labelledby="titulo-problemas" hidden>
             <div class="secao-titulo-painel">
-                <div><span class="painel-etiqueta">ATENDIMENTO</span>
+                <div>
+                    <span class="painel-etiqueta">ATENDIMENTO</span>
                     <h2 id="titulo-problemas">Obras com problemas</h2>
-                    <p>Consulte relatos enviados por usuários conectados. Cada relato será associado à obra e à conta de
-                        quem o enviou.</p>
+                    <p>Consulte relatos enviados por usuários autenticados e visitantes anônimos. Atualize o andamento e
+                        registre as providências tomadas.</p>
                 </div>
+                <button type="button" class="botao botao-secundario" data-atualizar-relatos>
+                    Atualizar lista
+                </button>
             </div>
-            <div class="filtros-admin" aria-label="Filtros de relatos"><span
-                    class="filtro-etiqueta">Estado</span><button type="button" class="filtro-chip ativa"
-                    data-filtro-relato="pendente">Pendentes</button><button type="button" class="filtro-chip"
-                    data-filtro-relato="em_analise">Em análise</button><button type="button" class="filtro-chip"
-                    data-filtro-relato="resolvido">Resolvidos</button></div>
-            <div class="colecao-conteudo">
-                <div class="estado-vazio"><span class="estado-vazio-simbolo" aria-hidden="true">✓</span>
-                    <h3>Relatos aparecerão aqui</h3>
-                    <p>A listagem e a atualização de estado serão conectadas à API administrativa.</p>
+
+            <div class="filtros-admin" aria-label="Filtros de relatos">
+                <span class="filtro-etiqueta">Estado</span>
+
+                <button type="button" class="filtro-chip ativa" data-filtro-relato="pendente" aria-pressed="true">
+                    Pendentes (<span data-contagem-relato="pendente">0</span>)
+                </button>
+
+                <button type="button" class="filtro-chip" data-filtro-relato="em_analise" aria-pressed="false">
+                    Em análise (<span data-contagem-relato="em_analise">0</span>)
+                </button>
+
+                <button type="button" class="filtro-chip" data-filtro-relato="resolvido" aria-pressed="false">
+                    Resolvidos (<span data-contagem-relato="resolvido">0</span>)
+                </button>
+
+                <button type="button" class="filtro-chip" data-filtro-relato="todos" aria-pressed="false">
+                    Todos (<span data-total-relatos>0</span>)
+                </button>
+            </div>
+
+            <p id="feedbackRelatosAdmin" class="feedback-relatos-admin" role="status" aria-live="polite"></p>
+
+            <div id="listaRelatosAdmin" class="lista-relatos-admin" aria-live="polite" aria-busy="true">
+                <div class="estado-vazio relato-admin-vazio">
+                    <span class="estado-vazio-simbolo" aria-hidden="true">…</span>
+                    <h3>Carregando relatos</h3>
+                    <p>Os registros serão exibidos aqui.</p>
                 </div>
             </div>
         </section>

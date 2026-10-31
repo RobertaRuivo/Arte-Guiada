@@ -10,12 +10,20 @@
 (() => {
     "use strict";
 
+    /* =====================================================
+       CONFIGURAÇÃO DAS APIs
+    ===================================================== */
+
     const API_OBRAS = "../api/obras/publicadas.php";
     const API_DETALHE = "../api/obras/visualizar.php";
     const API_IMAGEM = "../api/obras/imagem-publica.php";
 
-    // Elementos da galeria.
+    /* =====================================================
+       ELEMENTOS DA PÁGINA
+    ===================================================== */
+
     const frame = document.querySelector(".artwork-frame");
+
     const camadaInicial = document.getElementById("artworkCurrent");
     const camadaSeguinte = document.getElementById("artworkNext");
 
@@ -27,6 +35,7 @@
     const numeroDetalhe = document.getElementById("detailNumber");
     const tituloDetalhe = document.getElementById("detailTitle");
     const textoDetalhe = document.getElementById("detailDescription");
+
     const botaoFavorito = document.getElementById("botaoFavorito");
     const botaoQueroVer = document.getElementById("botaoQueroVer");
 
@@ -38,6 +47,10 @@
         "feedbackBibliotecaGaleria"
     );
 
+    const botaoRelatarProblema = document.getElementById(
+        "abrirRelatoProblema"
+    );
+
     const botaoAnterior = document.getElementById("previousButton");
     const botaoProximo = document.getElementById("nextButton");
 
@@ -45,7 +58,6 @@
     const preenchimentoProgresso = document.getElementById("progressFill");
     const textoProgresso = document.getElementById("progressText");
 
-    // O botão de tela cheia não é obrigatório para carregar a galeria.
     let botaoTelaCheia = document.getElementById("fullscreenButton");
 
     const painelCompleto = document.getElementById("completeArtwork");
@@ -56,7 +68,10 @@
     const artistaCompleta = document.getElementById("completeArtist");
     const tituloCompleto = document.getElementById("completeTitle");
 
-    // Somente os elementos necessários impedem a inicialização.
+    /* =====================================================
+       VALIDAÇÃO DA ESTRUTURA HTML
+    ===================================================== */
+
     const elementosObrigatorios = [
         [frame, ".artwork-frame"],
         [camadaInicial, "#artworkCurrent"],
@@ -90,11 +105,17 @@
             "Galeria: faltam elementos obrigatórios em views/galeria.html:",
             elementosAusentes.join(", ")
         );
+
         return;
     }
 
-    // Estado da experiência.
+    /* =====================================================
+       ESTADO DA EXPERIÊNCIA
+    ===================================================== */
+
     let obraAtual = null;
+    let obraIdAtual = null;
+
     let etapas = [];
     let indiceAtual = 0;
 
@@ -106,7 +127,11 @@
 
     let focoAnteriorModal = null;
     let overflowAnterior = "";
-    // Estado das ações da biblioteca para a obra atual.
+
+    /* =====================================================
+       ESTADO DA BIBLIOTECA
+    ===================================================== */
+
     let estadoBiblioteca = {
         favorito: false,
         quero_explorar: false,
@@ -118,6 +143,46 @@
 
     let conclusaoEmAndamento = false;
     let conclusaoRegistrada = false;
+
+    /* =====================================================
+       RELATO DE PROBLEMAS
+    ===================================================== */
+
+    function atualizarDisponibilidadeBotaoRelato(disponivel) {
+        if (!botaoRelatarProblema) return;
+
+        botaoRelatarProblema.disabled = !disponivel;
+
+        botaoRelatarProblema.setAttribute(
+            "aria-disabled",
+            String(!disponivel)
+        );
+    }
+
+    function abrirPaginaRelato() {
+        if (
+            !Number.isSafeInteger(obraIdAtual) ||
+            obraIdAtual < 1
+        ) {
+            return;
+        }
+
+        const destino = new URL(
+            "relatar-problema.html",
+            document.baseURI
+        );
+
+        destino.searchParams.set(
+            "obra_id",
+            String(obraIdAtual)
+        );
+
+        window.location.assign(destino.href);
+    }
+
+    /* =====================================================
+       FUNÇÕES AUXILIARES
+    ===================================================== */
 
     function urlApiBiblioteca(arquivo) {
         return new URL(
@@ -413,7 +478,9 @@
         }
     }
 
-    // Consulta JSON e valida a resposta da API.
+    /*
+     * Consulta JSON e valida a resposta da API.
+     */
     async function consultarJson(url) {
         const resposta = await fetch(url, {
             method: "GET",
@@ -479,7 +546,9 @@
         return Number((boba || obras[0]).id);
     }
 
-    // Carrega uma imagem e também trata imagens já presentes no cache.
+    /*
+     * Carrega uma imagem e também trata imagens já presentes no cache.
+     */
     function carregarImagem(imagem, url, textoAlternativo) {
         imagem.alt = textoAlternativo || "";
 
@@ -579,7 +648,9 @@
         };
     }
 
-    // Ajusta a área da galeria à proporção do detalhe selecionado no editor.
+    /*
+     * Ajusta a área da galeria à proporção do detalhe selecionado no editor.
+     */
     function aplicarEnquadramento(imagem, etapa, animar = true) {
         if (!imagem || !imagem.naturalWidth || !imagem.naturalHeight) {
             return;
@@ -599,10 +670,6 @@
 
         const retangulo = obterRetanguloZoom(etapa);
 
-        /*
-         * A proporção do quadro acompanha a seleção do editor.
-         * Se não existir seleção, utiliza a proporção da obra inteira.
-         */
         const proporcao = retangulo
             ? (
                 retangulo.largura * imagem.naturalWidth
@@ -611,10 +678,6 @@
             )
             : imagem.naturalWidth / imagem.naturalHeight;
 
-        /*
-         * Aproveita a maior área possível, respeitando os limites
-         * de largura e altura disponíveis na tela.
-         */
         const larguraFrame = Math.max(
             1,
             Math.min(larguraDisponivel, alturaDisponivel * proporcao)
@@ -622,10 +685,6 @@
 
         const alturaFrame = larguraFrame / proporcao;
 
-        /*
-         * O próprio quadro muda de tamanho conforme a seleção.
-         * Não há uma proporção fixa imposta pelo CSS.
-         */
         Object.assign(frame.style, {
             width: `${larguraFrame}px`,
             height: `${alturaFrame}px`,
@@ -635,10 +694,6 @@
             flex: "0 0 auto"
         });
 
-        /*
-         * Dimensiona a imagem original para o novo quadro,
-         * preservando suas proporções.
-         */
         const escalaBase = Math.max(
             larguraFrame / imagem.naturalWidth,
             alturaFrame / imagem.naturalHeight
@@ -667,10 +722,6 @@
             const escalaVertical =
                 alturaFrame / (retangulo.altura * alturaImagem);
 
-            /*
-             * Como o quadro tem a mesma proporção da seleção,
-             * o detalhe pode preencher a área sem deixar faixas vazias.
-             */
             escala = Math.min(
                 escalaHorizontal,
                 escalaVertical
@@ -717,7 +768,10 @@
             });
         }
     }
-    // Atualiza o texto, o contador e a barra de progresso.
+
+    /*
+     * Atualiza o texto, o contador e a barra de progresso.
+     */
     function atualizarNarrativa(etapa, indice) {
         const total = etapas.length;
 
@@ -784,7 +838,9 @@
         }, 220);
     }
 
-    // Estado para obras sem etapas cadastradas.
+    /*
+     * Estado para obras sem etapas cadastradas.
+     */
     function mostrarSemEtapas() {
         indiceAtual = 0;
 
@@ -797,9 +853,7 @@
             "A imagem está publicada, mas nenhuma etapa de exploração foi cadastrada.";
 
         contadorDetalhe.textContent = "00 / 00";
-
-        textoProgresso.textContent =
-            "Nenhuma etapa cadastrada";
+        textoProgresso.textContent = "Nenhuma etapa cadastrada";
 
         preenchimentoProgresso.style.width = "0%";
 
@@ -823,7 +877,9 @@
         );
     }
 
-    // Transição visual entre as etapas.
+    /*
+     * Transição visual entre as etapas.
+     */
     function navegarParaEtapa(novoIndice) {
         if (
             emTransicao ||
@@ -836,8 +892,7 @@
 
         emTransicao = true;
 
-        const imagemNova =
-            camadaProxima.querySelector("img");
+        const imagemNova = camadaProxima.querySelector("img");
 
         aplicarEnquadramento(
             imagemNova,
@@ -884,7 +939,9 @@
         }, 750);
     }
 
-    // Abre e fecha a visualização da obra completa.
+    /*
+     * Abre e fecha a visualização da obra completa.
+     */
     function abrirObraCompleta() {
         focoAnteriorModal = document.activeElement;
         overflowAnterior = document.body.style.overflow;
@@ -908,7 +965,9 @@
         }
     }
 
-    // Controle de tela cheia.
+    /*
+     * Controle de tela cheia.
+     */
     async function alternarTelaCheia() {
         try {
             if (!document.fullscreenElement) {
@@ -925,7 +984,6 @@
     }
 
     function atualizarBotaoTelaCheia() {
-        // O cabeçalho pode ter sido reconstruído pelo sessao-ui.js.
         botaoTelaCheia =
             document.getElementById("fullscreenButton");
 
@@ -961,8 +1019,7 @@
             return;
         }
 
-        let botao =
-            document.getElementById("fullscreenButton");
+        let botao = document.getElementById("fullscreenButton");
 
         if (!botao) {
             botao = document.createElement("button");
@@ -977,12 +1034,10 @@
             );
 
             const icone = document.createElement("span");
-
             icone.setAttribute("aria-hidden", "true");
             icone.textContent = "⛶";
 
             const texto = document.createElement("span");
-
             texto.className = "fullscreen-text";
             texto.textContent = "Tela cheia";
 
@@ -1004,7 +1059,9 @@
         atualizarBotaoTelaCheia();
     }
 
-    // Apresenta uma mensagem quando a obra não puder ser carregada.
+    /*
+     * Apresenta uma mensagem quando a obra não puder ser carregada.
+     */
     function mostrarErro(mensagem) {
         artistaElemento.textContent = "";
 
@@ -1012,11 +1069,10 @@
             "Não foi possível abrir a obra";
 
         numeroDetalhe.textContent = "—";
-
-        tituloDetalhe.textContent =
-            "Ocorreu um problema";
+        tituloDetalhe.textContent = "Ocorreu um problema";
 
         textoDetalhe.textContent = mensagem;
+
         contadorDetalhe.textContent = "—";
         textoProgresso.textContent = "";
 
@@ -1025,15 +1081,12 @@
         botaoAnterior.disabled = true;
         botaoProximo.disabled = true;
 
-        // Evita exibir A Boba como se fosse a obra solicitada.
         [
             camadaInicial.querySelector("img"),
             camadaSeguinte.querySelector("img"),
             imagemCompleta
         ].forEach((imagem) => {
-            if (!imagem) {
-                return;
-            }
+            if (!imagem) return;
 
             imagem.removeAttribute("src");
             imagem.alt = "";
@@ -1048,6 +1101,14 @@
     async function iniciar() {
         try {
             const id = await descobrirIdInicial();
+
+            /*
+             * Guarda o ID assim que ele é identificado.
+             * O botão de relato é liberado antes do carregamento
+             * da imagem, permitindo relatar falhas na própria imagem.
+             */
+            obraIdAtual = id;
+            atualizarDisponibilidadeBotaoRelato(true);
 
             const resultado = await consultarJson(
                 `${API_DETALHE}?id=${encodeURIComponent(id)}`
@@ -1097,7 +1158,6 @@
             const urlImagem =
                 `${API_IMAGEM}?id=${encodeURIComponent(obraAtual.id)}&v=${Date.now()}`;
 
-            // A mesma imagem é utilizada nas duas camadas e no modo completo.
             const imagens = [
                 camadaAtual.querySelector("img"),
                 camadaProxima.querySelector("img"),
@@ -1138,15 +1198,35 @@
                 0,
                 false
             );
+
         } catch (erro) {
             mostrarErro(
                 erro?.message ||
                 "Não foi possível carregar esta obra."
             );
+
+            /*
+             * Não desabilita o botão de relato aqui.
+             * Se o ID já foi identificado, ainda é possível
+             * relatar que a obra ou a imagem não carregou.
+             */
         }
     }
 
-    // Eventos dos controles da galeria.
+    /* =====================================================
+       EVENTOS
+    ===================================================== */
+
+    if (botaoRelatarProblema) {
+        botaoRelatarProblema.disabled = true;
+
+        botaoRelatarProblema.addEventListener("click", (evento) => {
+            evento.preventDefault();
+
+            abrirPaginaRelato();
+        });
+    }
+
     if (botaoFavorito) {
         botaoFavorito.addEventListener("click", () => {
             alterarEstadoBiblioteca("favorito");
@@ -1158,7 +1238,7 @@
             alterarEstadoBiblioteca("quero_explorar");
         });
     }
-    
+
     botaoAnterior.addEventListener("click", () => {
         navegarParaEtapa(indiceAtual - 1);
     });
@@ -1182,7 +1262,9 @@
         atualizarBotaoTelaCheia
     );
 
-    // Atalhos de teclado.
+    /*
+     * Atalhos de teclado.
+     */
     document.addEventListener("keydown", (evento) => {
         if (evento.key === "Escape") {
             if (painelCompleto.classList.contains("is-open")) {
@@ -1214,7 +1296,9 @@
         }
     });
 
-    // Recalcula o enquadramento quando a janela muda de tamanho.
+    /*
+     * Recalcula o enquadramento quando a janela muda de tamanho.
+     */
     window.addEventListener("resize", () => {
         if (!obraAtual || !etapas.length || emTransicao) {
             return;
@@ -1233,10 +1317,15 @@
         );
     });
 
-    // A inicialização não depende do botão de tela cheia.
+    /* =====================================================
+       INICIALIZAÇÃO
+    ===================================================== */
+
     iniciar();
 
-    // Restaura o botão depois que os scripts do cabeçalho forem executados.
+    /*
+     * Restaura o botão depois que os scripts do cabeçalho forem executados.
+     */
     if (document.readyState === "complete") {
         instalarControleTelaCheia();
     } else {
@@ -1246,4 +1335,5 @@
             { once: true }
         );
     }
+
 })();

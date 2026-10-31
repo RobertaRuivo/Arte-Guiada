@@ -3,15 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta name="description" content="Explore uma obra de arte por meio de uma sequência visual e narrativa.">
 
     <title>Arte Guiada | A Boba</title>
 
     <link rel="stylesheet" href="../public/css/galeria.css">
     <link rel="stylesheet" href="../public/css/galeria-biblioteca.css">
+
     <script src="../public/js/sessao-ui.js" defer></script>
 </head>
 
@@ -34,13 +33,7 @@
 
     </header>
 
-
     <main id="conteudo-principal" class="gallery">
-
-        <!--
-            ÁREA VISUAL
-            A obra permanece como elemento dominante.
-        -->
 
         <section class="artwork-section" aria-label="Obra em destaque">
 
@@ -63,12 +56,6 @@
 
         </section>
 
-
-        <!--
-            ÁREA NARRATIVA
-            Somente uma explicação é apresentada por vez.
-        -->
-
         <section class="narrative-section" aria-live="polite" aria-atomic="true">
 
             <div class="narrative-top">
@@ -83,7 +70,6 @@
 
             </div>
 
-
             <div class="narrative-content">
 
                 <p class="detail-number" id="detailNumber">
@@ -94,11 +80,9 @@
                     O rosto
                 </h1>
 
-                <p class="detail-description" id="detailDescription">
-                </p>
+                <p class="detail-description" id="detailDescription"></p>
 
             </div>
-
 
             <div class="narrative-navigation">
 
@@ -114,7 +98,6 @@
 
             </div>
 
-
             <div class="progress-area">
 
                 <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="2" aria-valuenow="1"
@@ -129,7 +112,6 @@
                 </p>
 
             </div>
-
 
             <div class="exploration-message">
 
@@ -157,6 +139,11 @@
                         aria-live="polite">
                     </p>
 
+                    <!-- Relato de problemas da obra atual -->
+                    <button type="button" id="abrirRelatoProblema" class="text-button" disabled aria-disabled="true">
+                        Relatar um problema
+                    </button>
+
                 </div>
 
                 <button type="button" id="viewCompleteButton" class="text-button">
@@ -168,13 +155,6 @@
         </section>
 
     </main>
-
-
-    <!--
-        MODO OBRA COMPLETA
-        Não é um modal pesado.
-        É uma expansão simples da própria imagem.
-    -->
 
     <div class="complete-artwork" id="completeArtwork" aria-hidden="true">
 
@@ -198,7 +178,6 @@
 
     </div>
 
-
     <footer class="site-footer">
 
         <p>Arte Guiada</p>
@@ -208,7 +187,6 @@
         </p>
 
     </footer>
-
 
     <script src="../public/js/galeria.js"></script>
 
