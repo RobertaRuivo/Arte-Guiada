@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Informe um problema encontrado durante a exploração de uma obra no Arte Guiada.">
+
+    <meta name="theme-color" content="#FAF1E6">
+
+    <title>Arte Guiada | Relatar um problema</title>
+
+    <link rel="stylesheet" href="../public/css/relato-problema.css">
+
+    <script src="../public/js/relatar-problema.js" defer></script>
+</head>
+
+<body class="pagina-relato-problema">
+
+    <a class="relato-skip-link" href="#conteudo-principal">
+        Ir para o formulário
+    </a>
+
+    <header class="relato-cabecalho">
+        <a href="../index.html" class="relato-logo">
+            Arte Guiada
+        </a>
+
+        <a href="../index.html" class="relato-link-home">
+            Página inicial
+        </a>
+    </header>
+
+    <main id="conteudo-principal" class="relato-container">
+
+        <a class="relato-voltar" id="voltarGaleriaRelato" href="galeria.html">
+            ← Voltar para a obra
+        </a>
+
+        <section class="relato-introducao">
+
+            <span class="relato-etiqueta">
+                CONTRIBUA COM A GALERIA
+            </span>
+
+            <h1>
+                Encontrou algum problema?
+            </h1>
+
+            <p>
+                Conte o que aconteceu durante a exploração.
+                Seu relato ajuda a manter as informações e as experiências
+                do Arte Guiada funcionando corretamente.
+            </p>
+
+        </section>
+
+        <section class="relato-card" aria-labelledby="tituloFormularioRelato">
+
+            <div class="relato-obra-contexto" id="contextoObraRelato">
+
+                <span>OBRA RELACIONADA</span>
+
+                <strong id="tituloObraRelato">
+                    Identificando obra...
+                </strong>
+
+                <small id="autorObraRelato"></small>
+
+            </div>
+
+            <div id="erroContextoRelato" class="relato-feedback erro" role="alert" hidden>
+            </div>
+
+            <form id="formRelatoProblema" novalidate>
+
+                <div class="relato-form-intro">
+
+                    <h2 id="tituloFormularioRelato">
+                        Qual problema você encontrou?
+                    </h2>
+
+                    <p>
+                        Selecione todas as opções que se aplicam.
+                        Não é necessário estar conectado à sua conta.
+                    </p>
+
+                </div>
+
+                <fieldset class="relato-categorias">
+
+                    <legend>Tipos de problema</legend>
+
+                    <div class="relato-opcoes">
+
+                        <label class="relato-opcao">
+
+                            <input type="checkbox" name="tipos" value="imagem">
+
+                            <span>
+                                <strong>Problema na imagem</strong>
+                                <small>
+                                    A imagem não carrega ou apresenta defeitos.
+                                </small>
+                            </span>
+
+                        </label>
+
+                        <label class="relato-opcao">
+
+                            <input type="checkbox" name="tipos" value="informacoes">
+
+                            <span>
+                                <strong>Informações incorretas</strong>
+                                <small>
+                                    Título, autoria ou dados da obra.
+                                </small>
+                            </span>
+
+                        </label>
+
+                        <label class="relato-opcao">
+
+                            <input type="checkbox" name="tipos" value="texto">
+
+                            <span>
+                                <strong>Erro no texto explicativo</strong>
+                                <small>
+                                    Informação ausente, incorreta ou escrita inadequadamente.
+                                </small>
+                            </span>
+
+                        </label>
+
+                        <label class="relato-opcao">
+
+                            <input type="checkbox" name="tipos" value="etapa_zoom">
+
+                            <span>
+                                <strong>Problema em etapa ou zoom</strong>
+                                <small>
+                                    Detalhe incorreto, região de zoom ou etapa com defeito.
+                                </small>
+                            </span>
+
+                        </label>
+
+                        <label class="relato-opcao">
+
+                            <input type="checkbox" name="tipos" value="navegacao">
+
+                            <span>
+                                <strong>Problema de navegação</strong>
+                                <small>
+                                    Botão, link ou recurso que não funciona corretamente.
+                                </small>
+                            </span>
+
+                        </label>
+
+                        <label class="relato-opcao">
+
+                            <input type="checkbox" name="tipos" value="acessibilidade">
+
+                            <span>
+                                <strong>Problema de acessibilidade</strong>
+                                <small>
+                                    Dificuldade de leitura, uso ou navegação.
+                                </small>
+                            </span>
+
+                        </label>
+
+                        <label class="relato-opcao relato-opcao-outro">
+
+                            <input type="checkbox" name="tipos" value="outro">
+
+                            <span>
+                                <strong>Outro problema</strong>
+                                <small>
+                                    Algo diferente das opções anteriores.
+                                </small>
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                </fieldset>
+
+                <div class="relato-descricao">
+
+                    <label for="descricaoRelato">
+                        Descrição do problema
+                        <span id="indicacaoDescricaoRelato">
+                            Opcional, mas ajuda na análise.
+                        </span>
+                    </label>
+
+                    <textarea id="descricaoRelato" name="descricao" maxlength="2000" rows="6"
+                        placeholder="Descreva o que aconteceu, em qual etapa e o que você esperava encontrar."
+                        aria-describedby="ajudaDescricaoRelato"></textarea>
+
+                    <div class="relato-descricao-rodape">
+
+                        <small id="ajudaDescricaoRelato">
+                            A descrição é obrigatória quando você seleciona
+                            "Outro". Não inclua senhas ou dados pessoais.
+                        </small>
+
+                        <small>
+                            <span id="contadorDescricaoRelato">0</span>/2000
+                        </small>
+
+                    </div>
+
+                </div>
+                <p class="relato-feedback" id="feedbackRelatoProblema" role="status" aria-live="polite">
+                </p>
+
+                <div class="relato-acoes">
+
+                    <button type="submit" class="relato-botao-enviar">
+                        Enviar relato
+                    </button>
+
+                    <a class="relato-botao-cancelar" id="cancelarRelatoProblema" href="galeria.html">
+                        Cancelar
+                    </a>
+
+                </div>
+
+                <p class="relato-privacidade">
+                    O relato pode ser enviado anonimamente.
+                    Quando você estiver conectado, ele será associado
+                    à sua conta para fins de acompanhamento administrativo.
+                </p>
+
+            </form>
+
+            <section class="relato-sucesso" id="sucessoRelato" role="status" aria-live="polite" hidden>
+
+                <span class="relato-sucesso-icone" aria-hidden="true">
+                    ✓
+                </span>
+
+                <h2>Relato enviado!</h2>
+
+                <p>
+                    Obrigado por contribuir com o Arte Guiada.
+                    Seu relato foi registrado para análise.
+                </p>
+
+                <p>
+                    Você será direcionado à página inicial.
+                </p>
+
+                <a href="../index.html">
+                    Ir para a página inicial
+                </a>
+
+            </section>
+
+        </section>
+
+    </main>
+
+    <footer class="relato-rodape">
+
+        <a class="relato-logo" href="../index.html">
+            Arte Guiada
+        </a>
+
+        <p>
+            Observe com atenção. Explore com curiosidade.
+            Interprete com liberdade.
+        </p>
+
+    </footer>
+
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+
+-- =========================================================
+-- ARTE GUIADA
+-- Migração 003: relatos públicos e histórico de acompanhamento.
+-- Preserva a tabela relatos_problema e seus registros existentes.
+-- =========================================================
+
+-- 1. Permite relatos anônimos e preserva o relato
+-- caso a conta do usuário seja excluída.
+
+ALTER TABLE relatos_problema
+    DROP FOREIGN KEY fk_relatos_problema_usuario,
+    MODIFY COLUMN usuario_id INT NULL,
+    ADD CONSTRAINT fk_relatos_problema_usuario
+        FOREIGN KEY (usuario_id)
+        REFERENCES usuarios(id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL;
+
+
+-- 2. Categorias selecionadas no formulário.
+
+CREATE TABLE IF NOT EXISTS relatos_problema_tipos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    relato_id INT NOT NULL,
+
+    tipo ENUM(
+        'imagem',
+        'informacoes',
+        'texto',
+        'etapa_zoom',
+        'navegacao',
+        'acessibilidade',
+        'outro'
+    ) NOT NULL,
+
+    UNIQUE KEY uq_relato_problema_tipo (relato_id, tipo),
+    INDEX idx_relato_problema_tipo (tipo),
+
+    CONSTRAINT fk_relato_tipo_relato
+        FOREIGN KEY (relato_id)
+        REFERENCES relatos_problema(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
+
+-- 3. Histórico de recebimento e alterações administrativas.
+
+CREATE TABLE IF NOT EXISTS relatos_problema_historico (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    relato_id INT NOT NULL,
+
+    status_anterior ENUM(
+        'pendente',
+        'em_analise',
+        'resolvido'
+    ) NULL,
+
+    status_novo ENUM(
+        'pendente',
+        'em_analise',
+        'resolvido'
+    ) NOT NULL,
+
+    observacao TEXT NULL,
+    responsavel_id INT NULL,
+
+    registrado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_historico_relato_data (relato_id, registrado_em),
+    INDEX idx_historico_responsavel (responsavel_id, registrado_em),
+
+    CONSTRAINT fk_historico_relato
+        FOREIGN KEY (relato_id)
+        REFERENCES relatos_problema(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_historico_responsavel
+        FOREIGN KEY (responsavel_id)
+        REFERENCES usuarios(id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;

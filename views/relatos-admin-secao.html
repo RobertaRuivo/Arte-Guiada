@@ -1,0 +1,41 @@
+<!--
+    TRECHO PARA views/admin.html
+    Substitua somente a seção antiga data-painel-secao="problemas" por este bloco.
+    Não substitua o arquivo admin.html inteiro.
+-->
+<section class="painel-conteudo-secao" data-painel-secao="problemas" aria-labelledby="titulo-problemas" hidden>
+    <div class="secao-titulo-painel">
+        <div>
+            <span class="painel-etiqueta">ATENDIMENTO</span>
+            <h2 id="titulo-problemas">Obras com problemas</h2>
+            <p>Consulte relatos enviados por usuários autenticados e visitantes anônimos. Atualize o andamento e registre as providências tomadas.</p>
+        </div>
+        <button type="button" class="botao botao-secundario" data-atualizar-relatos>Atualizar lista</button>
+    </div>
+
+    <div class="filtros-admin" aria-label="Filtros de relatos">
+        <span class="filtro-etiqueta">Estado</span>
+        <button type="button" class="filtro-chip ativa" data-filtro-relato="pendente" aria-pressed="true">
+            Pendentes (<span data-contagem-relato="pendente">0</span>)
+        </button>
+        <button type="button" class="filtro-chip" data-filtro-relato="em_analise" aria-pressed="false">
+            Em análise (<span data-contagem-relato="em_analise">0</span>)
+        </button>
+        <button type="button" class="filtro-chip" data-filtro-relato="resolvido" aria-pressed="false">
+            Resolvidos (<span data-contagem-relato="resolvido">0</span>)
+        </button>
+        <button type="button" class="filtro-chip" data-filtro-relato="todos" aria-pressed="false">
+            Todos (<span data-total-relatos>0</span>)
+        </button>
+    </div>
+
+    <p id="feedbackRelatosAdmin" class="feedback-relatos-admin" role="status" aria-live="polite"></p>
+
+    <div id="listaRelatosAdmin" class="lista-relatos-admin" aria-live="polite" aria-busy="true">
+        <div class="estado-vazio relato-admin-vazio">
+            <span class="estado-vazio-simbolo" aria-hidden="true">…</span>
+            <h3>Carregando relatos</h3>
+            <p>Os registros serão exibidos aqui.</p>
+        </div>
+    </div>
+</section>
