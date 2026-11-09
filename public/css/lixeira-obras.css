@@ -1,0 +1,147 @@
+/* Lixeira compartilhada: usa o fluxo normal do conteúdo nos dois painéis. */
+.painel-lixeira-obras {
+    position: relative;
+    isolation: isolate;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding-top: 1.75rem;
+}
+
+.painel-lixeira-obras[hidden] {
+    display: none !important;
+}
+
+.painel-lixeira-obras > *,
+.painel-lixeira-obras .dashboard-section-heading > div {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.painel-lixeira-obras .dashboard-section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 1.35rem;
+}
+
+.painel-lixeira-obras .dashboard-section-heading > div {
+    flex: 1 1 24rem;
+}
+
+.painel-lixeira-obras .dashboard-section-heading .botao {
+    flex: 0 0 auto;
+}
+
+.lixeira-obras-lista {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    width: 100%;
+    min-width: 0;
+}
+
+.lixeira-obra-card {
+    display: grid;
+    gap: 0.7rem;
+    width: 100%;
+    min-width: 0;
+    padding: clamp(1rem, 2.4vw, 1.35rem);
+    border: 1px solid var(--borda, #dedbd5);
+    border-radius: 1rem;
+    background: var(--fundo-card, #fff);
+    box-sizing: border-box;
+}
+
+.lixeira-obra-card > * {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.lixeira-obra-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+}
+
+.lixeira-obra-topo h3 {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.lixeira-obra-status {
+    flex: 0 0 auto;
+    max-width: 100%;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: normal;
+}
+
+.lixeira-obra-status.publicada {
+    color: #245b34;
+    background: #e5f2e8;
+}
+
+.lixeira-obra-status.rascunho {
+    color: #76591b;
+    background: #f5edda;
+}
+
+.lixeira-obra-meta,
+.lixeira-obra-aviso {
+    margin: 0;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.lixeira-obra-aviso {
+    color: var(--texto-secundario, #626262);
+    font-size: 0.92rem;
+}
+
+.lixeira-obra-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 0.25rem;
+}
+
+#feedbackLixeiraObras {
+    min-height: 1.5rem;
+    margin: 0.75rem 0 1rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#feedbackLixeiraObras[data-tipo="erro"] {
+    color: #a32626;
+}
+
+#feedbackLixeiraObras[data-tipo="sucesso"] {
+    color: #25643a;
+}
+
+@media (max-width: 640px) {
+    .painel-lixeira-obras {
+        padding-top: 1.25rem;
+    }
+
+    .painel-lixeira-obras .dashboard-section-heading {
+        align-items: stretch;
+    }
+
+    .painel-lixeira-obras .dashboard-section-heading .botao,
+    .lixeira-obra-acoes .botao {
+        width: 100%;
+    }
+}

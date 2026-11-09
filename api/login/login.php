@@ -1,143 +1,313 @@
 <?php
 
-session_set_cookie_params([
-    "lifetime" => 0,
-    "path" => "/Arte-Guiada/",
-    "secure" => false,
-    "httponly" => true,
-    "samesite" => "Lax"
-]);
-
-session_start();
-
-require_once "../../config/banco.php";
-
 header("Content-Type: application/json; charset=UTF-8");
+header("Cache-Control: no-store");
+header("Pragma: no-cache");
+
+function responderJsonLogin(int $status, array $dados): void
+{
+    http_response_code($status);
+
+    echo json_encode(
+        $dados,
+        JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
+    );
+
+    exit;
+}
+
+/*
+ * 1. Método HTTP.
+ */
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    http_response_code(405);
+    header("Allow: POST");
 
-    echo json_encode([
+    responderJsonLogin(405, [
         "sucesso" => false,
         "mensagem" => "Método não permitido."
     ]);
-
-    exit;
 }
 
-require_once __DIR__ . '/../../config/protecao-csrf.php';
+/*
+ * 2. Proteção de origem.
+ */
+
+require_once __DIR__ . "/../../config/protecao-csrf.php";
+
 exigirOrigemConfiavelCsrf();
 
-$dados = json_decode(
-    file_get_contents("php://input"),
-    true
-);
+/*
+ * 3. Validação do JSON.
+ */
 
-$email = trim($dados["email"] ?? "");
-$senha = $dados["senha"] ?? "";
+try {
+    $dados = json_decode(
+        file_get_contents("php://input"),
+        true,
+        512,
+        JSON_THROW_ON_ERROR
+    );
+} catch (JsonException $erro) {
+    responderJsonLogin(400, [
+        "sucesso" => false,
+        "mensagem" => "O corpo da requisição contém JSON inválido."
+    ]);
+}
 
-if ($email === "" || $senha === "") {
-    http_response_code(400);
+if (!is_array($dados)) {
+    responderJsonLogin(400, [
+        "sucesso" => false,
+        "mensagem" => "Os dados enviados são inválidos."
+    ]);
+}
 
-    echo json_encode([
+/*
+ * 4. Validação dos campos.
+ */
+
+foreach (["email", "senha"] as $campo) {
+    if (!isset($dados[$campo]) || !is_string($dados[$campo])) {
+        responderJsonLogin(400, [
+            "sucesso" => false,
+            "mensagem" => "Os dados enviados são inválidos."
+        ]);
+    }
+}
+
+$email = strtolower(trim($dados["email"]));
+$senhaInformada = $dados["senha"];
+
+if ($email === "" || $senhaInformada === "") {
+    responderJsonLogin(400, [
         "sucesso" => false,
         "mensagem" => "Informe o e-mail e a senha."
     ]);
-
-    exit;
 }
 
-$email = strtolower($email);
+if (
+    mb_strlen($email, "UTF-8") > 150 ||
+    !filter_var($email, FILTER_VALIDATE_EMAIL)
+) {
+    responderJsonLogin(422, [
+        "sucesso" => false,
+        "mensagem" => "Informe um endereço de e-mail válido."
+    ]);
+}
 
-$sql = "SELECT id, nome, sobrenome, email, senha, perfil
-        FROM usuarios
-        WHERE email = ?";
+if (strlen($senhaInformada) > 4096) {
+    responderJsonLogin(422, [
+        "sucesso" => false,
+        "mensagem" => "Os dados enviados são inválidos."
+    ]);
+}
+
+/*
+ * 5. Consulta ao banco.
+ */
+
+$conn = null;
+$stmt = null;
+$usuarioAutenticado = null;
 
 try {
+    require_once __DIR__ . "/../../config/banco.php";
+
+    $sql = "SELECT id, nome, sobrenome, email, senha, perfil
+            FROM usuarios
+            WHERE email = ?";
+
     $stmt = $conn->prepare($sql);
 
     $stmt->bind_param("s", $email);
 
     $stmt->execute();
 
-    $resultado = $stmt->get_result();
-    $usuario = $resultado->fetch_assoc();
-
-    if (
-        !$usuario ||
-        !password_verify($senha, $usuario["senha"])
-    ) {
-        http_response_code(401);
-
-        echo json_encode([
-            "sucesso" => false,
-            "mensagem" => "E-mail ou senha incorretos."
-        ]);
-
-        $stmt->close();
-        $conn->close();
-
-        exit;
-    }
-
-    // A sessão só é criada após validar as credenciais.
-    session_regenerate_id(true);
-    $perfil = strtolower(
-        trim((string) ($usuario["perfil"] ?? ""))
+    $stmt->bind_result(
+        $id,
+        $nome,
+        $sobrenome,
+        $emailBanco,
+        $senhaHash,
+        $perfilBanco
     );
 
-    if ($perfil === "administrador") {
-        $perfil = "admin";
+    if ($stmt->fetch()) {
+        $usuarioAutenticado = [
+            "id" => (int) $id,
+            "nome" => $nome,
+            "sobrenome" => $sobrenome,
+            "email" => $emailBanco,
+            "senha" => $senhaHash,
+            "perfil" => $perfilBanco
+        ];
     }
-
-    $perfisPermitidos = [
-        "visitante",
-        "editor",
-        "admin"
-    ];
-
-    if (!in_array($perfil, $perfisPermitidos, true)) {
-        http_response_code(403);
-
-        echo json_encode([
-            "sucesso" => false,
-            "mensagem" => "Perfil de acesso inválido ou não autorizado."
-        ]);
-
-        $stmt->close();
-        $conn->close();
-
-        exit;
-    }
-
-    session_regenerate_id(true);
-
-    $_SESSION["usuario_id"] = (int) $usuario["id"];
-    $_SESSION["nome"] = $usuario["nome"];
-    $_SESSION["perfil"] = $perfil;
-
-    echo json_encode([
-        "sucesso" => true,
-        "mensagem" => "Login realizado com sucesso.",
-        "usuario" => [
-            "id" => $usuario["id"],
-            "nome" => $usuario["nome"],
-            "sobrenome" => $usuario["sobrenome"],
-            "email" => $usuario["email"],
-            "perfil" => $perfil
-        ]
-    ]);
 
     $stmt->close();
+    $stmt = null;
+
     $conn->close();
+    $conn = null;
 
-} catch (mysqli_sql_exception $erro) {
-    http_response_code(500);
+} catch (Throwable $erro) {
 
-    echo json_encode([
+    if ($stmt instanceof mysqli_stmt) {
+        $stmt->close();
+    }
+
+    if ($conn instanceof mysqli) {
+        $conn->close();
+    }
+
+    error_log(
+        "[" . date("Y-m-d H:i:s") . "] Erro interno no login: " .
+        $erro->getMessage()
+    );
+
+    responderJsonLogin(500, [
         "sucesso" => false,
         "mensagem" => "Erro ao realizar o login."
     ]);
-
-    $conn->close();
 }
+
+/*
+ * 6. Verificação das credenciais.
+ */
+
+if (
+    !$usuarioAutenticado ||
+    !password_verify($senhaInformada, $usuarioAutenticado["senha"])
+) {
+    error_log(
+        "[" . date("Y-m-d H:i:s") . "] Falha de autenticação no login."
+    );
+
+    responderJsonLogin(401, [
+        "sucesso" => false,
+        "mensagem" => "E-mail ou senha incorretos."
+    ]);
+}
+
+/*
+ * 7. Validação do perfil.
+ */
+
+$perfil = strtolower(
+    trim((string) ($usuarioAutenticado["perfil"] ?? ""))
+);
+
+if ($perfil === "administrador") {
+    $perfil = "admin";
+}
+
+$perfisPermitidos = [
+    "visitante",
+    "editor",
+    "admin"
+];
+
+if (!in_array($perfil, $perfisPermitidos, true)) {
+    responderJsonLogin(403, [
+        "sucesso" => false,
+        "mensagem" => "Perfil de acesso inválido ou não autorizado."
+    ]);
+}
+
+/*
+ * 8. Configuração do cookie da sessão.
+ */
+
+$scriptName = str_replace(
+    "\\",
+    "/",
+    (string) ($_SERVER["SCRIPT_NAME"] ?? "/")
+);
+
+$posicaoApi = strpos($scriptName, "/api/");
+
+$caminhoCookie = $posicaoApi === false
+    ? "/"
+    : substr($scriptName, 0, $posicaoApi + 1);
+
+$https = (
+    !empty($_SERVER["HTTPS"]) &&
+    strtolower((string) $_SERVER["HTTPS"]) !== "off"
+) || (
+    (int) ($_SERVER["SERVER_PORT"] ?? 0) === 443
+);
+
+try {
+    ini_set("session.use_strict_mode", "1");
+    ini_set("session.use_only_cookies", "1");
+    ini_set("session.use_trans_sid", "0");
+
+    session_cache_limiter("");
+
+    session_set_cookie_params([
+        "lifetime" => 0,
+        "path" => $caminhoCookie,
+        "secure" => $https,
+        "httponly" => true,
+        "samesite" => "Lax"
+    ]);
+
+    if (!session_start()) {
+        throw new RuntimeException("Falha ao iniciar sessão.");
+    }
+
+    if (!session_regenerate_id(true)) {
+        throw new RuntimeException("Falha ao regenerar sessão.");
+    }
+
+    $_SESSION = [];
+
+    $_SESSION["usuario_id"] = $usuarioAutenticado["id"];
+    $_SESSION["nome"] = $usuarioAutenticado["nome"];
+    $_SESSION["perfil"] = $perfil;
+
+    if (!session_write_close()) {
+        throw new RuntimeException("Falha ao salvar sessão.");
+    }
+
+} catch (Throwable $erro) {
+
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        $_SESSION = [];
+        session_abort();
+    }
+
+    error_log(
+        "[" . date("Y-m-d H:i:s") . "] Erro na sessão: " .
+        $erro->getMessage()
+    );
+
+    responderJsonLogin(500, [
+        "sucesso" => false,
+        "mensagem" => "Erro ao realizar o login."
+    ]);
+}
+
+/*
+ * 9. Registro do sucesso.
+ */
+
+error_log(
+    "[" . date("Y-m-d H:i:s") . "] Login realizado com sucesso. Usuario ID: " .
+    $usuarioAutenticado["id"]
+);
+
+/*
+ * 10. Resposta.
+ */
+
+responderJsonLogin(200, [
+    "sucesso" => true,
+    "mensagem" => "Login realizado com sucesso.",
+    "usuario" => [
+        "id" => $usuarioAutenticado["id"],
+        "nome" => $usuarioAutenticado["nome"],
+        "sobrenome" => $usuarioAutenticado["sobrenome"],
+        "email" => $usuarioAutenticado["email"],
+        "perfil" => $perfil
+    ]
+]);

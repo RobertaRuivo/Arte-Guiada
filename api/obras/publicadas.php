@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 header("Content-Type: application/json; charset=UTF-8");
 header("Cache-Control: no-store");
+header("Pragma: no-cache");
 
 function responderJson(int $status, array $dados): void
 {
@@ -9,11 +12,18 @@ function responderJson(int $status, array $dados): void
 
     echo json_encode(
         $dados,
-        JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
+        JSON_UNESCAPED_UNICODE |
+        JSON_INVALID_UTF8_SUBSTITUTE
     );
 
     exit;
 }
+
+/*
+|--------------------------------------------------------------------------
+| 1. Validar método HTTP
+|--------------------------------------------------------------------------
+*/
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     header("Allow: GET");
@@ -24,9 +34,38 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     ]);
 }
 
-require_once __DIR__ . "/../../config/banco.php";
+/*
+|--------------------------------------------------------------------------
+| 2. Consultar obras publicadas
+|--------------------------------------------------------------------------
+*/
+
+$conn = null;
+$resultado = null;
 
 try {
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    require_once __DIR__ . "/../../config/banco.php";
+
+    if (!isset($conn) || !($conn instanceof mysqli)) {
+        throw new RuntimeException(
+            "A conexão com o banco não foi inicializada."
+        );
+    }
+
+    $conn->set_charset("utf8mb4");
+
+    /*
+     * Retorna somente obras:
+     * - publicadas;
+     * - não excluídas;
+     * - com imagem armazenada;
+     * - com pelo menos uma etapa de exploração.
+     *
+     * Não há parâmetros externos nesta consulta.
+     */
+
     $sql = "
         SELECT
             o.id,
@@ -55,6 +94,7 @@ try {
     ";
 
     $resultado = $conn->query($sql);
+
     $obras = [];
 
     while ($obra = $resultado->fetch_assoc()) {
@@ -69,11 +109,16 @@ try {
     }
 
     $resultado->free();
+    $resultado = null;
+
+    $totalObras = count($obras);
+
     $conn->close();
+    $conn = null;
 
     responderJson(200, [
         "sucesso" => true,
-        "total" => count($obras),
+        "total" => $totalObras,
         "obras" => $obras
     ]);
 
@@ -83,8 +128,20 @@ try {
         $erro->getMessage()
     );
 
-    if (isset($conn) && $conn instanceof mysqli) {
-        $conn->close();
+    if ($resultado instanceof mysqli_result) {
+        try {
+            $resultado->free();
+        } catch (Throwable $erroFechamento) {
+            // Preserva o erro original.
+        }
+    }
+
+    if ($conn instanceof mysqli) {
+        try {
+            $conn->close();
+        } catch (Throwable $erroFechamento) {
+            // Preserva o erro original.
+        }
     }
 
     responderJson(500, [

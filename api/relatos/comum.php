@@ -7,15 +7,6 @@ declare(strict_types=1);
  */
 
 /*
- * Inicia a sessão caso ainda não esteja ativa.
- * Necessário para identificar usuários e controlar
- * a frequência de envio dos relatos.
- */
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-/*
  * Envia uma resposta JSON e encerra a execução.
  *
  * @param int $status Código HTTP.
@@ -121,4 +112,69 @@ function usuarioRelatoAtual(): ?int
     }
 
     return null;
+}
+
+/*
+ * Configura e inicia a sessão caso ainda não esteja ativa.
+ *
+ * As configurações são alinhadas às utilizadas
+ * pelo endpoint de autenticação.
+ */
+if (session_status() === PHP_SESSION_NONE) {
+
+    $scriptName = str_replace(
+        "\\",
+        "/",
+        (string) ($_SERVER["SCRIPT_NAME"] ?? "/")
+    );
+
+    $posicaoApi = strpos($scriptName, "/api/");
+
+    $caminhoCookie = $posicaoApi === false
+        ? "/"
+        : substr($scriptName, 0, $posicaoApi + 1);
+
+    $https = (
+        !empty($_SERVER["HTTPS"]) &&
+        strtolower((string) $_SERVER["HTTPS"]) !== "off"
+    ) || (
+        (int) ($_SERVER["SERVER_PORT"] ?? 0) === 443
+    );
+
+    try {
+        ini_set("session.use_strict_mode", "1");
+        ini_set("session.use_only_cookies", "1");
+        ini_set("session.use_trans_sid", "0");
+
+        session_cache_limiter("");
+
+        session_set_cookie_params([
+            "lifetime" => 0,
+            "path" => $caminhoCookie,
+            "secure" => $https,
+            "httponly" => true,
+            "samesite" => "Lax"
+        ]);
+
+        if (!session_start()) {
+            throw new RuntimeException(
+                "Falha ao iniciar sessão."
+            );
+        }
+
+    } catch (Throwable $erro) {
+
+        error_log(
+            sprintf(
+                "[Arte Guiada][relatos] %s Falha ao iniciar sessão: %s",
+                date(DATE_ATOM),
+                $erro->getMessage()
+            )
+        );
+
+        responderRelato(500, [
+            'sucesso' => false,
+            'mensagem' => 'Não foi possível iniciar a sessão.'
+        ]);
+    }
 }

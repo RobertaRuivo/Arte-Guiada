@@ -69,6 +69,7 @@ $tiposRecebidos = $dados['tipos'] ?? null;
 
 if (
     !is_array($tiposRecebidos) ||
+    !array_is_list($tiposRecebidos) ||
     count($tiposRecebidos) < 1 ||
     count($tiposRecebidos) > count($tiposPermitidos)
 ) {
@@ -134,6 +135,11 @@ if (
    4. LIMITAÇÃO DE ENVIOS REPETIDOS
 ========================================================= */
 
+/*
+ * Este controle evita envios repetidos na mesma sessão.
+ * Não substitui uma proteção persistente contra spam.
+ */
+
 $ultimoEnvio = (int) (
     $_SESSION['ultimo_relato_enviado'] ?? 0
 );
@@ -165,7 +171,6 @@ try {
 
     /*
      * Ativa o tratamento de erros do MySQLi.
-     * Assim, erros de conexão e consultas SQL geram exceções.
      */
     mysqli_report(
         MYSQLI_REPORT_ERROR |
@@ -174,7 +179,6 @@ try {
 
     /*
      * Utiliza a conexão compartilhada do projeto.
-     * Não é necessário modificar config/banco.php.
      */
     require __DIR__ . '/../../config/banco.php';
 
@@ -188,7 +192,6 @@ try {
 
     /*
      * Inicia a transação.
-     * Nenhuma parte do relato será confirmada isoladamente.
      */
     $conn->begin_transaction();
     $transacaoIniciada = true;
@@ -368,12 +371,17 @@ try {
     $conn->close();
     $conn = null;
 
+    /*
+     * Registra a criação com timestamp.
+     */
     error_log(
-        'Relato registrado com sucesso. ' .
-        'ID: ' . $relatoId .
-        '; obra: ' . $obraId .
-        '; usuário: ' .
-        ($usuarioId === null ? 'anônimo' : $usuarioId)
+        sprintf(
+            '[Arte Guiada][relatos][%s] Relato registrado. ID: %d; obra: %d; usuário: %s',
+            date(DATE_ATOM),
+            $relatoId,
+            $obraId,
+            $usuarioId === null ? 'anônimo' : (string) $usuarioId
+        )
     );
 
     /*
@@ -402,19 +410,36 @@ try {
             $conn->rollback();
         } catch (Throwable $erroRollback) {
             error_log(
-                'Erro ao desfazer transação do relato: ' .
-                $erroRollback->getMessage()
+                sprintf(
+                    '[Arte Guiada][relatos][%s] Erro ao desfazer transação: %s',
+                    date(DATE_ATOM),
+                    str_replace(
+                        ["\r", "\n"],
+                        ' ',
+                        $erroRollback->getMessage()
+                    )
+                )
             );
         }
     }
 
     /*
      * Registra o erro técnico no log do PHP.
+     * Quebras de linha são removidas para evitar
+     * a inserção de entradas falsas no log.
      */
     error_log(
-        'Falha ao registrar relato. ' .
-        'Obra: ' . $obraId .
-        '; erro: ' . $erro->getMessage()
+        sprintf(
+            '[Arte Guiada][relatos][%s] Falha ao registrar relato. Obra: %d; usuário: %s; erro: %s',
+            date(DATE_ATOM),
+            $obraId,
+            $usuarioId === null ? 'anônimo' : (string) $usuarioId,
+            str_replace(
+                ["\r", "\n"],
+                ' ',
+                $erro->getMessage()
+            )
+        )
     );
 
     /*
@@ -425,8 +450,15 @@ try {
             $conn->close();
         } catch (Throwable $erroFechamento) {
             error_log(
-                'Erro ao fechar conexão do relato: ' .
-                $erroFechamento->getMessage()
+                sprintf(
+                    '[Arte Guiada][relatos][%s] Erro ao fechar conexão: %s',
+                    date(DATE_ATOM),
+                    str_replace(
+                        ["\r", "\n"],
+                        ' ',
+                        $erroFechamento->getMessage()
+                    )
+                )
             );
         }
     }

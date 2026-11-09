@@ -8,15 +8,21 @@
 -- 1. Permite relatos anônimos e preserva o relato
 -- caso a conta do usuário seja excluída.
 
+-- Remove a chave estrangeira anterior.
 ALTER TABLE relatos_problema
-    DROP FOREIGN KEY fk_relatos_problema_usuario,
-    MODIFY COLUMN usuario_id INT NULL,
-    ADD CONSTRAINT fk_relatos_problema_usuario
+    DROP FOREIGN KEY fk_relatos_problema_usuario;
+
+-- Permite que o relato não tenha um usuário associado.
+ALTER TABLE relatos_problema
+    MODIFY COLUMN usuario_id INT NULL;
+
+-- Cria a nova chave estrangeira com exclusão SET NULL.
+ALTER TABLE relatos_problema
+    ADD CONSTRAINT fk_relatos_problema_usuario_set_null
         FOREIGN KEY (usuario_id)
         REFERENCES usuarios(id)
         ON UPDATE CASCADE
         ON DELETE SET NULL;
-
 
 -- 2. Categorias selecionadas no formulário.
 

@@ -3,7 +3,12 @@
 $host = "localhost";
 $usuario = "root";
 $senha = "";
-$banco = "arte_guiada";
+
+$banco = getenv("ARTE_GUIADA_DB_NAME");
+
+if ($banco === false || $banco === "") {
+    $banco = "arte_guiada";
+}
 
 $conn = new mysqli($host, $usuario, $senha, $banco);
 

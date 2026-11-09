@@ -1,17 +1,10 @@
 <?php
 
-session_set_cookie_params([
-    "lifetime" => 0,
-    "path" => "/Arte-Guiada/",
-    "secure" => false,
-    "httponly" => true,
-    "samesite" => "Lax"
-]);
-
-session_start();
+declare(strict_types=1);
 
 header("Content-Type: application/json; charset=UTF-8");
 header("Cache-Control: no-store");
+header("Pragma: no-cache");
 
 const TAMANHO_MAXIMO_IMAGEM = 7 * 1024 * 1024;
 
@@ -21,18 +14,24 @@ const TIPOS_IMAGEM_PERMITIDOS = [
     "image/webp"
 ];
 
+/**
+ * Retorna JSON e encerra a execução.
+ */
 function responderJson(int $status, array $dados): void
 {
     http_response_code($status);
 
     echo json_encode(
         $dados,
-        JSON_UNESCAPED_UNICODE
+        JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
     );
 
     exit;
 }
 
+/**
+ * Normaliza um campo de texto recebido.
+ */
 function obterTexto($valor, string $campo): string
 {
     if ($valor === null) {
@@ -48,6 +47,9 @@ function obterTexto($valor, string $campo): string
     return trim((string) $valor);
 }
 
+/**
+ * Calcula o tamanho do texto em caracteres.
+ */
 function tamanhoTexto(string $texto): int
 {
     return function_exists("mb_strlen")
@@ -55,19 +57,34 @@ function tamanhoTexto(string $texto): int
         : strlen($texto);
 }
 
+/**
+ * Valida uma coordenada da região de zoom.
+ */
 function lerCoordenadaZoom($valor, string $campo): ?float
 {
-    if ($valor === null || trim((string) $valor) === "") {
+    if ($valor === null) {
         return null;
     }
 
-    if (!is_scalar($valor) || !is_numeric($valor)) {
+    if (!is_scalar($valor)) {
         throw new InvalidArgumentException(
             "O campo {$campo} contém uma coordenada inválida."
         );
     }
 
-    $numero = (float) $valor;
+    $texto = trim((string) $valor);
+
+    if ($texto === "") {
+        return null;
+    }
+
+    if (!is_numeric($texto)) {
+        throw new InvalidArgumentException(
+            "O campo {$campo} contém uma coordenada inválida."
+        );
+    }
+
+    $numero = (float) $texto;
 
     if (
         !is_finite($numero) ||
@@ -82,6 +99,9 @@ function lerCoordenadaZoom($valor, string $campo): ?float
     return $numero;
 }
 
+/**
+ * Formata coordenadas para armazenamento decimal.
+ */
 function formatarCoordenada(?float $valor): ?string
 {
     return $valor === null
@@ -89,9 +109,31 @@ function formatarCoordenada(?float $valor): ?string
         : number_format($valor, 6, ".", "");
 }
 
+/**
+ * Encerra uma transação e fecha a conexão antes
+ * de devolver uma resposta de erro.
+ */
+function encerrarTransacaoParaResposta(
+    mysqli $conn,
+    int $status,
+    array $dados
+): void {
+    try {
+        $conn->rollback();
+    } catch (Throwable $erro) {
+        error_log(
+            "Erro ao reverter transação da obra: " .
+            $erro->getMessage()
+        );
+    }
+
+    $conn->close();
+
+    responderJson($status, $dados);
+}
 
 /*
- * 1. Validar a requisição e a sessão.
+ * 1. Validar método HTTP e origem.
  */
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
@@ -103,32 +145,15 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     ]);
 }
 
-$usuarioId = (int) ($_SESSION["usuario_id"] ?? 0);
+require_once __DIR__ . "/../../config/protecao-csrf.php";
 
-$perfil = strtolower(
-    trim((string) ($_SESSION["perfil"] ?? ""))
-);
-
-if ($usuarioId <= 0) {
-    responderJson(401, [
-        "sucesso" => false,
-        "mensagem" => "Sua sessão expirou. Entre novamente."
-    ]);
-}
-
-
-if (!in_array($perfil, ["editor", "admin"], true)) {
-    responderJson(403, [
-        "sucesso" => false,
-        "mensagem" => "Você não tem permissão para salvar obras."
-    ]);
-}
-require_once __DIR__ . '/../../config/protecao-csrf.php';
 exigirOrigemConfiavelCsrf();
 
 /*
- * Se o tamanho da requisição ultrapassar post_max_size,
- * o PHP poderá deixar $_POST e $_FILES vazios.
+ * 2. Verificar o tamanho da requisição.
+ *
+ * Quando post_max_size é ultrapassado, o PHP pode
+ * deixar $_POST e $_FILES vazios.
  */
 
 $tamanhoRequisicao = (int) ($_SERVER["CONTENT_LENGTH"] ?? 0);
@@ -140,54 +165,187 @@ if (
 ) {
     responderJson(413, [
         "sucesso" => false,
-        "mensagem" => "A requisição está vazia ou ultrapassou o limite de upload do servidor."
+        "mensagem" =>
+            "A requisição está vazia ou ultrapassou o limite de upload do servidor."
     ]);
 }
-
 
 /*
- * 2. Preparar os dados recebidos do formulário.
+ * 3. Configurar e iniciar a sessão.
+ *
+ * Apache:
+ * /Arte-Guiada/api/obras/salvar.php
+ * Cookie: /Arte-Guiada/
+ *
+ * Servidor de testes:
+ * /api/obras/salvar.php
+ * Cookie: /
  */
 
-$status = obterTexto(
-    $_POST["status"] ?? "",
-    "status"
+$scriptName = str_replace(
+    "\\",
+    "/",
+    (string) ($_SERVER["SCRIPT_NAME"] ?? "/")
 );
 
-if (!in_array($status, ["rascunho", "publicada"], true)) {
-    responderJson(422, [
+$posicaoApi = strpos($scriptName, "/api/");
+
+$caminhoCookie = $posicaoApi === false
+    ? "/"
+    : substr($scriptName, 0, $posicaoApi + 1);
+
+$https = (
+    !empty($_SERVER["HTTPS"]) &&
+    strtolower((string) $_SERVER["HTTPS"]) !== "off"
+) || (
+    (int) ($_SERVER["SERVER_PORT"] ?? 0) === 443
+);
+
+/*
+ * Não cria uma sessão vazia quando não existe
+ * cookie de autenticação.
+ */
+
+$nomeCookie = session_name();
+
+if (
+    !isset($_COOKIE[$nomeCookie]) ||
+    !is_string($_COOKIE[$nomeCookie]) ||
+    $_COOKIE[$nomeCookie] === ""
+) {
+    responderJson(401, [
         "sucesso" => false,
-        "mensagem" => "Informe um status válido para a obra."
+        "mensagem" => "Sua sessão expirou. Entre novamente."
     ]);
-}
-
-$obraIdTexto = obterTexto(
-    $_POST["obra_id"] ?? "",
-    "obra_id"
-);
-
-$obraId = 0;
-
-if ($obraIdTexto !== "") {
-    $obraIdValidado = filter_var(
-        $obraIdTexto,
-        FILTER_VALIDATE_INT,
-        ["options" => ["min_range" => 1]]
-    );
-
-    if ($obraIdValidado === false) {
-        responderJson(422, [
-            "sucesso" => false,
-            "mensagem" => "O identificador da obra é inválido."
-        ]);
-    }
-
-    $obraId = (int) $obraIdValidado;
 }
 
 try {
-    $titulo = obterTexto($_POST["titulo"] ?? "", "titulo");
-    $autor = obterTexto($_POST["autor"] ?? "", "autor");
+    ini_set("session.use_strict_mode", "1");
+    ini_set("session.use_only_cookies", "1");
+    ini_set("session.use_trans_sid", "0");
+
+    session_cache_limiter("");
+
+    session_set_cookie_params([
+        "lifetime" => 0,
+        "path" => $caminhoCookie,
+        "secure" => $https,
+        "httponly" => true,
+        "samesite" => "Lax"
+    ]);
+
+    if (!session_start()) {
+        throw new RuntimeException(
+            "Não foi possível iniciar a sessão."
+        );
+    }
+
+} catch (Throwable $erro) {
+    error_log(
+        "[" . date("Y-m-d H:i:s") . "] " .
+        "Erro ao iniciar sessão para salvar obra: " .
+        $erro->getMessage()
+    );
+
+    responderJson(500, [
+        "sucesso" => false,
+        "mensagem" => "Não foi possível verificar sua sessão."
+    ]);
+}
+
+/*
+ * 4. Validar o usuário e o perfil.
+ */
+
+$usuarioId = filter_var(
+    $_SESSION["usuario_id"] ?? null,
+    FILTER_VALIDATE_INT,
+    ["options" => ["min_range" => 1]]
+);
+
+$perfil = strtolower(
+    trim((string) ($_SESSION["perfil"] ?? ""))
+);
+
+if ($perfil === "administrador") {
+    $perfil = "admin";
+}
+
+if ($usuarioId === false || $usuarioId === null) {
+    session_write_close();
+
+    responderJson(401, [
+        "sucesso" => false,
+        "mensagem" => "Sua sessão expirou. Entre novamente."
+    ]);
+}
+
+if (!in_array($perfil, ["editor", "admin"], true)) {
+    session_write_close();
+
+    responderJson(403, [
+        "sucesso" => false,
+        "mensagem" => "Você não tem permissão para salvar obras."
+    ]);
+}
+
+$usuarioId = (int) $usuarioId;
+
+/*
+ * Os dados da sessão já foram obtidos.
+ * Liberamos o bloqueio antes das operações no banco.
+ */
+
+session_write_close();
+
+/*
+ * 5. Preparar e validar os dados do formulário.
+ */
+
+try {
+    $status = obterTexto(
+        $_POST["status"] ?? "",
+        "status"
+    );
+
+    if (!in_array($status, ["rascunho", "publicada"], true)) {
+        throw new InvalidArgumentException(
+            "Informe um status válido para a obra."
+        );
+    }
+
+    $obraIdTexto = obterTexto(
+        $_POST["obra_id"] ?? "",
+        "obra_id"
+    );
+
+    $obraId = 0;
+
+    if ($obraIdTexto !== "") {
+        $obraIdValidado = filter_var(
+            $obraIdTexto,
+            FILTER_VALIDATE_INT,
+            ["options" => ["min_range" => 1]]
+        );
+
+        if ($obraIdValidado === false) {
+            throw new InvalidArgumentException(
+                "O identificador da obra é inválido."
+            );
+        }
+
+        $obraId = (int) $obraIdValidado;
+    }
+
+    $titulo = obterTexto(
+        $_POST["titulo"] ?? "",
+        "titulo"
+    );
+
+    $autor = obterTexto(
+        $_POST["autor"] ?? "",
+        "autor"
+    );
 
     $textoAlternativo = obterTexto(
         $_POST["texto_alternativo"] ?? "",
@@ -213,18 +371,41 @@ try {
     }
 
     /*
-     * 3. Validar e ler o arquivo de imagem.
+     * 6. Validar e ler a imagem.
      */
 
     $imagemBinaria = null;
     $imagemMime = null;
 
-    $arquivoImagem = $_FILES["imagem"] ?? null;
+    if (isset($_FILES["imagem"])) {
+        $arquivoImagem = $_FILES["imagem"];
 
-    if (is_array($arquivoImagem)) {
-        $erroUpload = (int) (
-            $arquivoImagem["error"] ?? UPLOAD_ERR_NO_FILE
+        if (!is_array($arquivoImagem)) {
+            throw new InvalidArgumentException(
+                "Os dados da imagem enviada são inválidos."
+            );
+        }
+
+        $erroUploadBruto = $arquivoImagem["error"] ?? UPLOAD_ERR_NO_FILE;
+
+        if (!is_scalar($erroUploadBruto)) {
+            throw new InvalidArgumentException(
+                "Os dados do upload são inválidos."
+            );
+        }
+
+        $erroUploadValidado = filter_var(
+            $erroUploadBruto,
+            FILTER_VALIDATE_INT
         );
+
+        if ($erroUploadValidado === false) {
+            throw new InvalidArgumentException(
+                "O código de erro do upload é inválido."
+            );
+        }
+
+        $erroUpload = (int) $erroUploadValidado;
 
         if ($erroUpload === UPLOAD_ERR_OK) {
             $caminhoTemporario = $arquivoImagem["tmp_name"] ?? "";
@@ -322,7 +503,7 @@ try {
     }
 
     /*
-     * 4. Validar e preparar as etapas.
+     * 7. Validar e preparar as etapas.
      *
      * Etapas completamente vazias não são armazenadas.
      * Rascunhos podem conter etapas parcialmente preenchidas.
@@ -474,6 +655,10 @@ try {
         ];
     }
 
+    /*
+     * 8. Validar os requisitos de publicação.
+     */
+
     if ($status === "publicada") {
         if ($titulo === "") {
             $errosPublicacao[] = "Informe o título da obra.";
@@ -515,15 +700,21 @@ try {
     ]);
 }
 
-
 /*
- * 5. Conferir a obra existente e as permissões de edição.
+ * 9. Salvar a obra e suas etapas no banco.
  */
 
 $conn = null;
+$stmt = null;
+$stmtAtual = null;
+$stmtEtapa = null;
 $transacaoAberta = false;
 
 try {
+    mysqli_report(
+        MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT
+    );
+
     require_once __DIR__ . "/../../config/banco.php";
 
     if (!isset($conn) || !($conn instanceof mysqli)) {
@@ -532,8 +723,23 @@ try {
         );
     }
 
+    $conn->set_charset("utf8mb4");
+
+    /*
+     * Inicia a transação antes de consultar a obra.
+     */
+
+    $conn->begin_transaction();
+
+    $transacaoAberta = true;
+
     $obraAtual = null;
     $imagemAnteriorSalva = false;
+
+    /*
+     * 10. Se for edição, bloqueia a linha durante
+     * a verificação de propriedade e atualização.
+     */
 
     if ($obraId > 0) {
         $sqlAtual = "
@@ -550,51 +756,91 @@ try {
             WHERE id = ?
               AND excluida_em IS NULL
             LIMIT 1
+            FOR UPDATE
         ";
 
-        $stmt = $conn->prepare($sqlAtual);
-        $stmt->bind_param("i", $obraId);
-        $stmt->execute();
+        $stmtAtual = $conn->prepare($sqlAtual);
 
-        $obraAtual = $stmt->get_result()->fetch_assoc();
+        $stmtAtual->bind_param("i", $obraId);
+        $stmtAtual->execute();
 
-        $stmt->close();
+        $resultadoAtual = $stmtAtual->get_result();
+
+        $obraAtual = $resultadoAtual->fetch_assoc();
+
+        $resultadoAtual->free();
+
+        $stmtAtual->close();
+        $stmtAtual = null;
 
         if (!$obraAtual) {
-            responderJson(404, [
-                "sucesso" => false,
-                "mensagem" => "A obra não foi encontrada."
-            ]);
+            encerrarTransacaoParaResposta(
+                $conn,
+                404,
+                [
+                    "sucesso" => false,
+                    "mensagem" => "A obra não foi encontrada."
+                ]
+            );
         }
 
-        if (
-            $perfil !== "admin" &&
-            (int) $obraAtual["criada_por"] !== $usuarioId
-        ) {
-            responderJson(403, [
-                "sucesso" => false,
-                "mensagem" =>
-                    "Você só pode editar obras que pertencem à sua conta."
-            ]);
+                $stmtAcessoEditor = $conn->prepare(
+            "SELECT ativo FROM obras_editores_acesso
+             WHERE obra_id = ? AND usuario_id = ?
+             LIMIT 1"
+        );
+        $stmtAcessoEditor->bind_param("ii", $obraId, $usuarioId);
+        $stmtAcessoEditor->execute();
+        $registroAcessoEditor = $stmtAcessoEditor->get_result()->fetch_assoc();
+        $stmtAcessoEditor->close();
+
+        $editorTemRegistroAcesso = $registroAcessoEditor !== null;
+        $editorTemAcessoDelegado = $editorTemRegistroAcesso &&
+            (int) $registroAcessoEditor["ativo"] === 1;
+        $editorEhAutorOriginal =
+            (int) $obraAtual["criada_por"] === $usuarioId;
+        $editorPodeEditarObra = $editorTemAcessoDelegado ||
+            ($editorEhAutorOriginal && !$editorTemRegistroAcesso);
+
+        if ($perfil !== "admin" && !$editorPodeEditarObra) {
+            encerrarTransacaoParaResposta(
+                $conn,
+                403,
+                [
+                    "sucesso" => false,
+                    "mensagem" =>
+                        "Você só pode editar obras que pertencem à sua conta."
+                ]
+            );
         }
 
         $imagemAnteriorSalva = (bool) $obraAtual["imagem_salva"];
     }
+
+    /*
+     * 11. Verifica se existe imagem disponível.
+     */
 
     $imagemDisponivel =
         $imagemBinaria !== null ||
         $imagemAnteriorSalva;
 
     if ($status === "publicada" && !$imagemDisponivel) {
-        responderJson(422, [
-            "sucesso" => false,
-            "mensagem" =>
-                "Selecione a imagem principal antes de publicar."
-        ]);
+        encerrarTransacaoParaResposta(
+            $conn,
+            422,
+            [
+                "sucesso" => false,
+                "mensagem" =>
+                    "Selecione a imagem principal antes de publicar."
+            ]
+        );
     }
 
     /*
-     * Ao editar uma obra publicada, a data original é preservada.
+     * 12. Determina a data da publicação.
+     *
+     * Ao editar uma obra publicada, preserva a data original.
      * Uma nova publicação recebe a data atual.
      * Ao transformar a obra em rascunho, a data é removida.
      */
@@ -616,20 +862,13 @@ try {
     $tituloBanco = $titulo !== "" ? $titulo : null;
     $autorBanco = $autor !== "" ? $autor : null;
 
-    $textoAlternativoBanco =
-        $textoAlternativo !== ""
-            ? $textoAlternativo
-            : null;
+    $textoAlternativoBanco = $textoAlternativo !== ""
+        ? $textoAlternativo
+        : null;
 
     /*
-     * 6. Salvar a obra e suas etapas em uma transação.
-     *
-     * Assim, se uma etapa falhar, as alterações da operação
-     * não ficam parcialmente gravadas no banco.
+     * 13. Cria ou atualiza a obra.
      */
-
-    $conn->begin_transaction();
-    $transacaoAberta = true;
 
     if ($obraId > 0) {
         if ($imagemBinaria !== null) {
@@ -688,13 +927,15 @@ try {
         }
 
         $stmt->execute();
+
         $stmt->close();
+        $stmt = null;
 
         $obraIdSalva = $obraId;
 
         /*
          * As etapas enviadas representam o estado atual da obra.
-         * Por isso, substituímos a sequência anterior pela nova.
+         * Portanto, substituímos a sequência anterior pela nova.
          */
 
         $stmt = $conn->prepare(
@@ -703,7 +944,9 @@ try {
 
         $stmt->bind_param("i", $obraIdSalva);
         $stmt->execute();
+
         $stmt->close();
+        $stmt = null;
 
     } else {
         $sql = "
@@ -739,10 +982,11 @@ try {
         $obraIdSalva = (int) $conn->insert_id;
 
         $stmt->close();
+        $stmt = null;
     }
 
     /*
-     * 7. Gravar as etapas na ordem do formulário.
+     * 14. Grava as etapas na ordem do formulário.
      */
 
     if ($etapasPreparadas !== []) {
@@ -792,12 +1036,87 @@ try {
         }
 
         $stmtEtapa->close();
+        $stmtEtapa = null;
     }
 
-    $conn->commit();
+    /*
+     * 15. Confirma a transação.
+     */
+
+    /*
+ * Notifica o editor responsÃ¡vel quando um administrador altera
+ * uma obra criada por outra conta. O aviso Ã© gravado na mesma
+ * transaÃ§Ã£o da ediÃ§Ã£o: ou ambos sÃ£o confirmados, ou nenhum Ã©.
+ */
+if ($perfil === "admin" && $obraId > 0 && $obraAtual !== null) {
+    $editorResponsavelId = (int) ($obraAtual["criada_por"] ?? 0);
+
+    if ($editorResponsavelId > 0 && $editorResponsavelId !== $usuarioId) {
+        $tituloNotificacao = $titulo !== ""
+            ? $titulo
+            : "Obra sem tÃ­tulo";
+
+        $statusDescricao = $status === "publicada"
+            ? "publicada"
+            : "salva como rascunho";
+
+        $tipoNotificacao = "obra_editada_admin";
+        $tituloAviso = "Uma obra sua foi alterada pelo administrador";
+        $mensagemAviso = sprintf(
+            'O administrador alterou a obra "%s". Ela foi %s.',
+            $tituloNotificacao,
+            $statusDescricao
+        );
+
+        $stmtNotificacao = $conn->prepare(
+            "INSERT INTO notificacoes_editor
+                (usuario_id, obra_id, tipo, titulo, mensagem)
+             VALUES (?, ?, ?, ?, ?)"
+        );
+
+        $stmtNotificacao->bind_param(
+            "iisss",
+            $editorResponsavelId,
+            $obraIdSalva,
+            $tipoNotificacao,
+            $tituloAviso,
+            $mensagemAviso
+        );
+
+        $stmtNotificacao->execute();
+        $stmtNotificacao->close();
+    }
+}
+$conn->commit();
+
     $transacaoAberta = false;
 
     $conn->close();
+    $conn = null;
+
+    /*
+     * 16. Registra a operação.
+     */
+
+    $tipoOperacao = $obraId > 0
+        ? "Atualização"
+        : "Criação";
+
+    error_log(
+        "[" . date("Y-m-d H:i:s") . "] " .
+        $tipoOperacao . " de obra concluída. " .
+        "obra_id=" . $obraIdSalva .
+        "; usuario_id=" . $usuarioId .
+        "; perfil=" . $perfil .
+        "; status=" . $status
+    );
+
+    /*
+     * 17. Retorna a resposta.
+     *
+     * Mantemos HTTP 200 para criação e edição,
+     * preservando o contrato atual do endpoint.
+     */
 
     responderJson(200, [
         "sucesso" => true,
@@ -810,6 +1129,28 @@ try {
     ]);
 
 } catch (Throwable $erro) {
+
+    /*
+     * Fecha instruções que ainda estejam abertas.
+     */
+
+    foreach ([$stmt, $stmtAtual, $stmtEtapa] as $instrucao) {
+        if ($instrucao instanceof mysqli_stmt) {
+            try {
+                $instrucao->close();
+            } catch (Throwable $erroFechamento) {
+                error_log(
+                    "Erro ao fechar instrução SQL: " .
+                    $erroFechamento->getMessage()
+                );
+            }
+        }
+    }
+
+    /*
+     * Reverte a operação se a transação ainda estiver ativa.
+     */
+
     if ($transacaoAberta && $conn instanceof mysqli) {
         try {
             $conn->rollback();
@@ -821,14 +1162,32 @@ try {
         }
     }
 
-    error_log(
-        "Erro ao salvar obra no Arte Guiada: " .
-        $erro->getMessage()
-    );
+    /*
+     * Fecha a conexão.
+     */
 
     if ($conn instanceof mysqli) {
-        $conn->close();
+        try {
+            $conn->close();
+        } catch (Throwable $erroFechamento) {
+            error_log(
+                "Erro ao fechar conexão de salvamento: " .
+                $erroFechamento->getMessage()
+            );
+        }
     }
+
+    /*
+     * Registra o erro interno.
+     */
+
+    error_log(
+        "[" . date("Y-m-d H:i:s") . "] " .
+        "Erro ao salvar obra. " .
+        "Tipo=" . get_class($erro) .
+        "; código=" . $erro->getCode() .
+        "; mensagem=" . $erro->getMessage()
+    );
 
     responderJson(500, [
         "sucesso" => false,

@@ -1,105 +1,103 @@
 <?php
+declare(strict_types=1);
 
-session_set_cookie_params([
-    "lifetime" => 0,
-    "path" => "/Arte-Guiada/",
-    "secure" => false,
-    "httponly" => true,
-    "samesite" => "Lax"
-]);
+require_once __DIR__ . '/../../config/painel-api.php';
 
-session_start();
-header("Content-Type: application/json; charset=UTF-8");
-
-function responderJson(int $status, array $dados): void
-{
-    http_response_code($status);
-    echo json_encode($dados, JSON_UNESCAPED_UNICODE);
-    exit;
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
+    header('Allow: GET');
+    ag_responder_json(405, ['sucesso' => false, 'mensagem' => 'Método não permitido.']);
 }
-
-if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    header("Allow: GET");
-    responderJson(405, ["sucesso" => false, "mensagem" => "Método não permitido."]);
-}
-
-$usuarioId = (int) ($_SESSION["usuario_id"] ?? 0);
-$perfil = strtolower(trim((string) ($_SESSION["perfil"] ?? "")));
-$id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
-
-if ($usuarioId <= 0) {
-    responderJson(401, ["sucesso" => false, "mensagem" => "Sua sessão expirou. Entre novamente."]);
-}
-if (!in_array($perfil, ["editor", "admin"], true)) {
-    responderJson(403, ["sucesso" => false, "mensagem" => "Você não tem permissão para abrir esta obra."]);
-}
-if (!$id || $id < 1) {
-    responderJson(400, ["sucesso" => false, "mensagem" => "Identificador de obra inválido."]);
-}
-
-require_once "../../config/banco.php";
+$sessao = ag_exigir_perfil(['editor', 'admin']);
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+if (!$id) ag_responder_json(400, ['sucesso' => false, 'mensagem' => 'Identificador de obra inválido.']);
+$conn = null;
 
 try {
-    $sql = "SELECT id, titulo, autor, texto_alternativo, status, criada_por,
-                   (imagem IS NOT NULL AND OCTET_LENGTH(imagem) > 0) AS imagem_salva
-            FROM obras
-            WHERE id = ? AND excluida_em IS NULL";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    require __DIR__ . '/../../config/banco.php';
+    if (!$conn instanceof mysqli) throw new RuntimeException('Conexão indisponível.');
+    $conn->set_charset('utf8mb4');
+
+    $stmt = $conn->prepare(
+        "SELECT o.id, o.titulo, o.autor, o.texto_alternativo, o.status, o.criada_por,
+                (o.imagem IS NOT NULL AND OCTET_LENGTH(o.imagem) > 0) AS imagem_salva,
+                NULLIF(TRIM(CONCAT_WS(' ', u.nome, u.sobrenome)), '') AS editor_nome
+         FROM obras o
+         LEFT JOIN usuarios u ON u.id = o.criada_por
+         WHERE o.id = ? AND o.excluida_em IS NULL
+         LIMIT 1"
+    );
+    $stmt->bind_param('i', $id);
     $stmt->execute();
     $obra = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
     if (!$obra) {
         $conn->close();
-        responderJson(404, ["sucesso" => false, "mensagem" => "A obra não foi encontrada."]);
+        ag_responder_json(404, ['sucesso' => false, 'mensagem' => 'A obra não foi encontrada.']);
     }
 
-    if ($perfil !== "admin" && (int) $obra["criada_por"] !== $usuarioId) {
-        $conn->close();
-        responderJson(403, ["sucesso" => false, "mensagem" => "Você só pode editar obras que criou."]);
+    $acessoDelegado = false;
+    if ($sessao['perfil'] === 'editor') {
+        $stmtAcesso = $conn->prepare(
+            'SELECT ativo FROM obras_editores_acesso WHERE obra_id = ? AND usuario_id = ? LIMIT 1'
+        );
+        $usuarioId = (int) $sessao['usuario_id'];
+        $stmtAcesso->bind_param('ii', $id, $usuarioId);
+        $stmtAcesso->execute();
+        $permissao = $stmtAcesso->get_result()->fetch_assoc();
+        $stmtAcesso->close();
+
+        $acessoDelegado = $permissao !== null && (int) $permissao['ativo'] === 1
+            && (int) $obra['criada_por'] !== $usuarioId;
+        $editorEhAutor = (int) $obra['criada_por'] === $usuarioId;
+        $editorPodeEditar = $permissao !== null
+            ? (int) $permissao['ativo'] === 1
+            : $editorEhAutor;
+
+        if (!$editorPodeEditar) {
+            $conn->close();
+            ag_responder_json(403, ['sucesso' => false, 'mensagem' => 'Você não tem mais permissão para editar esta obra.']);
+        }
     }
 
-    $stmtEtapas = $conn->prepare(
-        "SELECT ordem, titulo, texto, zoom_x, zoom_y, zoom_largura, zoom_altura
-         FROM etapas_exploracao
-         WHERE obra_id = ?
-         ORDER BY ordem ASC, id ASC"
+    $stmt = $conn->prepare(
+        'SELECT ordem, titulo, texto, zoom_x, zoom_y, zoom_largura, zoom_altura
+         FROM etapas_exploracao WHERE obra_id = ? ORDER BY ordem ASC, id ASC'
     );
-    $stmtEtapas->bind_param("i", $id);
-    $stmtEtapas->execute();
-    $resultadoEtapas = $stmtEtapas->get_result();
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
     $etapas = [];
-
-    while ($etapa = $resultadoEtapas->fetch_assoc()) {
+    while ($etapa = $resultado->fetch_assoc()) {
         $etapas[] = [
-            "ordem" => (int) $etapa["ordem"],
-            "titulo" => $etapa["titulo"],
-            "texto" => $etapa["texto"],
-            "zoom_x" => $etapa["zoom_x"] === null ? null : (float) $etapa["zoom_x"],
-            "zoom_y" => $etapa["zoom_y"] === null ? null : (float) $etapa["zoom_y"],
-            "zoom_largura" => $etapa["zoom_largura"] === null ? null : (float) $etapa["zoom_largura"],
-            "zoom_altura" => $etapa["zoom_altura"] === null ? null : (float) $etapa["zoom_altura"]
+            'ordem' => (int) $etapa['ordem'],
+            'titulo' => $etapa['titulo'],
+            'texto' => $etapa['texto'],
+            'zoom_x' => $etapa['zoom_x'] === null ? null : (float) $etapa['zoom_x'],
+            'zoom_y' => $etapa['zoom_y'] === null ? null : (float) $etapa['zoom_y'],
+            'zoom_largura' => $etapa['zoom_largura'] === null ? null : (float) $etapa['zoom_largura'],
+            'zoom_altura' => $etapa['zoom_altura'] === null ? null : (float) $etapa['zoom_altura']
         ];
     }
-
-    $stmtEtapas->close();
+    $stmt->close();
     $conn->close();
+    $conn = null;
 
-    responderJson(200, [
-        "sucesso" => true,
-        "obra" => [
-            "id" => (int) $obra["id"],
-            "titulo" => $obra["titulo"],
-            "autor" => $obra["autor"],
-            "texto_alternativo" => $obra["texto_alternativo"],
-            "status" => $obra["status"],
-            "imagem_salva" => (bool) $obra["imagem_salva"],
-            "etapas" => $etapas
-        ]
-    ]);
+    ag_responder_json(200, ['sucesso' => true, 'obra' => [
+        'id' => (int) $obra['id'],
+        'titulo' => $obra['titulo'],
+        'autor' => $obra['autor'],
+        'texto_alternativo' => $obra['texto_alternativo'],
+        'status' => $obra['status'],
+        'imagem_salva' => (bool) $obra['imagem_salva'],
+        'criada_por' => (int) $obra['criada_por'],
+        'editor_nome' => $obra['editor_nome'],
+        'acesso_delegado' => $acessoDelegado,
+        'etapas' => $etapas
+    ]]);
 } catch (Throwable $erro) {
-    error_log("Erro ao carregar obra para edição: " . $erro->getMessage());
-    $conn->close();
-    responderJson(500, ["sucesso" => false, "mensagem" => "Não foi possível carregar a obra."]);
+    error_log('Falha em api/obras/detalhe.php: ' . $erro->getMessage());
+    if ($conn instanceof mysqli) { try { $conn->close(); } catch (Throwable $ignorado) {} }
+    ag_responder_json(500, ['sucesso' => false, 'mensagem' => 'Não foi possível carregar a obra.']);
 }

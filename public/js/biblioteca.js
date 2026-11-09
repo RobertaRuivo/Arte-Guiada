@@ -105,9 +105,11 @@
 
         return destino.href;
     }
-
     function urlDaImagem(obraId) {
-        const destino = urlApi("imagem");
+        const destino = new URL(
+            "../api/obras/imagem-publica.php",
+            document.baseURI
+        );
 
         destino.searchParams.set(
             "id",

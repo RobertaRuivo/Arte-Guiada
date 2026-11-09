@@ -1,7 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 header("Content-Type: application/json; charset=UTF-8");
+header("Cache-Control: no-store");
+header("Pragma: no-cache");
 
 function responderJson(int $status, array $dados): void
 {
@@ -9,11 +12,18 @@ function responderJson(int $status, array $dados): void
 
     echo json_encode(
         $dados,
-        JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
+        JSON_UNESCAPED_UNICODE |
+        JSON_INVALID_UTF8_SUBSTITUTE
     );
 
     exit;
 }
+
+/*
+|--------------------------------------------------------------------------
+| 1. Validar método HTTP
+|--------------------------------------------------------------------------
+*/
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     header("Allow: GET");
@@ -24,7 +34,28 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     ]);
 }
 
-$id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
+/*
+|--------------------------------------------------------------------------
+| 2. Validar identificador da obra
+|--------------------------------------------------------------------------
+*/
+
+$idRecebido = $_GET["id"] ?? null;
+
+if (
+    !is_string($idRecebido) &&
+    !is_int($idRecebido)
+) {
+    responderJson(400, [
+        "sucesso" => false,
+        "mensagem" => "Identificador da obra inválido."
+    ]);
+}
+
+$id = filter_var(
+    $idRecebido,
+    FILTER_VALIDATE_INT
+);
 
 if ($id === false || $id === null || $id < 1) {
     responderJson(400, [
@@ -33,14 +64,33 @@ if ($id === false || $id === null || $id < 1) {
     ]);
 }
 
-require_once __DIR__ . "/../../config/banco.php";
+/*
+|--------------------------------------------------------------------------
+| 3. Consultar dados públicos da obra
+|--------------------------------------------------------------------------
+*/
+
+$conn = null;
+
+$stmt = null;
+$stmtEtapas = null;
 
 try {
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    require_once __DIR__ . "/../../config/banco.php";
+
+    if (!isset($conn) || !($conn instanceof mysqli)) {
+        throw new RuntimeException(
+            "A conexão com o banco não foi inicializada."
+        );
+    }
+
     $conn->set_charset("utf8mb4");
 
     /*
-     * A API pública só disponibiliza obras publicadas.
-     * Rascunhos e obras excluídas não são retornados.
+     * A API pública disponibiliza somente obras publicadas
+     * e que não foram excluídas.
      */
 
     $stmt = $conn->prepare(
@@ -49,8 +99,10 @@ try {
             titulo,
             autor,
             texto_alternativo,
-            (imagem IS NOT NULL AND OCTET_LENGTH(imagem) > 0)
-                AS imagem_salva
+            (
+                imagem IS NOT NULL AND
+                OCTET_LENGTH(imagem) > 0
+            ) AS imagem_salva
          FROM obras
          WHERE id = ?
            AND status = 'publicada'
@@ -61,12 +113,18 @@ try {
     $stmt->bind_param("i", $id);
     $stmt->execute();
 
-    $obra = $stmt->get_result()->fetch_assoc();
+    $resultadoObra = $stmt->get_result();
+
+    $obra = $resultadoObra->fetch_assoc();
+
+    $resultadoObra->free();
 
     $stmt->close();
+    $stmt = null;
 
     if (!$obra) {
         $conn->close();
+        $conn = null;
 
         responderJson(404, [
             "sucesso" => false,
@@ -96,6 +154,7 @@ try {
     $stmtEtapas->execute();
 
     $resultadoEtapas = $stmtEtapas->get_result();
+
     $etapas = [];
 
     while ($etapa = $resultadoEtapas->fetch_assoc()) {
@@ -122,8 +181,17 @@ try {
         ];
     }
 
+    $resultadoEtapas->free();
+
     $stmtEtapas->close();
+    $stmtEtapas = null;
+
     $conn->close();
+    $conn = null;
+
+    /*
+     * Mantém o formato JSON utilizado pelo galeria.js.
+     */
 
     responderJson(200, [
         "sucesso" => true,
@@ -140,12 +208,27 @@ try {
 
 } catch (Throwable $erro) {
     error_log(
-        "Erro ao consultar obra para visualização: "
-        . $erro->getMessage()
+        "Erro ao consultar obra para visualização: " .
+        $erro->getMessage()
     );
 
-    if (isset($conn) && $conn instanceof mysqli) {
-        $conn->close();
+    // Fecha os comandos preparados que ainda estejam abertos.
+    foreach ([$stmtEtapas, $stmt] as $stmtPendente) {
+        if ($stmtPendente instanceof mysqli_stmt) {
+            try {
+                $stmtPendente->close();
+            } catch (Throwable $erroFechamento) {
+                // Preserva o erro original.
+            }
+        }
+    }
+
+    if ($conn instanceof mysqli) {
+        try {
+            $conn->close();
+        } catch (Throwable $erroFechamento) {
+            // Preserva o erro original.
+        }
     }
 
     responderJson(500, [

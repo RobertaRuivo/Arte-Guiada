@@ -1,0 +1,73 @@
+/* Avisos internos exibidos ao editor responsável por uma obra. */
+.notificacoes-editor {
+    display: grid;
+    gap: 0.85rem;
+    margin: 1.25rem 0;
+    padding: 1.15rem;
+    border: 1px solid var(--borda, #dedbd5);
+    border-radius: 1rem;
+    background: var(--fundo-card, #fff);
+}
+
+.notificacoes-editor[hidden] {
+    display: none;
+}
+
+.notificacoes-editor-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.notificacoes-editor-cabecalho h2 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.notificacoes-editor-contagem,
+.notificacao-editor-data {
+    color: #646b70;
+    font-size: 0.88rem;
+}
+
+.notificacoes-editor-lista {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.notificacao-editor-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #e3d8bd;
+    border-radius: 0.75rem;
+    background: #fffaf0;
+}
+
+.notificacao-editor-conteudo {
+    min-width: 0;
+}
+
+.notificacao-editor-conteudo h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+}
+
+.notificacao-editor-conteudo p {
+    margin: 0 0 0.4rem;
+}
+
+.notificacao-editor-data {
+    display: block;
+}
+
+@media (max-width: 640px) {
+    .notificacao-editor-card,
+    .notificacoes-editor-cabecalho {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

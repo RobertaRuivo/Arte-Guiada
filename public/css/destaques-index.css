@@ -1,0 +1,74 @@
+/* Mantém os cartões estáticos fora de vista enquanto a seleção atual é consultada. */
+.obras-destaque[aria-busy="true"] > *,
+.obras-grid[aria-busy="true"] > * {
+    visibility: hidden;
+}
+
+/* Complementos da curadoria dinâmica da página inicial. */
+.obras-destaque .obra-com-legenda .obra-legenda {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: opacity 220ms ease, transform 220ms ease, visibility 220ms ease;
+    z-index: 2;
+}
+
+.obras-destaque .obra-com-legenda:hover .obra-legenda,
+.obras-destaque .obra-com-legenda:focus-visible .obra-legenda,
+.obras-destaque .obra-com-legenda:active .obra-legenda {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.obras-destaque .obra-com-legenda:focus-visible {
+    outline: 3px solid #8B6047;
+    outline-offset: 5px;
+}
+
+.obras-destaque-vazio,
+.obras-index-vazio {
+    width: 100%;
+    margin: 0;
+    padding: 1.5rem;
+    border: 1px dashed rgba(90, 55, 30, 0.35);
+    border-radius: 12px;
+    color: #5A371E;
+    background: rgba(250, 241, 230, 0.72);
+    text-align: center;
+    line-height: 1.55;
+}
+
+.obras-destaque-vazio {
+    align-self: center;
+}
+
+.obras-index-vazio {
+    grid-column: 1 / -1;
+}
+
+.obra-card-etapas {
+    margin: 0 0 1rem;
+    color: #6B584A;
+    font-size: 0.92rem;
+}
+
+.imagem-obra-indisponivel {
+    object-fit: contain;
+    background: #E9D8C5;
+}
+
+@media (hover: none) {
+    .obras-destaque .obra-com-legenda .obra-legenda {
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .obras-destaque .obra-com-legenda .obra-legenda {
+        transition: none;
+    }
+}

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -8,12 +8,18 @@
     <link rel="stylesheet" href="../public/css/style.css">
     <link rel="stylesheet" href="../public/css/painel.css">
     <link rel="stylesheet" href="../public/css/painel-dashboard.css">
-    <link rel="stylesheet" href="../public/css/painel-editor.css?v=20261020">
+    <link rel="stylesheet" href="../public/css/painel-editor.css?v=20261108-2">
     <script src="../public/js/sessao-ui.js" defer></script>
     <script src="../public/js/controle-acesso.js" defer></script>
     <script src="../public/js/painel.js" defer></script>
     <script src="../public/js/validacao-publicacao.js?v=20261020" defer></script>
-    <script src="../public/js/editor.js" defer></script>
+    <script src="../public/js/editor.js?v=20261108-2" defer></script>
+    <link rel="stylesheet" href="../public/css/lixeira-obras.css?v=20261108-2">
+    <link rel="stylesheet" href="../public/css/notificacoes-editor.css?v=20261108">
+    <script src="../public/js/lixeira-obras.js?v=20261108-2" defer></script>
+    <script src="../public/js/notificacoes-editor.js?v=20261108" defer></script>
+    <link rel="stylesheet" href="../public/css/relatos-editor.css?v=20261109-fluxo">
+    <script src="../public/js/relatos-editor.js?v=20261109-fluxo" defer></script>
 </head>
 <body class="pagina-painel dashboard-editor" data-perfis-permitidos="editor">
     <a class="skip-link-painel" href="#conteudo-principal">Pular para o conteúdo</a>
@@ -30,6 +36,8 @@
                 <button type="button" class="painel-nav-item ativa" data-painel-target="resumo" data-painel-label="Visão geral" aria-current="page"><span class="dashboard-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1.2"></rect><rect x="14" y="3" width="7" height="7" rx="1.2"></rect><rect x="3" y="14" width="7" height="7" rx="1.2"></rect><rect x="14" y="14" width="7" height="7" rx="1.2"></rect></svg></span>Visão geral</button>
                 <button type="button" class="painel-nav-item" data-painel-target="minhas-obras" data-painel-label="Minhas obras"><span class="dashboard-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5h12M8 12h12M8 19h12"></path><path d="M3.5 5h.01M3.5 12h.01M3.5 19h.01"></path></svg></span>Minhas obras</button>
                 <button type="button" class="painel-nav-item" data-painel-target="publicar" data-painel-label="Nova obra" data-nova-obra><span class="dashboard-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 5v14M5 12h14"></path></svg></span>Nova obra</button>
+                <button type="button" class="painel-nav-item" data-painel-target="lixeira-obras" data-painel-label="Lixeira"><span class="dashboard-nav-icon" aria-hidden="true">▧</span>Lixeira</button>
+                <button type="button" class="painel-nav-item" data-painel-target="relatos-editor" data-painel-label="Problemas das minhas obras"><span class="dashboard-nav-icon" aria-hidden="true">▧</span>Problemas das minhas obras</button>
                 <button type="button" class="painel-nav-item" data-painel-target="biblioteca" data-painel-label="Minha biblioteca"><span class="dashboard-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M20.8 8.8c0 5.1-8.8 10.1-8.8 10.1S3.2 13.9 3.2 8.8A4.6 4.6 0 0 1 12 6.5a4.6 4.6 0 0 1 8.8 2.3Z"></path></svg></span>Minha biblioteca</button>
             </nav>
             <div class="dashboard-sidebar-bottom">
@@ -50,7 +58,21 @@
                 </div>
             </header>
 
-            <section class="painel-conteudo-secao ativa dashboard-page-panel" data-painel-secao="resumo" aria-labelledby="titulo-resumo-editor">
+                        <section class="painel-conteudo-secao dashboard-page-panel relatos-editor-secao" data-painel-secao="relatos-editor" aria-labelledby="titulo-relatos-editor" hidden>
+                <div class="relatos-editor-cabecalho">
+                    <div>
+                        <span class="dashboard-eyebrow">ACOMPANHAMENTO DE RELATOS</span>
+                        <h2 id="titulo-relatos-editor">Problemas das suas obras</h2>
+                        <p>Revise os problemas atribuídos a você, corrija a obra e envie uma descrição para verificação administrativa.</p>
+                    </div>
+                    <button type="button" class="botao botao-secundario" data-atualizar-relatos-editor>Atualizar pendências</button>
+                </div>
+                <p id="feedbackRelatosEditor" class="feedback-relatos-editor" role="status" aria-live="polite"></p>
+                <div id="listaRelatosEditor" class="relatos-editor-lista" aria-live="polite" aria-busy="false">
+                    <div class="estado-vazio"><span class="estado-vazio-simbolo" aria-hidden="true">…</span><h3>Carregando pendências</h3><p>Consultando relatos atribuídos à sua conta.</p></div>
+                </div>
+            </section>
+<section class="painel-conteudo-secao ativa dashboard-page-panel" data-painel-secao="resumo" aria-labelledby="titulo-resumo-editor">
                 <div class="dashboard-section-heading">
                     <div>
                         <span class="dashboard-eyebrow">RESUMO DO ATELIÊ</span>
@@ -106,7 +128,7 @@
                     <div>
                         <span class="dashboard-eyebrow">GERENCIAMENTO</span>
                         <h2 id="titulo-minhas-obras">Minhas obras</h2>
-                        <p>Consulte suas publicações e rascunhos. Você só pode editar obras que pertencem à sua conta.</p>
+                        <p>Consulte suas obras e também aquelas que o administrador encaminhou para sua edição.</p>
                     </div>
                     <button class="botao botao-principal" type="button" data-nova-obra>＋ Nova obra</button>
                 </div>
@@ -253,6 +275,25 @@
                 </div>
                 <div class="colecao-conteudo">
                     <div class="estado-vazio"><span class="estado-vazio-simbolo" aria-hidden="true">♡</span><h3>Sua coleção pessoal</h3><p>A interface está pronta, mas leitura e gravação das coleções ainda dependem da integração com a API da biblioteca. Suas obras criadas ficam em “Minhas obras”.</p><a class="botao botao-secundario" href="galeria.html">Explorar a galeria</a></div>
+                </div>
+            </section>
+
+            <section class="painel-conteudo-secao dashboard-page-panel painel-lixeira-obras" data-painel-secao="lixeira-obras" aria-labelledby="titulo-lixeira-obras" hidden>
+                <div class="dashboard-section-heading">
+                    <div>
+                        <span class="dashboard-eyebrow">RECUPERAÇÃO</span>
+                        <h2 id="titulo-lixeira-obras">Lixeira de obras</h2>
+                        <p>Consulte as obras excluídas e restaure os registros necessários. O status, a imagem e as etapas são preservados.</p>
+                    </div>
+                    <button type="button" class="botao botao-secundario" data-atualizar-lixeira-obras>Atualizar lixeira</button>
+                </div>
+                <p id="feedbackLixeiraObras" role="status" aria-live="polite"></p>
+                <div id="listaLixeiraObras" class="lixeira-obras-lista" aria-live="polite" aria-busy="false">
+                    <div class="estado-vazio">
+                        <span class="estado-vazio-simbolo" aria-hidden="true">▧</span>
+                        <h3>A lixeira ainda não foi consultada</h3>
+                        <p>As obras excluídas aparecerão aqui.</p>
+                    </div>
                 </div>
             </section>
         </div>
