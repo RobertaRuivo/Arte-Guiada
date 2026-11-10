@@ -1,0 +1,500 @@
+/*
+ * Arte Guiada
+ * Estilos específicos do catálogo público.
+ *
+ * A identidade visual segue os cartões do index.html.
+ * O rodapé permanece sob responsabilidade de painel.css.
+ */
+
+/* ========================================
+   PÁGINA
+======================================== */
+
+.pagina-catalogo {
+    background-color: #FAF1E6;
+    color: #2F1F1A;
+    font-family: "Times New Roman", Times, serif;
+}
+
+.pagina-catalogo .catalogo-visualmente-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.pagina-catalogo .catalogo-pagina {
+    width: 100%;
+    padding: 42px 0 20px;
+}
+
+/* ========================================
+   NAVEGAÇÃO
+======================================== */
+
+.pagina-catalogo .catalogo-nav {
+    width: 90%;
+    max-width: 1200px;
+    min-height: 76px;
+    margin: 0 auto;
+    gap: 24px;
+}
+
+.pagina-catalogo .catalogo-nav .logo {
+    color: #3A241B;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.pagina-catalogo .catalogo-nav-links {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pagina-catalogo .catalogo-nav-links>a {
+    padding: 10px 14px;
+    border-radius: 6px;
+
+    color: #4B3528;
+    text-decoration: none;
+
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease;
+}
+
+.pagina-catalogo .catalogo-nav-links>a:hover,
+.pagina-catalogo .catalogo-nav-links>a:focus-visible,
+.pagina-catalogo .catalogo-nav-links>a[aria-current="page"] {
+    background-color: #E9D8C5;
+    color: #3A241B;
+}
+
+/* ========================================
+   BUSCA
+======================================== */
+
+.pagina-catalogo .catalogo-busca-toggle {
+    display: inline-flex !important;
+    visibility: visible;
+    opacity: 1;
+
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 42px;
+    padding: 9px 14px;
+
+    border: 1px solid #8B6B55;
+    border-radius: 999px;
+
+    background-color: transparent;
+    color: #4B3528;
+
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.pagina-catalogo .catalogo-busca-toggle:hover,
+.pagina-catalogo .catalogo-busca-toggle:focus-visible {
+    background-color: #E9D8C5;
+    transform: translateY(-1px);
+}
+
+.pagina-catalogo .catalogo-busca-toggle svg {
+    display: block;
+    flex-shrink: 0;
+}
+
+.pagina-catalogo .catalogo-busca-popover {
+    position: absolute;
+    z-index: 30;
+
+    top: calc(100% - 2px);
+    right: max(5%, calc((100% - 1200px) / 2));
+
+    width: min(360px, 90vw);
+    padding: 20px;
+
+    border: 1px solid #D8C2AD;
+    border-radius: 14px;
+
+    background-color: #FAF1E6;
+    box-shadow: 0 18px 40px rgba(58, 36, 27, 0.16);
+}
+
+.pagina-catalogo .catalogo-busca-popover[hidden] {
+    display: none !important;
+}
+
+.pagina-catalogo .catalogo-busca-popover label {
+    display: block;
+    margin-bottom: 9px;
+
+    color: #4B3528;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.pagina-catalogo .catalogo-busca-popover input {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+
+    border: 1px solid #B99B84;
+    border-radius: 9px;
+
+    background-color: #FFF9F2;
+    color: #2F1F1A;
+
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+}
+
+.pagina-catalogo .catalogo-busca-popover input:focus {
+    outline: 2px solid #8B6047;
+    outline-offset: 2px;
+}
+
+.pagina-catalogo .catalogo-busca-fechar {
+    display: block;
+    margin: 12px 0 0 auto;
+    padding: 8px 14px;
+
+    border: 1px solid #D8C2AD;
+    border-radius: 999px;
+
+    background-color: #E9D8C5;
+    color: #4B3528;
+
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.pagina-catalogo .catalogo-busca-fechar:hover {
+    background-color: #DCC4AE;
+}
+
+/* ========================================
+   GRADE DE CARTÕES
+======================================== */
+
+.pagina-catalogo #catalogoObras.catalogo-obras-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 25px;
+
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto 80px;
+}
+
+/* ========================================
+   CARTÕES
+   Visual baseado nos cartões do index.html
+======================================== */
+
+.pagina-catalogo #catalogoObras .obra-card {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+    overflow: hidden;
+
+    border: 0;
+    border-radius: 14px;
+
+    background-color: #FAF1E6;
+
+    box-shadow: 0 10px 30px rgba(58, 36, 27, 0.08);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.pagina-catalogo #catalogoObras .obra-card:hover {
+    transform: translateY(-5px);
+
+    box-shadow: 0 18px 40px rgba(58, 36, 27, 0.15);
+}
+
+/* ========================================
+   IMAGENS
+======================================== */
+
+/* Imagens do catálogo: mesmo comportamento do index.html */
+
+.pagina-catalogo #catalogoObras .obra-card-imagem {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+}
+
+.pagina-catalogo #catalogoObras .obra-card-imagem a {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.pagina-catalogo #catalogoObras .obra-card-imagem img {
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    transition: transform 0.5s ease;
+}
+
+.pagina-catalogo #catalogoObras .obra-card:hover .obra-card-imagem img {
+    transform: scale(1.03);
+}
+
+.pagina-catalogo #catalogoObras .obra-card:hover .obra-card-imagem img {
+    transform: scale(1.02);
+}
+
+.pagina-catalogo #catalogoObras .obra-card-imagem-indisponivel {
+    position: relative;
+}
+
+/* ========================================
+   INFORMAÇÕES DOS CARTÕES
+======================================== */
+
+.pagina-catalogo #catalogoObras .obra-card-conteudo {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    padding: 24px;
+}
+
+.pagina-catalogo #catalogoObras .obra-artista {
+    color: #8B6047;
+
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    overflow-wrap: anywhere;
+}
+
+.pagina-catalogo #catalogoObras .obra-card-titulo {
+    margin: 8px 0 20px;
+
+    color: #4B3528;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 27px;
+    font-weight: normal;
+    line-height: 1.2;
+
+    overflow-wrap: anywhere;
+}
+
+.pagina-catalogo #catalogoObras .obra-card-etapas {
+    margin: 0 0 20px;
+
+    color: #5B4033;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.pagina-catalogo #catalogoObras .obra-link {
+    margin-top: auto;
+
+    color: #5A371E;
+
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.pagina-catalogo #catalogoObras .obra-link:hover,
+.pagina-catalogo #catalogoObras .obra-link:focus-visible {
+    text-decoration: underline;
+}
+
+/* ========================================
+   ESTADOS DE VAZIO E ERRO
+======================================== */
+
+.pagina-catalogo .catalogo-estado-vazio {
+    grid-column: 1 / -1;
+
+    width: 100%;
+    padding: 36px 24px;
+
+    border: 1px solid #D8C2AD;
+    border-radius: 14px;
+
+    background-color: #F1E3D4;
+    text-align: center;
+}
+
+.pagina-catalogo .catalogo-estado-vazio h2 {
+    margin-bottom: 12px;
+
+    color: #4B3528;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 26px;
+    font-weight: normal;
+}
+
+.pagina-catalogo .catalogo-estado-vazio p {
+    margin: 0;
+
+    color: #5B4033;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.pagina-catalogo .catalogo-tentar-novamente {
+    margin-top: 20px;
+    padding: 11px 20px;
+
+    border: 0;
+    border-radius: 999px;
+
+    background-color: #3A241B;
+    color: #F2E1D0;
+
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.pagina-catalogo .catalogo-tentar-novamente:hover {
+    background-color: #5A371E;
+}
+
+.pagina-catalogo .catalogo-feedback:empty {
+    display: none;
+}
+
+.pagina-catalogo .catalogo-feedback:not(:empty) {
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto 20px;
+
+    color: #5B4033;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 850px) {
+    .pagina-catalogo .catalogo-nav {
+        flex-direction: column;
+        justify-content: center;
+        gap: 12px;
+        padding: 18px 0;
+    }
+
+    .pagina-catalogo .catalogo-nav-links {
+        justify-content: center;
+    }
+
+    .pagina-catalogo #catalogoObras.catalogo-obras-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .pagina-catalogo #catalogoObras .obra-card-conteudo {
+        padding: 20px;
+    }
+
+    .pagina-catalogo #catalogoObras .obra-card-titulo {
+        font-size: 25px;
+    }
+}
+
+@media (max-width: 600px) {
+    .pagina-catalogo .catalogo-nav {
+        width: 92%;
+    }
+
+    .pagina-catalogo .catalogo-nav-links {
+        width: 100%;
+        gap: 3px;
+    }
+
+    .pagina-catalogo .catalogo-nav-links>a {
+        padding: 8px 9px;
+        font-size: 14px;
+    }
+
+    .pagina-catalogo .catalogo-busca-toggle {
+        padding: 8px 10px;
+    }
+
+    .pagina-catalogo .catalogo-busca-popover {
+        right: 4%;
+        width: 92%;
+    }
+
+    .pagina-catalogo .catalogo-pagina {
+        padding-top: 28px;
+    }
+
+    .pagina-catalogo #catalogoObras.catalogo-obras-grid {
+        width: 90%;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 24px;
+    }
+
+    .pagina-catalogo #catalogoObras .obra-card {
+        width: 100%;
+        max-width: 400px;
+        justify-self: center;
+    }
+
+    .pagina-catalogo #catalogoObras .obra-card-imagem {
+        aspect-ratio: 4 / 5;
+    }
+
+    .pagina-catalogo #catalogoObras .obra-card-conteudo {
+        padding: 24px;
+    }
+
+    .pagina-catalogo #catalogoObras .obra-card-titulo {
+        font-size: 27px;
+    }
+}

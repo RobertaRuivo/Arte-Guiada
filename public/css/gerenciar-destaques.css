@@ -1,0 +1,39 @@
+/* Curadoria das obras que ocupam os três espaços do destaque da página inicial. */
+.gerenciar-destaques-area { display: grid; gap: 1.4rem; }
+.gerenciar-destaques-bloco {
+    display: grid; gap: .85rem; padding: clamp(1rem, 2.5vw, 1.4rem);
+    border: 1px solid var(--cor-borda, #e3e0dc); border-radius: 1rem;
+    background: var(--cor-superficie, #fff);
+}
+.gerenciar-destaques-bloco h3 { margin: 0; }
+.gerenciar-destaques-bloco > p { margin: 0; color: var(--cor-texto-secundario, #65615c); }
+.destaques-admin-lista { display: grid; gap: .7rem; }
+.destaque-admin-card {
+    display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+    align-items: center; gap: .9rem; padding: .75rem;
+    border: 1px solid var(--cor-borda, #e3e0dc); border-radius: .8rem;
+    background: #fff;
+}
+.destaque-admin-imagem {
+    display: block; width: 5.5rem; height: 5.5rem; object-fit: cover;
+    border-radius: .45rem; background: #eeeae4;
+}
+.destaque-admin-identificacao { display: grid; gap: .18rem; min-width: 0; }
+.destaque-admin-identificacao strong { overflow-wrap: anywhere; }
+.destaque-admin-identificacao span,
+.destaque-admin-identificacao small { color: var(--cor-texto-secundario, #65615c); }
+.destaque-admin-acoes { display: flex; align-items: center; justify-content: flex-end; gap: .45rem; flex-wrap: wrap; }
+.destaque-admin-checkbox { display: inline-flex; align-items: center; gap: .45rem; cursor: pointer; font-size: .9rem; }
+.destaque-admin-checkbox input { width: 1.1rem; height: 1.1rem; accent-color: var(--cor-destaque, #7c5637); }
+.botao-ordem { min-width: 2.35rem; padding: .4rem .55rem; }
+.destaque-admin-vazio { margin: 0; padding: .8rem; color: var(--cor-texto-secundario, #65615c); }
+.gerenciar-destaques-contador { font-weight: 700; color: var(--cor-texto, #292520); }
+.feedback-destaques-admin { min-height: 1.4rem; margin: .8rem 0; color: var(--cor-texto-secundario, #65615c); }
+.feedback-destaques-admin[data-tipo="erro"] { color: #a12622; }
+.feedback-destaques-admin[data-tipo="sucesso"] { color: #27623a; }
+.destaques-admin-rodape { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
+@media (max-width: 720px) {
+    .destaque-admin-card { grid-template-columns: 4.5rem minmax(0, 1fr); }
+    .destaque-admin-imagem { width: 4.5rem; height: 4.5rem; }
+    .destaque-admin-acoes { grid-column: 1 / -1; justify-content: flex-start; }
+}

@@ -32,6 +32,27 @@ const loginEmailInput = document.getElementById("loginEmail");
 const loginSenhaInput = document.getElementById("loginSenha");
 const loginFeedback = document.getElementById("login-feedback");
 
+const loginConteudo = document.getElementById("loginConteudo");
+const recuperacaoConteudo = document.getElementById("recuperacaoConteudo");
+
+const abrirRecuperacaoButton = document.getElementById("abrirRecuperacao");
+const voltarLoginRecuperacaoButton = document.getElementById("voltarLogin");
+
+const recuperacaoSolicitarForm = document.getElementById("recuperacaoSolicitarForm");
+const recuperacaoEmailInput = document.getElementById("recuperacaoEmail");
+const recuperacaoSolicitarFeedback = document.getElementById("recuperacaoSolicitarFeedback");
+
+const tokenLocalContainer = document.getElementById("tokenLocalContainer");
+const tokenLocalValor = document.getElementById("tokenLocalValor");
+
+const redefinirSenhaForm = document.getElementById("redefinirSenhaForm");
+const recuperacaoTokenInput = document.getElementById("recuperacaoToken");
+const recuperacaoNovaSenhaInput = document.getElementById("recuperacaoNovaSenha");
+const recuperacaoConfirmarSenhaInput = document.getElementById("recuperacaoConfirmarSenha");
+
+const recuperacaoRedefinirFeedback = document.getElementById("recuperacaoRedefinirFeedback");
+
+
 const wizardProgress = document.getElementById("wizard-progress");
 const wizardProgressBar = document.getElementById("wizard-progress-bar");
 const wizardStepLabel = document.getElementById("wizard-step-label");
@@ -283,41 +304,10 @@ function validarEtapa(stepNumber) {
        ETAPA 2 - PERFIL E MENSAGEM
        ----------------------------------------------------- */
 
+    /* ETAPA 2: APRESENTAÇÃO */
+
     if (stepNumber === 2) {
-        const perfilSelecionado =
-            document.querySelector(
-                'input[name="loginTipo"]:checked'
-            );
-
-        const mensagemValor =
-            mensagemInput.value.trim();
-
-        if (!perfilSelecionado) {
-            const erro =
-                document.getElementById(
-                    "tipo-error"
-                );
-
-            if (erro) {
-                erro.textContent =
-                    "Por favor, selecione um perfil no sistema.";
-            }
-
-            const primeiroRadio =
-                document.querySelector(
-                    'input[name="loginTipo"]'
-                );
-
-            if (
-                primeiroRadio &&
-                !primeiroCampoInvalido
-            ) {
-                primeiroCampoInvalido =
-                    primeiroRadio;
-            }
-
-            valido = false;
-        }
+        const mensagemValor = mensagemInput.value.trim();
 
         if (mensagemValor.length < 5) {
             marcarInvalido(
@@ -327,7 +317,6 @@ function validarEtapa(stepNumber) {
             );
         }
     }
-
 
     /* -----------------------------------------------------
        ETAPA 3 - SEGURANÇA
@@ -401,6 +390,9 @@ function encontrarPrimeiraEtapaInvalida() {
    ========================================================= */
 
 function mostrarTelaCadastro() {
+    loginConteudo.hidden = false;
+    recuperacaoConteudo.hidden = true;
+
     atualizarEstadoElemento(
         loginWrapper,
         false
@@ -440,6 +432,9 @@ function mostrarTelaCadastro() {
 
 
 function mostrarTelaLogin() {
+    loginConteudo.hidden = false;
+    recuperacaoConteudo.hidden = true;
+
     atualizarEstadoElemento(
         cadastroWrapper,
         false
@@ -647,75 +642,91 @@ cadastroForm.addEventListener(
 );
 
 
-function cadastrarUsuario(event) {
+async function cadastrarUsuario(event) {
     event.preventDefault();
 
     limparErrosCadastro();
 
-    formFeedback.textContent =
-        "";
-
-    formFeedback.className =
-        "feedback-box";
-
+    formFeedback.textContent = "";
+    formFeedback.className = "feedback-box";
 
     const primeiraEtapaInvalida =
         encontrarPrimeiraEtapaInvalida();
 
-
-    if (
-        primeiraEtapaInvalida > 0
-    ) {
-        mostrarEtapa(
-            primeiraEtapaInvalida
-        );
-
+    if (primeiraEtapaInvalida > 0) {
+        mostrarEtapa(primeiraEtapaInvalida);
         return;
     }
 
 
-    formFeedback.textContent =
-        "Cadastro realizado com sucesso!";
+    const dados = {
+        nome: nomeInput.value.trim(),
+        sobrenome: sobrenomeInput.value.trim(),
+        email: normalizarEmail(emailInput.value),
+        senha: passwordInput.value,
+        mensagem: mensagemInput.value.trim()
+    };
 
-    formFeedback.className =
-        "feedback-box success";
-
-
-    loginEmailInput.value =
-        normalizarEmail(
-            emailInput.value
+    try {
+        const resposta = await fetch(
+            "../api/cadastro/cadastrar.php",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dados)
+            }
         );
 
+        const resultado = await resposta.json();
 
-    cadastroForm.reset();
+        if (!resposta.ok) {
+            formFeedback.textContent =
+                resultado.mensagem ||
+                "Não foi possível realizar o cadastro.";
 
+            formFeedback.className =
+                "feedback-box error";
 
-    strengthBar.style.width =
-        "0%";
+            return;
+        }
 
-    strengthBar.style.backgroundColor =
-        "transparent";
-
-
-    strengthBar.parentElement.setAttribute(
-        "aria-valuenow",
-        "0"
-    );
-
-
-    strengthText.textContent =
-        "";
-
-
-    setTimeout(() => {
         formFeedback.textContent =
-            "";
+            resultado.mensagem ||
+            "Cadastro realizado com sucesso!";
 
-        mostrarTelaLogin();
-    }, 900);
+        formFeedback.className =
+            "feedback-box success";
+
+        loginEmailInput.value =
+            normalizarEmail(emailInput.value);
+
+        cadastroForm.reset();
+
+        strengthBar.style.width = "0%";
+        strengthBar.style.backgroundColor = "transparent";
+
+        strengthBar.parentElement.setAttribute(
+            "aria-valuenow",
+            "0"
+        );
+
+        strengthText.textContent = "";
+
+        setTimeout(() => {
+            formFeedback.textContent = "";
+            mostrarTelaLogin();
+        }, 900);
+
+    } catch (erro) {
+        formFeedback.textContent =
+            "Não foi possível conectar ao servidor.";
+
+        formFeedback.className =
+            "feedback-box error";
+    }
 }
-
-
 /* =========================================================
    LOGIN
    ========================================================= */
@@ -726,34 +737,24 @@ loginForm.addEventListener(
 );
 
 
-function realizarLogin(event) {
+
+async function realizarLogin(event) {
     event.preventDefault();
 
     limparErrosLogin();
 
-    loginFeedback.textContent =
-        "";
-
-    loginFeedback.className =
-        "feedback-box";
-
+    loginFeedback.textContent = "";
+    loginFeedback.className = "feedback-box";
 
     let formValido = true;
 
+    const email = normalizarEmail(
+        loginEmailInput.value
+    );
 
-    const email =
-        normalizarEmail(
-            loginEmailInput.value
-        );
+    const senha = loginSenhaInput.value;
 
-
-    const senha =
-        loginSenhaInput.value;
-
-
-    if (
-        !validarEmail(email)
-    ) {
+    if (!validarEmail(email)) {
         document.getElementById(
             "login-email-error"
         ).textContent =
@@ -766,7 +767,6 @@ function realizarLogin(event) {
 
         formValido = false;
     }
-
 
     if (senha.length === 0) {
         document.getElementById(
@@ -782,7 +782,6 @@ function realizarLogin(event) {
         formValido = false;
     }
 
-
     if (!formValido) {
         loginFeedback.textContent =
             "Verifique os dados informados.";
@@ -793,15 +792,76 @@ function realizarLogin(event) {
         return;
     }
 
+    const dados = {
+        email: email,
+        senha: senha
+    };
 
-    loginFeedback.textContent =
-        "Login realizado com sucesso!";
+    try {
+        const resposta = await fetch(
+            "../api/login/login.php",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dados)
+            }
+        );
 
-    loginFeedback.className =
-        "feedback-box success";
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+            loginFeedback.textContent =
+                resultado.mensagem ||
+                "E-mail ou senha incorretos.";
+
+            loginFeedback.className =
+                "feedback-box error";
+
+            return;
+        }
+
+        const destinosPorPerfil = {
+            visitante: "visitante.html",
+            editor: "editor.html",
+            admin: "admin.html"
+        };
+
+        const perfil = String(
+            resultado.usuario?.perfil ?? ""
+        ).trim().toLowerCase();
+
+        const destino = destinosPorPerfil[perfil];
+
+        if (!destino) {
+            loginFeedback.textContent =
+                "Sua conta não possui um perfil de acesso válido.";
+
+            loginFeedback.className =
+                "feedback-box error";
+
+            return;
+        }
+
+        loginFeedback.textContent =
+            resultado.mensagem || "Login realizado com sucesso.";
+
+        loginFeedback.className =
+            "feedback-box success";
+
+        setTimeout(() => {
+            window.location.href = destino;
+        }, 500);
+
+    } catch (erro) {
+        loginFeedback.textContent =
+            "Não foi possível conectar ao servidor.";
+
+        loginFeedback.className =
+            "feedback-box error";
+    }
 }
-
-
 /* =========================================================
    TECLADO
    ========================================================= */
@@ -853,3 +913,298 @@ mostrarEtapa(
     1,
     false
 );
+
+/* Mostrar ou ocultar a senha individualmente. */
+document.querySelectorAll("[data-alvo-senha]").forEach((botao) => {
+    const idCampo = botao.dataset.alvoSenha;
+    const campo = document.getElementById(idCampo);
+
+    if (!campo) return;
+
+    botao.addEventListener("click", () => {
+        const mostrar = campo.type === "password";
+
+        campo.type = mostrar ? "text" : "password";
+        botao.textContent = mostrar ? "Ocultar" : "Mostrar";
+        botao.setAttribute(
+            "aria-label",
+            mostrar ? "Ocultar senha" : "Mostrar senha"
+        );
+    });
+});
+
+/* =========================================================
+   RECUPERAÇÃO LOCAL DE SENHA
+   Disponível somente para desenvolvimento no XAMPP.
+   ========================================================= */
+
+function mostrarTelaRecuperacao(tokenInicial = null) {
+    const tokenDaUrl =
+        tokenInicial ??
+        new URLSearchParams(window.location.search).get("token");
+
+    atualizarEstadoElemento(cadastroWrapper, false);
+    atualizarEstadoElemento(loginWrapper, true);
+    atualizarEstadoElemento(painelCadastro, false);
+    atualizarEstadoElemento(painelLogin, true);
+
+    loginConteudo.hidden = true;
+    recuperacaoConteudo.hidden = false;
+
+    recuperacaoSolicitarForm.reset();
+    redefinirSenhaForm.reset();
+
+    recuperacaoSolicitarFeedback.textContent = "";
+    recuperacaoSolicitarFeedback.className = "feedback-box";
+
+    recuperacaoRedefinirFeedback.textContent = "";
+    recuperacaoRedefinirFeedback.className = "feedback-box";
+
+    tokenLocalValor.textContent = "";
+    tokenLocalContainer.hidden = true;
+
+    const existeTokenNaUrl =
+        typeof tokenDaUrl === "string" &&
+        tokenDaUrl.length > 0;
+
+    recuperacaoSolicitarForm.hidden = existeTokenNaUrl;
+    redefinirSenhaForm.hidden = !existeTokenNaUrl;
+
+    if (existeTokenNaUrl) {
+        recuperacaoTokenInput.value = tokenDaUrl;
+
+        // Remove o token da barra de endereço após carregá-lo.
+        window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname + window.location.hash
+        );
+
+        window.setTimeout(() => {
+            recuperacaoTokenInput.focus();
+        }, 350);
+    } else {
+        recuperacaoEmailInput.value =
+            loginEmailInput.value.trim();
+
+        window.setTimeout(() => {
+            recuperacaoEmailInput.focus();
+        }, 350);
+    }
+}
+
+
+/* Abre a recuperação a partir do login. */
+abrirRecuperacaoButton.addEventListener("click", () => {
+    mostrarTelaRecuperacao();
+});
+
+
+/* Retorna para o formulário de login. */
+voltarLoginRecuperacaoButton.addEventListener("click", () => {
+    mostrarTelaLogin();
+});
+
+
+/* =========================================================
+   SOLICITAR TOKEN
+   ========================================================= */
+
+recuperacaoSolicitarForm.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+
+    recuperacaoSolicitarFeedback.textContent = "";
+    recuperacaoSolicitarFeedback.className = "feedback-box";
+
+    const email = normalizarEmail(recuperacaoEmailInput.value);
+
+    if (!validarEmail(email)) {
+        recuperacaoSolicitarFeedback.textContent =
+            "Informe um e-mail válido.";
+
+        recuperacaoSolicitarFeedback.className =
+            "feedback-box error";
+
+        recuperacaoEmailInput.setAttribute("aria-invalid", "true");
+        recuperacaoEmailInput.focus();
+
+        return;
+    }
+
+    recuperacaoEmailInput.removeAttribute("aria-invalid");
+
+    try {
+        const resposta = await fetch("../api/senha/solicitar.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email })
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+            recuperacaoSolicitarFeedback.textContent =
+                resultado.mensagem ||
+                "Não foi possível gerar o token.";
+
+            recuperacaoSolicitarFeedback.className =
+                "feedback-box error";
+
+            return;
+        }
+
+        /*
+         * O endpoint local devolve token_desenvolvimento
+         * somente quando encontra o usuário e gera o token.
+         */
+        if (resultado.token_desenvolvimento) {
+            tokenLocalValor.textContent =
+                resultado.token_desenvolvimento;
+
+            tokenLocalContainer.hidden = false;
+
+            recuperacaoTokenInput.value =
+                resultado.token_desenvolvimento;
+
+            recuperacaoSolicitarForm.hidden = true;
+            redefinirSenhaForm.hidden = false;
+
+            recuperacaoSolicitarFeedback.textContent =
+                "Token gerado no ambiente local. Ele já foi inserido no formulário abaixo.";
+
+            recuperacaoSolicitarFeedback.className =
+                "feedback-box success";
+
+            window.setTimeout(() => {
+                recuperacaoNovaSenhaInput.focus();
+            }, 100);
+
+            return;
+        }
+
+        recuperacaoSolicitarFeedback.textContent =
+            resultado.mensagem ||
+            "Se o e-mail estiver cadastrado, será gerado um token de recuperação.";
+
+        recuperacaoSolicitarFeedback.className =
+            "feedback-box success";
+
+    } catch (erro) {
+        console.error("Erro ao solicitar recuperação:", erro);
+
+        recuperacaoSolicitarFeedback.textContent =
+            "Não foi possível conectar ao servidor local.";
+
+        recuperacaoSolicitarFeedback.className =
+            "feedback-box error";
+    }
+});
+
+
+/* =========================================================
+   REDEFINIR SENHA
+   ========================================================= */
+
+redefinirSenhaForm.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+
+    recuperacaoRedefinirFeedback.textContent = "";
+    recuperacaoRedefinirFeedback.className = "feedback-box";
+
+    const token = recuperacaoTokenInput.value.trim();
+    const novaSenha = recuperacaoNovaSenhaInput.value;
+    const confirmarSenha = recuperacaoConfirmarSenhaInput.value;
+
+    if (!/^[a-f0-9]{64}$/i.test(token)) {
+        recuperacaoRedefinirFeedback.textContent =
+            "Informe um token válido de 64 caracteres hexadecimais.";
+
+        recuperacaoRedefinirFeedback.className =
+            "feedback-box error";
+
+        recuperacaoTokenInput.focus();
+        return;
+    }
+
+    if (novaSenha.length < 8) {
+        recuperacaoRedefinirFeedback.textContent =
+            "A nova senha deve ter pelo menos 8 caracteres.";
+
+        recuperacaoRedefinirFeedback.className =
+            "feedback-box error";
+
+        recuperacaoNovaSenhaInput.focus();
+        return;
+    }
+
+    if (novaSenha !== confirmarSenha) {
+        recuperacaoRedefinirFeedback.textContent =
+            "As senhas não coincidem.";
+
+        recuperacaoRedefinirFeedback.className =
+            "feedback-box error";
+
+        recuperacaoConfirmarSenhaInput.focus();
+        return;
+    }
+
+    try {
+        const resposta = await fetch("../api/senha/redefinir.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                token: token,
+                nova_senha: novaSenha,
+                confirmar_senha: confirmarSenha
+            })
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+            recuperacaoRedefinirFeedback.textContent =
+                resultado.mensagem ||
+                "Não foi possível redefinir a senha.";
+
+            recuperacaoRedefinirFeedback.className =
+                "feedback-box error";
+
+            return;
+        }
+
+        recuperacaoRedefinirFeedback.textContent =
+            resultado.mensagem ||
+            "Senha redefinida com sucesso. Você já pode entrar com a nova senha.";
+
+        recuperacaoRedefinirFeedback.className =
+            "feedback-box success";
+
+        // Remove os dados do token da interface.
+        tokenLocalContainer.hidden = true;
+        tokenLocalValor.textContent = "";
+
+        redefinirSenhaForm.reset();
+
+    } catch (erro) {
+        console.error("Erro ao redefinir senha:", erro);
+
+        recuperacaoRedefinirFeedback.textContent =
+            "Não foi possível conectar ao servidor local.";
+
+        recuperacaoRedefinirFeedback.className =
+            "feedback-box error";
+    }
+});
+
+
+/* Permite abrir diretamente a redefinição com ?token=... */
+const tokenInicialRecuperacao =
+    new URLSearchParams(window.location.search).get("token");
+
+if (tokenInicialRecuperacao) {
+    mostrarTelaRecuperacao(tokenInicialRecuperacao);
+}

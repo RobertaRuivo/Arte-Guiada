@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sua biblioteca pessoal no Arte Guiada: favoritos, obras para explorar e experiências concluídas.">
+    <title>Arte Guiada | Minha biblioteca</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/biblioteca.css">
+    <script src="../public/js/sessao-ui.js" defer></script>
+    <script src="../public/js/biblioteca.js" defer></script>
+</head>
+<body class="pagina-biblioteca">
+    <a class="skip-link-biblioteca" href="#conteudo-principal">Pular para o conteúdo</a>
+    <header class="cabecalho" data-site-header></header>
+
+    <main id="conteudo-principal" class="biblioteca-container">
+        <section class="biblioteca-intro" aria-labelledby="titulo-biblioteca">
+            <span class="biblioteca-etiqueta">COLEÇÃO PESSOAL</span>
+            <h1 id="titulo-biblioteca">Minha biblioteca</h1>
+            <p>Guarde as obras que chamaram sua atenção, organize o que deseja explorar e reencontre suas experiências concluídas.</p>
+        </section>
+
+        <section class="biblioteca-area" aria-label="Coleções pessoais">
+            <div class="biblioteca-abas" role="tablist" aria-label="Coleções">
+                <button type="button" class="biblioteca-aba ativa" id="aba-favoritos" role="tab" aria-selected="true" aria-controls="listaBiblioteca" data-colecao="favoritos">Favoritos</button>
+                <button type="button" class="biblioteca-aba" id="aba-quero-explorar" role="tab" aria-selected="false" aria-controls="listaBiblioteca" data-colecao="quero_explorar">Quero ver</button>
+                <button type="button" class="biblioteca-aba" id="aba-exploradas" role="tab" aria-selected="false" aria-controls="listaBiblioteca" data-colecao="exploradas">Já explorei</button>
+            </div>
+
+            <p class="biblioteca-feedback" id="bibliotecaFeedback" role="status" aria-live="polite"></p>
+            <div class="biblioteca-grid" id="listaBiblioteca" role="tabpanel" aria-labelledby="aba-favoritos" aria-live="polite">
+                <div class="biblioteca-carregando">Carregando sua biblioteca…</div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="rodape">
+        <p>Arte Guiada</p>
+        <a href="mailto:roberta.ruivo@unesp.br">Email</a>
+        <p>Sistemas Computacionais 2 - 2026</p>
+    </footer>
+</body>
+</html>
