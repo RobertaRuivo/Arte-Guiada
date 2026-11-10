@@ -126,15 +126,6 @@
         });
     });
 
-    document.querySelectorAll("[data-acao-admin]").forEach((botao) => {
-        botao.addEventListener("click", () => {
-            const mensagem = botao.dataset.acaoAdmin === "convite"
-                ? "A criação e gravação do convite serão conectadas à API administrativa na próxima etapa."
-                : "A consulta e alteração das permissões serão conectadas à API administrativa na próxima etapa.";
-            window.alert(mensagem);
-        });
-    });
-
     // O cabeçalho global (sessao-ui.js) é o único responsável pelo logout.
     // Isso evita dois handlers concorrentes nas páginas de painel.
 

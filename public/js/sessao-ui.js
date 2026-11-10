@@ -415,28 +415,86 @@
         );
 
         controleMenu.type = "button";
+
         controleMenu.setAttribute(
             "aria-expanded",
             "false"
         );
+
         controleMenu.setAttribute(
             "aria-controls",
             "ag-global-links"
         );
 
-        controleMenu.addEventListener("click", () => {
-            const aberto =
-                controleMenu.getAttribute("aria-expanded") !== "true";
+        /*
+         * Controle centralizado do menu.
+         * A visibilidade é aplicada diretamente ao elemento
+         * para evitar conflitos com outras folhas de estilo.
+         */
 
-            controleMenu.setAttribute(
-                "aria-expanded",
-                String(aberto)
+        const mediaMenu = window.matchMedia("(max-width: 850px)");
+
+        function definirEstadoMenu(aberto) {
+            const mobile = mediaMenu.matches;
+
+            if (!mobile) {
+                links.hidden = false;
+                links.style.removeProperty("display");
+                links.classList.remove("ag-menu-aberto");
+
+                controleMenu.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                return;
+            }
+
+            links.hidden = !aberto;
+
+            links.style.setProperty(
+                "display",
+                aberto ? "flex" : "none",
+                "important"
             );
 
             links.classList.toggle(
                 "ag-menu-aberto",
                 aberto
             );
+
+            controleMenu.setAttribute(
+                "aria-expanded",
+                String(aberto)
+            );
+        }
+
+        /* Estado inicial: fechado em dispositivos móveis. */
+        definirEstadoMenu(false);
+
+        /* Alterna entre aberto e fechado. */
+        controleMenu.addEventListener("click", () => {
+            const aberto =
+                controleMenu.getAttribute("aria-expanded") !== "true";
+
+            definirEstadoMenu(aberto);
+        });
+
+        /* Fecha o menu ao mudar a largura da tela. */
+        mediaMenu.addEventListener("change", () => {
+            definirEstadoMenu(false);
+        });
+
+        /* Fecha o menu com Escape. */
+        document.addEventListener("keydown", (evento) => {
+            if (
+                evento.key === "Escape" &&
+                mediaMenu.matches &&
+                controleMenu.getAttribute("aria-expanded") === "true"
+            ) {
+                definirEstadoMenu(false);
+                controleMenu.focus();
+            }
         });
 
         nav.appendChild(controleMenu);

@@ -6,11 +6,13 @@ declare(strict_types=1);
  * API pública para criação de relatos de problemas.
  *
  * Aceita usuários autenticados e anônimos.
- * Registra o relato, suas categorias e o histórico
+ * Registra o relato, suas categorias, o evento inicial e as notificações
  * em uma única transação.
  */
 
+require_once __DIR__ . '/../../config/log.php';
 require_once __DIR__ . '/comum.php';
+require_once __DIR__ . '/gestao-comum.php';
 
 /* =========================================================
    1. VALIDAÇÃO DA REQUISIÇÃO
@@ -205,24 +207,35 @@ try {
      * podem receber relatos.
      */
     $stmtObra = $conn->prepare(
-        "SELECT id
-         FROM obras
-         WHERE id = ?
-           AND status = 'publicada'
-           AND excluida_em IS NULL
+        "SELECT
+            o.id,
+            o.criada_por,
+            LOWER(TRIM(COALESCE(criador.perfil, ''))) AS criador_perfil,
+            (
+                SELECT a.usuario_id
+                FROM obras_editores_acesso a
+                INNER JOIN usuarios editor_delegado ON editor_delegado.id = a.usuario_id
+                WHERE a.obra_id = o.id
+                  AND a.ativo = 1
+                  AND a.principal = 1
+                  AND LOWER(TRIM(editor_delegado.perfil)) = 'editor'
+                ORDER BY a.atualizado_em DESC, a.usuario_id ASC
+                LIMIT 1
+            ) AS editor_principal_id
+         FROM obras o
+         LEFT JOIN usuarios criador ON criador.id = o.criada_por
+         WHERE o.id = ?
+           AND o.status = 'publicada'
+           AND o.excluida_em IS NULL
          LIMIT 1"
     );
 
     $stmtObra->bind_param('i', $obraId);
     $stmtObra->execute();
-
-    $stmtObra->bind_result($obraEncontrada);
-
-    $obraExiste = $stmtObra->fetch();
-
+    $obraEncontrada = $stmtObra->get_result()->fetch_assoc();
     $stmtObra->close();
 
-    if (!$obraExiste) {
+    if (!$obraEncontrada) {
         $conn->rollback();
         $transacaoIniciada = false;
 
@@ -236,53 +249,60 @@ try {
     }
 
     /* -----------------------------------------------------
-       6.2. INSERIR O RELATO PRINCIPAL
+       6.2. DEFINIR A RESPONSABILIDADE INICIAL
     ----------------------------------------------------- */
 
     /*
-     * A coluna tipo da tabela antiga é preservada.
-     * A primeira categoria selecionada é utilizada como tipo principal.
+     * Um acesso principal delegado ativo tem prioridade. Na ausência dele,
+     * o autor original recebe o relato se ainda possuir perfil Editor.
+     * O administrador pode transferir a responsabilidade posteriormente.
      */
+    $editorResponsavelId = null;
+    if (!empty($obraEncontrada['editor_principal_id'])) {
+        $editorResponsavelId = (int) $obraEncontrada['editor_principal_id'];
+    } elseif (strtolower(trim((string) ($obraEncontrada['criador_perfil'] ?? ''))) === 'editor') {
+        $editorResponsavelId = (int) $obraEncontrada['criada_por'];
+    }
+
+    $statusInicial = $editorResponsavelId !== null ? 'atribuido' : 'pendente';
     $tipoPrincipal = $tipos[0];
 
-    if ($usuarioId === null) {
+    /* -----------------------------------------------------
+       6.3. INSERIR O RELATO PRINCIPAL
+    ----------------------------------------------------- */
 
-        /*
-         * Relato anônimo.
-         * usuario_id recebe NULL explicitamente.
-         */
+    if ($usuarioId === null) {
         $stmtRelato = $conn->prepare(
             "INSERT INTO relatos_problema
-                (usuario_id, obra_id, tipo, descricao, status)
+                (usuario_id, obra_id, tipo, descricao, status, prioridade, editor_responsavel_id)
              VALUES
-                (NULL, ?, ?, ?, 'pendente')"
+                (NULL, ?, ?, ?, ?, 'media', ?)"
         );
 
         $stmtRelato->bind_param(
-            'iss',
+            'isssi',
             $obraId,
             $tipoPrincipal,
-            $descricao
+            $descricao,
+            $statusInicial,
+            $editorResponsavelId
         );
-
     } else {
-
-        /*
-         * Relato associado ao usuário autenticado.
-         */
         $stmtRelato = $conn->prepare(
             "INSERT INTO relatos_problema
-                (usuario_id, obra_id, tipo, descricao, status)
+                (usuario_id, obra_id, tipo, descricao, status, prioridade, editor_responsavel_id)
              VALUES
-                (?, ?, ?, ?, 'pendente')"
+                (?, ?, ?, ?, ?, 'media', ?)"
         );
 
         $stmtRelato->bind_param(
-            'iiss',
+            'iisssi',
             $usuarioId,
             $obraId,
             $tipoPrincipal,
-            $descricao
+            $descricao,
+            $statusInicial,
+            $editorResponsavelId
         );
     }
 
@@ -325,32 +345,42 @@ try {
     $stmtTipo->close();
 
     /* -----------------------------------------------------
-       6.4. REGISTRAR O HISTÓRICO INICIAL
+       6.4. REGISTRAR O EVENTO INICIAL E NOTIFICAR
     ----------------------------------------------------- */
 
     $observacaoInicial = 'Relato recebido pelo sistema.';
-
-    $stmtHistorico = $conn->prepare(
-        "INSERT INTO relatos_problema_historico
-            (
-                relato_id,
-                status_anterior,
-                status_novo,
-                observacao,
-                responsavel_id
-            )
-         VALUES
-            (?, NULL, 'pendente', ?, NULL)"
-    );
-
-    $stmtHistorico->bind_param(
-        'is',
+    ag_relato_registrar_evento(
+        $conn,
         $relatoId,
+        $usuarioId,
+        'relato_criado',
+        null,
+        $statusInicial,
+        null,
+        'media',
+        null,
+        $editorResponsavelId,
         $observacaoInicial
     );
 
-    $stmtHistorico->execute();
-    $stmtHistorico->close();
+    ag_relato_notificar_admins(
+        $conn,
+        $relatoId,
+        'novo_relato',
+        'Novo relato de problema recebido',
+        'Um novo relato foi registrado para a obra #' . $obraId . '.'
+    );
+
+    if ($editorResponsavelId !== null) {
+        ag_relato_notificar_editor(
+            $conn,
+            $editorResponsavelId,
+            $obraId,
+            'novo_relato_obra',
+            'Um problema foi relatado em uma obra sob sua responsabilidade',
+            'Um novo relato foi recebido para a obra #' . $obraId . '. Consulte suas pendências no painel do editor.'
+        );
+    }
 
     /* -----------------------------------------------------
        6.5. CONFIRMAR A TRANSAÇÃO
@@ -374,15 +404,11 @@ try {
     /*
      * Registra a criação com timestamp.
      */
-    error_log(
-        sprintf(
-            '[Arte Guiada][relatos][%s] Relato registrado. ID: %d; obra: %d; usuário: %s',
-            date(DATE_ATOM),
-            $relatoId,
-            $obraId,
-            $usuarioId === null ? 'anônimo' : (string) $usuarioId
-        )
-    );
+    registrarLog('INFO', 'relato_criado', [
+        'relato_id' => $relatoId,
+        'obra_id' => $obraId,
+        'usuario_id' => $usuarioId
+    ]);
 
     /*
      * Resposta de sucesso enviada ao JavaScript.
@@ -428,19 +454,12 @@ try {
      * Quebras de linha são removidas para evitar
      * a inserção de entradas falsas no log.
      */
-    error_log(
-        sprintf(
-            '[Arte Guiada][relatos][%s] Falha ao registrar relato. Obra: %d; usuário: %s; erro: %s',
-            date(DATE_ATOM),
-            $obraId,
-            $usuarioId === null ? 'anônimo' : (string) $usuarioId,
-            str_replace(
-                ["\r", "\n"],
-                ' ',
-                $erro->getMessage()
-            )
-        )
-    );
+    registrarLog('ERROR', 'relato_criacao_falhou', [
+        'obra_id' => $obraId,
+        'usuario_id' => $usuarioId,
+        'tipo' => get_class($erro),
+        'codigo' => (int) $erro->getCode()
+    ]);
 
     /*
      * Fecha a conexão, caso tenha sido estabelecida.

@@ -1,9 +1,12 @@
-
 <?php
 
 header("Content-Type: application/json; charset=UTF-8");
 header("Cache-Control: no-store");
+header("Pragma: no-cache");
 
+/**
+ * Retorna uma resposta JSON e encerra a execução.
+ */
 function responderJson(int $status, array $dados): void
 {
     http_response_code($status);
@@ -16,6 +19,10 @@ function responderJson(int $status, array $dados): void
     exit;
 }
 
+/*
+ * 1. Verifica o método HTTP.
+ */
+
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Allow: POST");
 
@@ -24,21 +31,52 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
         "mensagem" => "Método não permitido."
     ]);
 }
-require_once __DIR__ . '/../../config/protecao-csrf.php';
+
+/*
+ * 2. Verifica a origem da requisição.
+ */
+
+require_once __DIR__ . "/../../config/log.php";
+require_once __DIR__ . "/../../config/protecao-csrf.php";
+
 exigirOrigemConfiavelCsrf();
 
-$corpo = file_get_contents("php://input");
-$dados = json_decode($corpo, true);
+/*
+ * 3. Valida o JSON recebido.
+ */
 
-if (!is_array($dados) || json_last_error() !== JSON_ERROR_NONE) {
+$corpo = file_get_contents("php://input");
+
+try {
+    $dados = json_decode(
+        $corpo,
+        true,
+        512,
+        JSON_THROW_ON_ERROR
+    );
+} catch (JsonException $erro) {
     responderJson(400, [
         "sucesso" => false,
         "mensagem" => "O corpo da requisição contém JSON inválido."
     ]);
 }
 
+if (!is_array($dados)) {
+    responderJson(400, [
+        "sucesso" => false,
+        "mensagem" => "Os dados enviados são inválidos."
+    ]);
+}
+
+/*
+ * 4. Verifica os campos obrigatórios.
+ */
+
 foreach (["nome", "sobrenome", "email", "senha"] as $campo) {
-    if (!isset($dados[$campo]) || !is_string($dados[$campo])) {
+    if (
+        !isset($dados[$campo]) ||
+        !is_string($dados[$campo])
+    ) {
         responderJson(400, [
             "sucesso" => false,
             "mensagem" => "Os dados enviados são inválidos."
@@ -51,6 +89,10 @@ $sobrenome = trim($dados["sobrenome"]);
 $email = strtolower(trim($dados["email"]));
 $senha = $dados["senha"];
 
+/*
+ * 5. Valida a mensagem opcional.
+ */
+
 $mensagemRecebida = $dados["mensagem"] ?? "";
 
 if (!is_string($mensagemRecebida)) {
@@ -61,6 +103,10 @@ if (!is_string($mensagemRecebida)) {
 }
 
 $mensagem = trim($mensagemRecebida);
+
+/*
+ * 6. Verifica campos vazios.
+ */
 
 if (
     $nome === "" ||
@@ -74,6 +120,10 @@ if (
     ]);
 }
 
+/*
+ * 7. Valida nome e sobrenome.
+ */
+
 if (
     mb_strlen($nome, "UTF-8") > 100 ||
     mb_strlen($sobrenome, "UTF-8") > 100
@@ -84,6 +134,10 @@ if (
     ]);
 }
 
+/*
+ * 8. Valida o e-mail.
+ */
+
 if (
     mb_strlen($email, "UTF-8") > 150 ||
     !filter_var($email, FILTER_VALIDATE_EMAIL)
@@ -93,6 +147,10 @@ if (
         "mensagem" => "Informe um endereço de e-mail válido."
     ]);
 }
+
+/*
+ * 9. Valida a senha.
+ */
 
 if (
     strlen($senha) < 8 ||
@@ -105,11 +163,16 @@ if (
 }
 
 /*
- * O perfil não é aceito do cliente.
- * Contas comuns começam como visitantes.
- * Perfis privilegiados exigem autorização específica.
+ * 10. O perfil não é recebido do cliente.
+ *
+ * Contas comuns sempre começam como visitantes.
  */
+
 $perfil = "visitante";
+
+/*
+ * 11. Gera o hash da senha.
+ */
 
 $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
 
@@ -120,7 +183,15 @@ if ($senhaHash === false) {
     ]);
 }
 
+/*
+ * 12. Insere o usuário no banco.
+ */
+
+$conn = null;
+$stmt = null;
+
 try {
+
     require_once __DIR__ . "/../../config/banco.php";
 
     $sql = "INSERT INTO usuarios
@@ -140,34 +211,71 @@ try {
     );
 
     $stmt->execute();
+
+    $usuarioId = (int) $conn->insert_id;
+
     $stmt->close();
+    $stmt = null;
+
     $conn->close();
+    $conn = null;
+
+    /*
+     * Registra a criação da entidade.
+     */
+
+    registrarLog('INFO', 'cadastro_realizado', [
+        'usuario_id' => $usuarioId
+    ]);
 
     responderJson(201, [
         "sucesso" => true,
         "mensagem" => "Cadastro realizado com sucesso."
     ]);
 
-} catch (mysqli_sql_exception $erro) {
-    if (isset($stmt) && $stmt instanceof mysqli_stmt) {
-        $stmt->close();
+} catch (Throwable $erro) {
+
+    /*
+     * Fecha os recursos, caso ainda estejam abertos.
+     */
+
+    if ($stmt instanceof mysqli_stmt) {
+        try {
+            $stmt->close();
+        } catch (Throwable $ignorado) {
+        }
     }
 
-    if (isset($conn) && $conn instanceof mysqli) {
-        $conn->close();
+    if ($conn instanceof mysqli) {
+        try {
+            $conn->close();
+        } catch (Throwable $ignorado) {
+        }
     }
 
-    if ((int) $erro->getCode() === 1062) {
+    /*
+     * Trata especificamente o e-mail duplicado.
+     */
+
+    if (
+        $erro instanceof mysqli_sql_exception &&
+        (int) $erro->getCode() === 1062
+    ) {
+        registrarLog('WARNING', 'cadastro_email_duplicado');
         responderJson(409, [
             "sucesso" => false,
             "mensagem" => "Este e-mail já está cadastrado."
         ]);
     }
 
-    error_log(
-        "[" . date("Y-m-d H:i:s") . "] Erro no cadastro: " .
-        $erro->getMessage()
-    );
+    /*
+     * Registra erros inesperados.
+     */
+
+    registrarLog('ERROR', 'cadastro_falhou', [
+        'tipo' => get_class($erro),
+        'codigo' => (int) $erro->getCode()
+    ]);
 
     responderJson(500, [
         "sucesso" => false,

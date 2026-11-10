@@ -33,6 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
  * 2. Proteção de origem.
  */
 
+require_once __DIR__ . "/../../config/log.php";
 require_once __DIR__ . "/../../config/protecao-csrf.php";
 
 exigirOrigemConfiavelCsrf();
@@ -159,10 +160,10 @@ try {
         $conn->close();
     }
 
-    error_log(
-        "[" . date("Y-m-d H:i:s") . "] Erro interno no login: " .
-        $erro->getMessage()
-    );
+    registrarLog('ERROR', 'login_erro_consulta', [
+        'tipo' => get_class($erro),
+        'codigo' => (int) $erro->getCode()
+    ]);
 
     responderJsonLogin(500, [
         "sucesso" => false,
@@ -178,9 +179,7 @@ if (
     !$usuarioAutenticado ||
     !password_verify($senhaInformada, $usuarioAutenticado["senha"])
 ) {
-    error_log(
-        "[" . date("Y-m-d H:i:s") . "] Falha de autenticação no login."
-    );
+    registrarLog('WARNING', 'login_credenciais_invalidas');
 
     responderJsonLogin(401, [
         "sucesso" => false,
@@ -276,10 +275,10 @@ try {
         session_abort();
     }
 
-    error_log(
-        "[" . date("Y-m-d H:i:s") . "] Erro na sessão: " .
-        $erro->getMessage()
-    );
+    registrarLog('ERROR', 'login_erro_sessao', [
+        'tipo' => get_class($erro),
+        'codigo' => (int) $erro->getCode()
+    ]);
 
     responderJsonLogin(500, [
         "sucesso" => false,
@@ -291,10 +290,10 @@ try {
  * 9. Registro do sucesso.
  */
 
-error_log(
-    "[" . date("Y-m-d H:i:s") . "] Login realizado com sucesso. Usuario ID: " .
-    $usuarioAutenticado["id"]
-);
+registrarLog('INFO', 'login_realizado', [
+    'usuario_id' => $usuarioAutenticado['id'],
+    'perfil' => $perfil
+]);
 
 /*
  * 10. Resposta.

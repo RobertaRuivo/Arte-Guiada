@@ -145,6 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     ]);
 }
 
+require_once __DIR__ . "/../../config/log.php";
 require_once __DIR__ . "/../../config/protecao-csrf.php";
 
 exigirOrigemConfiavelCsrf();
@@ -1044,8 +1045,8 @@ try {
      */
 
     /*
- * Notifica o editor responsÃ¡vel quando um administrador altera
- * uma obra criada por outra conta. O aviso Ã© gravado na mesma
+ * Notifica o editor responsável quando um administrador altera
+ * uma obra criada por outra conta. O aviso é gravado na mesma
  * transaÃ§Ã£o da ediÃ§Ã£o: ou ambos sÃ£o confirmados, ou nenhum Ã©.
  */
 if ($perfil === "admin" && $obraId > 0 && $obraAtual !== null) {
@@ -1054,7 +1055,7 @@ if ($perfil === "admin" && $obraId > 0 && $obraAtual !== null) {
     if ($editorResponsavelId > 0 && $editorResponsavelId !== $usuarioId) {
         $tituloNotificacao = $titulo !== ""
             ? $titulo
-            : "Obra sem tÃ­tulo";
+            : "Obra sem título";
 
         $statusDescricao = $status === "publicada"
             ? "publicada"
@@ -1102,14 +1103,13 @@ $conn->commit();
         ? "Atualização"
         : "Criação";
 
-    error_log(
-        "[" . date("Y-m-d H:i:s") . "] " .
-        $tipoOperacao . " de obra concluída. " .
-        "obra_id=" . $obraIdSalva .
-        "; usuario_id=" . $usuarioId .
-        "; perfil=" . $perfil .
-        "; status=" . $status
-    );
+    registrarLog('INFO', 'obra_salva', [
+        'obra_id' => $obraIdSalva,
+        'usuario_id' => $usuarioId,
+        'perfil' => $perfil,
+        'status' => $status,
+        'operacao' => $tipoOperacao
+    ]);
 
     /*
      * 17. Retorna a resposta.
@@ -1181,13 +1181,12 @@ $conn->commit();
      * Registra o erro interno.
      */
 
-    error_log(
-        "[" . date("Y-m-d H:i:s") . "] " .
-        "Erro ao salvar obra. " .
-        "Tipo=" . get_class($erro) .
-        "; código=" . $erro->getCode() .
-        "; mensagem=" . $erro->getMessage()
-    );
+    registrarLog('ERROR', 'obra_salvar_falhou', [
+        'usuario_id' => $usuarioId,
+        'perfil' => $perfil,
+        'tipo' => get_class($erro),
+        'codigo' => (int) $erro->getCode()
+    ]);
 
     responderJson(500, [
         "sucesso" => false,

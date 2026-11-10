@@ -59,7 +59,6 @@
     function mostrarFeedback(mensagem, tipo = "") {
         if (!feedback) {
             console.warn("[RELATO] Elemento de feedback não encontrado.");
-            console.log("[RELATO]", mensagem);
             return;
         }
 
@@ -169,12 +168,6 @@
                 );
             }
 
-            console.log("[RELATO] Consulta da obra:", {
-                url: resposta.url,
-                status: resposta.status,
-                dados
-            });
-
             if (!resposta.ok || dados?.sucesso !== true) {
                 throw new Error(
                     dados?.mensagem ||
@@ -222,11 +215,6 @@
                 autorObra.textContent =
                     autor || "Autor não informado";
             }
-
-            console.log(
-                "[RELATO] Contexto da obra carregado:",
-                { obraId, titulo, autor }
-            );
 
         } catch (erro) {
             console.error(
@@ -394,13 +382,6 @@
                 );
             }
 
-            console.log("[RELATO] Resposta do envio:", {
-                url: resposta.url,
-                status: resposta.status,
-                corpo: corpoResposta,
-                dados
-            });
-
             /*
              * O envio só é considerado concluído quando
              * o backend confirma o sucesso.
@@ -496,11 +477,6 @@
 
     atualizarObrigatoriedadeDescricao();
     atualizarContadorDescricao();
-
-    console.log(
-        "[RELATO] Formulário inicializado.",
-        { obraId }
-    );
 
     /*
      * A consulta da obra acontece depois da inicialização.

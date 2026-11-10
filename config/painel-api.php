@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/log.php';
+
 /* Utilitários comuns das APIs novas do painel administrativo. */
 function ag_responder_json(int $status, array $dados): never
 {
@@ -8,12 +10,25 @@ function ag_responder_json(int $status, array $dados): never
     header('Content-Type: application/json; charset=UTF-8');
     header('Cache-Control: no-store, no-cache, must-revalidate');
     header('Pragma: no-cache');
+    if ($status >= 500) {
+        registrarLog('ERROR', 'api_painel_erro_500', [
+            'endpoint' => (string) ($_SERVER['SCRIPT_NAME'] ?? 'desconhecido')
+        ]);
+    }
     echo json_encode($dados, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
     exit;
 }
 
 function ag_iniciar_sessao(): array
 {
+    if (session_status() === PHP_SESSION_NONE) {
+        $nomeCookie = session_name();
+        $cookie = $_COOKIE[$nomeCookie] ?? null;
+        if (!is_string($cookie) || $cookie === '') {
+            return ['usuario_id' => 0, 'perfil' => ''];
+        }
+    }
+
     if (session_status() === PHP_SESSION_ACTIVE) {
         $usuarioId = filter_var($_SESSION['usuario_id'] ?? null, FILTER_VALIDATE_INT);
         $perfil = strtolower(trim((string) ($_SESSION['perfil'] ?? '')));

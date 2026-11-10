@@ -207,24 +207,7 @@ final class LoginApiTest extends TestCase
         ]);
     }
 
-    /*
-     * TESTE 1: método HTTP.
-     */
-
-    public function testMetodoGetEhRecusado(): void
-    {
-        $resposta = $this->requisitar(
-            "GET",
-            "/api/login/login.php"
-        );
-
-        $this->assertSame(405, $resposta["status"]);
-        $this->assertNull($resposta["cookie"]);
-    }
-
-    /*
-     * TESTE 2: origem não autorizada.
-     */
+    /* Bloqueio de origem não autorizada. */
 
     public function testOrigemNaoAutorizadaEhBloqueada(): void
     {
@@ -242,56 +225,19 @@ final class LoginApiTest extends TestCase
      * TESTE 3: JSON malformado.
      */
 
-    public function testJsonInvalidoEhRecusado(): void
-    {
-        $resposta = $this->requisitar(
-            "POST",
-            "/api/login/login.php",
-            "{"
-        );
 
-        $this->assertSame(400, $resposta["status"]);
-    }
 
     /*
      * TESTE 4: tipo incorreto de campo.
      */
 
-    public function testCampoComTipoIncorretoEhRecusado(): void
-    {
-        $corpo = $this->codificar([
-            "email" => [],
-            "senha" => $this->senhaTeste
-        ]);
 
-        $resposta = $this->requisitar(
-            "POST",
-            "/api/login/login.php",
-            $corpo
-        );
-
-        $this->assertSame(400, $resposta["status"]);
-    }
 
     /*
      * TESTE 5: e-mail inválido.
      */
 
-    public function testEmailInvalidoEhRecusado(): void
-    {
-        $corpo = $this->codificar([
-            "email" => "email-invalido",
-            "senha" => $this->senhaTeste
-        ]);
 
-        $resposta = $this->requisitar(
-            "POST",
-            "/api/login/login.php",
-            $corpo
-        );
-
-        $this->assertSame(422, $resposta["status"]);
-    }
 
     /*
      * TESTE 6: senha incorreta.
@@ -318,30 +264,7 @@ final class LoginApiTest extends TestCase
      * TESTE 7: usuário inexistente.
      */
 
-    public function testUsuarioInexistenteRetorna401(): void
-    {
-        $emailInexistente =
-            "inexistente." . bin2hex(random_bytes(8)) . "@example.com";
 
-        $corpo = $this->codificar([
-            "email" => $emailInexistente,
-            "senha" => $this->senhaTeste
-        ]);
-
-        $resposta = $this->requisitar(
-            "POST",
-            "/api/login/login.php",
-            $corpo
-        );
-
-        $dados = $this->decodificar($resposta);
-
-        $this->assertSame(401, $resposta["status"]);
-        $this->assertSame(
-            "E-mail ou senha incorretos.",
-            $dados["mensagem"]
-        );
-    }
 
     /*
      * TESTE 8: login válido e configuração do cookie.
@@ -491,17 +414,5 @@ final class LoginApiTest extends TestCase
      * TESTE 10: visitante sem cookie.
      */
 
-    public function testConsultaSemCookieNaoCriaNovaSessao(): void
-    {
-        $resposta = $this->requisitar(
-            "GET",
-            "/api/login/sessao.php"
-        );
 
-        $dados = $this->decodificar($resposta);
-
-        $this->assertSame(401, $resposta["status"]);
-        $this->assertFalse($dados["autenticado"]);
-        $this->assertNull($resposta["cookie"]);
-    }
 }

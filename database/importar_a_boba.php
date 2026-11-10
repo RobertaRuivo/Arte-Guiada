@@ -27,7 +27,12 @@ $conn->set_charset('utf8mb4');
 
 $titulo = 'A Boba';
 $autor = 'Anita Malfatti';
-$emailEditor = 'robertarupompeu@gmail.com';
+$opcoes = getopt('', ['editor-email:']);
+$emailEditor = $opcoes['editor-email'] ?? getenv('ARTE_GUIADA_EDITOR_EMAIL');
+if (!is_string($emailEditor) || !filter_var($emailEditor, FILTER_VALIDATE_EMAIL)) {
+    fwrite(STDERR, "Informe o e-mail do Editor com --editor-email=... ou ARTE_GUIADA_EDITOR_EMAIL no ambiente.\n");
+    exit(1);
+}
 $caminhoImagem = __DIR__ . '/../public/img/a_boba.jpg';
 $textoAlternativo = 'A Boba, de Anita Malfatti, representada em uma composição de cores intensas.';
 
@@ -45,6 +50,7 @@ $etapas = [
 ];
 
 $mimePermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+$transacaoAberta = false;
 
 try {
     if (!is_file($caminhoImagem) || !is_readable($caminhoImagem)) {
@@ -78,7 +84,7 @@ try {
     $stmtUsuario->close();
 
     if (!$usuario) {
-        throw new RuntimeException('Não encontrei uma conta com o e-mail configurado e perfil Editor. Confira o e-mail em database/importar_a_boba.php.');
+        throw new RuntimeException('Não encontrei uma conta com o e-mail informado e perfil Editor. Confira o endereço da conta existente e tente novamente.');
     }
     $criadaPor = (int) $usuario['id'];
 
@@ -104,6 +110,7 @@ try {
     }
 
     $conn->begin_transaction();
+    $transacaoAberta = true;
 
     $status = 'publicada';
     $destaque = 0;
@@ -144,6 +151,7 @@ try {
     $stmtEtapa->close();
 
     $conn->commit();
+    $transacaoAberta = false;
 
     fwrite(STDOUT, "Obra importada com sucesso.\n");
     fwrite(STDOUT, "ID da obra: {$obraId}\n");
@@ -151,13 +159,12 @@ try {
     fwrite(STDOUT, "Imagem armazenada no banco: sim ({$mime}).\n");
     fwrite(STDOUT, "As coordenadas de zoom ficaram NULL porque o formato antigo da galeria não usa o retângulo do editor.\n");
 } catch (Throwable $erro) {
-    if ($conn->errno === 0) {
-        // A transação pode ainda não ter sido iniciada; rollback é tolerado pelo mysqli.
-    }
-    try {
-        $conn->rollback();
-    } catch (Throwable $ignorado) {
-        // Não havia transação ativa para reverter.
+    if ($transacaoAberta) {
+        try {
+            $conn->rollback();
+        } catch (Throwable $ignorado) {
+            // Preserva a falha original.
+        }
     }
 
     fwrite(STDERR, "Falha ao importar A Boba: " . $erro->getMessage() . "\n");

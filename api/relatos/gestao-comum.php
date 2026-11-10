@@ -6,7 +6,7 @@ declare(strict_types=1);
 function ag_relato_registrar_evento(
     mysqli $conn,
     int $relatoId,
-    int $usuarioId,
+    ?int $usuarioId,
     string $acao,
     ?string $statusAnterior,
     ?string $statusNovo,
@@ -39,25 +39,6 @@ function ag_relato_registrar_evento(
     $stmt->execute();
     $stmt->close();
 
-    // Mantém também o histórico legado para que as consultas já existentes continuem úteis.
-    $observacaoHistorico = mb_substr(strtoupper($acao) . ': ' . $observacao, 0, 500, 'UTF-8');
-    $statusAnteriorHistorico = $statusAnterior ?? '';
-    $statusNovoHistorico = $statusNovo ?? '';
-    $stmtHistorico = $conn->prepare(
-        "INSERT INTO relatos_problema_historico
-            (relato_id, status_anterior, status_novo, observacao, responsavel_id)
-         VALUES (?, ?, ?, ?, ?)"
-    );
-    $stmtHistorico->bind_param(
-        'isssi',
-        $relatoId,
-        $statusAnteriorHistorico,
-        $statusNovoHistorico,
-        $observacaoHistorico,
-        $usuarioId
-    );
-    $stmtHistorico->execute();
-    $stmtHistorico->close();
 }
 
 function ag_relato_notificar_editor(

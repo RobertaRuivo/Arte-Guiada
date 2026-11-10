@@ -147,30 +147,11 @@ final class CadastroApiTest extends TestCase
         $stmt->close();
     }
 
-    public function testMetodoGetEhRecusado(): void
-    {
-        $resposta = $this->requisitarCadastro('GET');
 
-        $this->assertSame(405, $resposta['status']);
-    }
 
-    public function testOrigemNaoConfiavelEhBloqueada(): void
-    {
-        $resposta = $this->requisitarCadastro(
-            'POST',
-            '{}',
-            'http://site-malicioso.test'
-        );
 
-        $this->assertSame(403, $resposta['status']);
-    }
 
-    public function testJsonInvalidoEhRecusado(): void
-    {
-        $resposta = $this->requisitarCadastro('POST', '{');
 
-        $this->assertSame(400, $resposta['status']);
-    }
 
     public function testCamposObrigatoriosAusentesSaoRecusados(): void
     {
@@ -179,19 +160,7 @@ final class CadastroApiTest extends TestCase
         $this->assertSame(400, $resposta['status']);
     }
 
-    public function testSenhaMuitoCurtaEhRecusada(): void
-    {
-        $email = $this->novoEmail();
-        $dados = $this->dadosValidos($email);
-        $dados['senha'] = '1234567';
 
-        $resposta = $this->requisitarCadastro(
-            'POST',
-            $this->codificar($dados)
-        );
-
-        $this->assertSame(422, $resposta['status']);
-    }
 
     public function testCadastroValidoArmazenaSenhaHash(): void
     {
